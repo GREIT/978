@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Project</string>
+    <string name="name">Nome</string>
+    <string name="surname">Cognome</string>
+    <string name="email" translatable="false">Email</string>
+    <string name="nickname" translatable="false">Nickname</string>
+    <string name="location">Indirizzo</string>
+    <string name="bio">Una piccola bio</string>
+    <string name="bio_sample" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam metus eros, maximus non ipsum ac, luctus ultricies urna. Suspendisse dignissim volutpat sodales. Nullam tincidunt lectus vitae dui finibus, nec egestas neque venenatis.</string>
+    <string name="upload"> Carica </string>
+    <string name="camera"> Foto </string>
+    <string name="cancel"> Annulla </string>
+    <string name="ok"> OK </string>
+
+</resources>

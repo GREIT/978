@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Project</string>
+    <string name="name">Name</string>
+    <string name="surname">Surname</string>
+    <string name="email" translatable="false">Email</string>
+    <string name="nickname" translatable="false">Nickname</string>
+    <string name="location">Location</string>
+    <string name="bio">A short bio</string>
+    <string name="bio_sample" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam metus eros, maximus non ipsum ac, luctus ultricies urna. Suspendisse dignissim volutpat sodales. Nullam tincidunt lectus vitae dui finibus, nec egestas neque venenatis.</string>
+    <string name="upload"> Upload </string>
+    <string name="camera"> Camera </string>
+    <string name="cancel"> Cancel </string>
+    <string name="ok"> OK </string>
+</resources>
