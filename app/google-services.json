@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1059761957663",
+    "firebase_url": "https://mad-greit.firebaseio.com",
+    "project_id": "mad-greit",
+    "storage_bucket": "mad-greit.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1059761957663:android:de6cc4f90442476c",
+        "android_client_info": {
+          "package_name": "it.polito.mad.greit.project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1059761957663-3k2rl2brptnks2irrslekltfg6nvem73.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.polito.mad.greit.project",
+            "certificate_hash": "45353eb35748d8b1ce5882fcacb8c25d0673fa50"
+          }
+        },
+        {
+          "client_id": "1059761957663-g0pf2f234revm5upjo64u3s6v2br3t38.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARUK4Wbumqrf-EKieI23jOvVe04k9Vujk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1059761957663-g0pf2f234revm5upjo64u3s6v2br3t38.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
