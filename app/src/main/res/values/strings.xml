@@ -1,14 +1,26 @@
 <resources>
-    <string name="app_name">Project</string>
-    <string name="name">Name</string>
-    <string name="surname">Surname</string>
-    <string name="email" translatable="false">Email</string>
-    <string name="nickname" translatable="false">Nickname</string>
-    <string name="location">Location</string>
-    <string name="bio">A short bio</string>
-    <string name="bio_sample" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam metus eros, maximus non ipsum ac, luctus ultricies urna. Suspendisse dignissim volutpat sodales. Nullam tincidunt lectus vitae dui finibus, nec egestas neque venenatis.</string>
-    <string name="upload"> Upload </string>
-    <string name="camera"> Camera </string>
-    <string name="cancel"> Cancel </string>
-    <string name="ok"> OK </string>
+  <string name="app_name">Project</string>
+  <string name="name">Name</string>
+  <string name="surname">Surname</string>
+  <string name="email" translatable="false">Email</string>
+  <string name="username" translatable="false">Username</string>
+  <string name="location">Location</string>
+  <string name="bio">A short bio</string>
+  <string name="bio_sample" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam metus eros, maximus non ipsum ac, luctus ultricies urna. Suspendisse dignissim volutpat sodales. Nullam tincidunt lectus vitae dui finibus, nec egestas neque venenatis.</string>
+  <string name="upload"> Upload </string>
+  <string name="camera"> Camera </string>
+  <string name="cancel"> Cancel </string>
+  <string name="ok"> OK </string>
+  <string name="AUTH_ID" translatable="false">1059761957663-g0pf2f234revm5upjo64u3s6v2br3t38.apps.googleusercontent.com</string>
+  <string name="title_activity_main">Home</string>
+  <string name="complete_profile">Complete your profile</string>
+  <string name="shared_books">Shared books</string>
+  <string name="signout">Sign out</string>
+  <string name="navigation_drawer_open">Open navigation drawer</string>
+  <string name="navigation_drawer_close">Close navigation drawer</string>
+  <string name="nav_header_title"> \@username </string>
+  <string name="nav_header_subtitle">email</string>
+  <string name="nav_header_desc">Navigation header</string>
+  <string name="action_settings">Settings</string>
+  <string name="fill_fields">Fill all the required fields!</string>
 </resources>
