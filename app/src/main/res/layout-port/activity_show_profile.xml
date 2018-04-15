@@ -24,9 +24,7 @@
     android:layout_gravity="bottom"
     android:background="@color/colorPrimary"
     android:orientation="horizontal"
-    android:paddingBottom="30dp"
-    android:paddingHorizontal="30dp"
-    android:paddingTop="30dp">
+    android:padding="30dp">
 
     <ImageView
       android:id="@+id/pic"

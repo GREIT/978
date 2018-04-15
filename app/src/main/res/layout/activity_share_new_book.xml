@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  tools:context=".CompleteRegistration"
+  android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+  android:background="@color/white">
+
+  <android.support.v7.widget.Toolbar
+    android:id="@+id/share_new_book_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/colorPrimaryDark"
+    android:elevation="4dp"
+    android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    app:titleTextColor="@color/colorPrimaryTitle" />
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="30dp"
+    android:layout_gravity="bottom"
+    android:background="@color/colorPrimary">
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textSize="45sp"
+      android:textStyle="normal"
+      android:textColor="@color/white"
+      android:text="Share a new book 📖"/>
+
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="30dp">
+
+
+    <android.support.design.widget.TextInputLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textColorHint="@color/colorPrimaryText"
+      android:textColor="@color/colorPrimaryTitle"
+      android:hint="ISBN">
+
+      <EditText
+        android:paddingVertical="10dp"
+        android:id="@+id/share_new_book_ISBN"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:backgroundTint="@color/colorPrimaryText"
+        android:textColor="@color/colorPrimaryText"
+        android:inputType="text" />
+    </android.support.design.widget.TextInputLayout>
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="or"
+      android:paddingVertical="10dp"
+      android:textColor="@color/colorPrimaryText"/>
+
+    <Button
+      android:id="@+id/share_new_book_scan"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="10dp"
+      android:background="@drawable/rounded_corner_button"
+      android:padding="10dp"
+      android:text="Scan QR Code️"
+      android:textColor="@color/white" />
+
+  </LinearLayout>
+
+</LinearLayout>

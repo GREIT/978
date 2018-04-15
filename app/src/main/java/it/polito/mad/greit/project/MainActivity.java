@@ -2,6 +2,7 @@ package it.polito.mad.greit.project;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.sax.StartElementListener;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.View;
@@ -41,8 +42,10 @@ public class MainActivity extends AppCompatActivity
     setSupportActionBar(toolbar);
     
     FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_add_book);
-    fab.setOnClickListener(v -> Toast.makeText(MainActivity.this, "Share a book",
-        Toast.LENGTH_SHORT).show());
+    fab.setOnClickListener(v -> {
+      Intent I = new Intent(MainActivity.this, ShareNewBook.class);
+      startActivity(I);
+    });
   
     P = new Profile();
   

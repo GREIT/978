@@ -16,7 +16,7 @@
     android:elevation="4dp"
     android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    app:titleTextColor="#FFFFFF" />
+    app:titleTextColor="@color/colorPrimaryTitle" />
 
   <ScrollView
     android:layout_width="match_parent"

@@ -1,87 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@color/colorPrimaryDark"
+android:orientation="vertical"
+tools:context=".ShareNewBook">
+
+<LinearLayout
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:gravity="center"
   android:orientation="vertical"
-  tools:context=".CompleteRegistration"
-  android:background="@color/colorPrimaryDark">
+  android:padding="50dp">
 
-  <LinearLayout
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingVertical="20dp"
+    android:text="@string/complete_profile"
+    android:textColor="@color/white"
+    android:textSize="45sp"
+    android:textStyle="normal" />
+
+
+  <android.support.design.widget.TextInputLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="50dp"
-    android:gravity="center">
-
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:textSize="45sp"
-      android:textStyle="normal"
-      android:paddingVertical="20dp"
-      android:textColor="@color/white"
-      android:text="@string/complete_profile"/>
-
-
-    <android.support.design.widget.TextInputLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:textColorHint="@color/white"
-      android:textColor="@color/white"
-      android:hint="@string/username">
+    android:layout_height="wrap_content"
+    android:hint="@string/username"
+    android:textColor="@color/white"
+    android:textColorHint="@color/white">
 
     <EditText
       android:id="@+id/complete_nickname"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      app:backgroundTint="@color/white"
+      android:inputType="text"
       android:textColor="@color/white"
-      android:inputType="text" />
-    </android.support.design.widget.TextInputLayout>
+      app:backgroundTint="@color/white" />
+  </android.support.design.widget.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+  <android.support.design.widget.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="Your location"
+    android:textColor="@color/white"
+    android:textColorHint="@color/white">
+
+    <EditText
+      android:id="@+id/complete_location"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:textColorHint="@color/white"
+      android:inputType="text"
       android:textColor="@color/white"
-      android:hint="Your location">
+      app:backgroundTint="@color/white" />
+  </android.support.design.widget.TextInputLayout>
 
-      <EditText
-        android:id="@+id/complete_location"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:backgroundTint="@color/white"
-        android:textColor="@color/white"
-        android:inputType="text" />
-    </android.support.design.widget.TextInputLayout>
+  <android.support.design.widget.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="@string/bio"
+    android:textColorHint="@color/white">
 
-    <android.support.design.widget.TextInputLayout
+    <EditText
+      android:id="@+id/complete_biography"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:textColorHint="@color/white"
-      android:hint="@string/bio">
-
-      <EditText
-        android:id="@+id/complete_biography"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:backgroundTint="@color/white"
-        android:textColor="@color/white"
-        android:inputType="textMultiLine"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-    <Button
-      android:id="@+id/complete_registration"
-      android:layout_marginTop="50dp"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:padding="10dp"
+      android:inputType="textMultiLine"
       android:textColor="@color/white"
-      android:background="@drawable/rounded_corner_button"
-      android:text="✔️" />
-  </LinearLayout>
+      app:backgroundTint="@color/white" />
 
-</android.support.constraint.ConstraintLayout>
+  </android.support.design.widget.TextInputLayout>
+
+  <Button
+    android:id="@+id/complete_registration"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="50dp"
+    android:background="@drawable/rounded_corner_button"
+    android:padding="10dp"
+    android:text="✔️"
+    android:textColor="@color/white" />
+</LinearLayout>
+
+</LinearLayout>
