@@ -121,8 +121,8 @@ public class MainActivity extends AppCompatActivity
     int id = item.getItemId();
     
     if (id == R.id.nav_shared_books) {
-      Toast.makeText(MainActivity.this, "View your shared books",
-          Toast.LENGTH_SHORT).show();
+      Intent intent = new Intent(MainActivity.this, SharedBooksByUser.class);
+      startActivity(intent);
     } else if (id == R.id.nav_sign_out) {
       FirebaseAuth.getInstance().signOut();
       Intent intent = new Intent(MainActivity.this, SignInActivity.class);
