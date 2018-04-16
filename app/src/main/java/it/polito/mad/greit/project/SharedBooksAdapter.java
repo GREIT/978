@@ -1,27 +1,42 @@
 package it.polito.mad.greit.project;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.MyViewHolder> {
   private Context mContext;
   private List<SharedBook> bookList;
   
+  
   public class MyViewHolder extends RecyclerView.ViewHolder {
     public TextView title, author;
+    public ImageView thumbnail;
+    
     
     public MyViewHolder(View view) {
       super(view);
       title = (TextView) view.findViewById(R.id.book_card_title);
       author = (TextView) view.findViewById(R.id.book_card_author);
+      thumbnail = (ImageView) view.findViewById(R.id.book_card_thumbnail);
     }
   }
   
@@ -44,36 +59,34 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
     holder.title.setText(book.getTitle());
     holder.author.setText(book.getAuthor());
   
-    // loading album cover using Glide library
-    //Glide.with(mContext).load(album.getThumbnail()).into(holder.thumbnail);
-//
-//    holder.overflow.setOnClickListener(new View.OnClickListener() {
-//      @Override
-//      public void onClick(View view) {
-//        showPopupMenu(holder.overflow);
-//      }
-//    });
+    if (book.getPhotoUri() != null) {
+      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+      StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
+      final long size = 7 * 1024 * 1024;
+      sr.getBytes(size).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        @Override
+        public void onSuccess(byte[] bytes) {
+          // Data for "images/island.jpg" is returns, use this as needed
+          Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+          ByteArrayOutputStream stream = new ByteArrayOutputStream();
+          bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+          Glide
+              .with(mContext)
+              .load(stream.toByteArray())
+              .asBitmap()
+              .error(R.drawable.ic_book_blue_grey_900_48dp)
+              //.transform(new CircleTransform(this))
+              .into(holder.thumbnail);
+        }
+      }).addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception exception) {
+          // Handle any errors
+          exception.printStackTrace();
+        }
+      });
+    }
   }
-  
-//  class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
-//
-//    public MyMenuItemClickListener() {
-//    }
-//
-//    @Override
-//    public boolean onMenuItemClick(MenuItem menuItem) {
-//      switch (menuItem.getItemId()) {
-//        case R.id.action_add_favourite:
-//          Toast.makeText(mContext, "Add to favourite", Toast.LENGTH_SHORT).show();
-//          return true;
-//        case R.id.action_play_next:
-//          Toast.makeText(mContext, "Play next", Toast.LENGTH_SHORT).show();
-//          return true;
-//        default:
-//      }
-//      return false;
-//    }
-//  }
   
   @Override
   public int getItemCount() {

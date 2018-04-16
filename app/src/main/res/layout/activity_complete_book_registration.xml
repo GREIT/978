@@ -49,6 +49,15 @@
       android:orientation="vertical"
       android:padding="30dp">
 
+      <Button
+        android:id="@+id/complete_book_snap_pic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@drawable/rounded_corner_button"
+        android:textColor="@color/white"
+        android:text="📸" />
+
       <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
