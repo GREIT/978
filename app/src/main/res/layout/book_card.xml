@@ -16,10 +16,19 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 
+      <ImageView
+        android:id="@+id/book_card_thumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:scaleType="fitXY" />
+
       <TextView
         android:id="@+id/book_card_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/book_card_thumbnail"
         android:paddingHorizontal="10dp"
         android:paddingTop="10dp"
         android:textColor="@color/colorPrimaryText"
@@ -30,11 +39,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/book_card_title"
-        android:textColor="@color/colorPrimaryText"
         android:paddingBottom="5dp"
         android:paddingHorizontal="10dp"
-        android:textSize="12dp"
-        />
+        android:textColor="@color/colorPrimaryText"
+        android:textSize="12dp" />
 
     </RelativeLayout>
 

@@ -131,7 +131,8 @@ public class EditProfile extends AppCompatActivity {
     //profile.setPhotoUri(photo.toString());
     
     try {
-      StorageReference sr = FirebaseStorage.getInstance().getReference().child("images/profile.jpg");
+      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+      StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
       sr.putFile(this.photo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -212,5 +213,11 @@ public class EditProfile extends AppCompatActivity {
     if (ContextCompat.checkSelfPermission(EditProfile.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions(EditProfile.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.STORAGE_PERMISSION);
     }
+  }
+  
+  @Override
+  public void onBackPressed() {
+    Intent intent = new Intent(EditProfile.this, MainActivity.class);
+    startActivity(intent);
   }
 }

@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,7 +43,7 @@ public class ShowProfile extends AppCompatActivity {
   
   Toolbar t;
   Profile profile;
-
+  
   
   @Override
   protected void onCreate(Bundle b) {
@@ -65,8 +66,6 @@ public class ShowProfile extends AppCompatActivity {
     
     if (R.id.edit == item.getItemId()) {
       Intent swap = new Intent(ShowProfile.this, EditProfile.class);
-      
-      swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
       startActivity(swap);
       return true;
     } else return super.onOptionsItemSelected(item);
@@ -77,12 +76,12 @@ public class ShowProfile extends AppCompatActivity {
     if (ContextCompat.checkSelfPermission(ShowProfile.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions(ShowProfile.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.STORAGE_PERMISSION);
     }
-
+    
     profile = new Profile();
     FirebaseDatabase db = FirebaseDatabase.getInstance();
     DatabaseReference dbref = db.getReference("users").child(FirebaseAuth.getInstance().
         getCurrentUser().getUid());
-  
+    
     dbref.addListenerForSingleValueEvent(new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
@@ -98,69 +97,33 @@ public class ShowProfile extends AppCompatActivity {
         tv.setText(profile.getLocation());
         tv = findViewById(R.id.biography);
         tv.setText(profile.getBio());
-
-        if(profile.getPhotoUri() != null){
-            ImageView iw = findViewById(R.id.pic);
-            StorageReference sr = FirebaseStorage.getInstance().getReference().child("images/profile.jpg");
-            final long size = 7 * 1024 * 1024;
-            sr.getBytes(size).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-                    // Data for "images/island.jpg" is returns, use this as needed
-                    Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    iw.setImageBitmap(bm);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                    exception.printStackTrace();
-                }
-            });
+        
+        if (profile.getPhotoUri() != null) {
+          ImageView iw = findViewById(R.id.pic);
+          FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+          StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
+          final long size = 7 * 1024 * 1024;
+          sr.getBytes(size).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+              // Data for "images/island.jpg" is returns, use this as needed
+              Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+              iw.setImageBitmap(bm);
+            }
+          }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+              // Handle any errors
+              exception.printStackTrace();
+            }
+          });
         }
-
-
-
-        /*
-          if (profile.getPhotoUri() != null) {
-              ImageView iw = findViewById(R.id.pic);
-              final File localFile;
-
-              try {
-                  localFile = File.createTempFile("profile", "jpg");
-                  sr.getFile(localFile)
-                          .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                              @Override
-                              public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                  // Successfully downloaded data to local file
-                                  // ...
-                                  //profile.setPhotoUri(localFile.toString());
-                                  profile.setPhotoUri(localFile.toURI().toString());
-                                  Log.d("UP", "onSuccess: url " + localFile.toURI().toString());
-                              }
-                          }).addOnFailureListener(new OnFailureListener() {
-                      @Override
-                      public void onFailure(@NonNull Exception exception) {
-                          // Handle failed download
-                          // ...
-                          exception.printStackTrace();
-                      }
-                  });
-
-                  Log.d("SHOWPROFILE", "onDataChange: uri" + profile.getPhotoUri());
-                  iw.setImageURI(Uri.parse(profile.getPhotoUri()));
-              }
-              catch (Exception e ){
-                  e.printStackTrace();
-              }
-          } else {
-              ImageView iw = findViewById(R.id.pic);
-              iw.setImageResource(R.mipmap.ic_launcher);
-          }
-          */
+        
       }
+      
       @Override
-      public void onCancelled(DatabaseError e) {}
+      public void onCancelled(DatabaseError e) {
+      }
     });
     
     
@@ -187,5 +150,12 @@ public class ShowProfile extends AppCompatActivity {
     if (ContextCompat.checkSelfPermission(ShowProfile.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions(ShowProfile.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.STORAGE_PERMISSION);
     }
+  }
+  
+  @Override
+  public void onBackPressed() {
+    Intent intent = new Intent(ShowProfile.this, MainActivity.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    startActivity(intent);
   }
 }
