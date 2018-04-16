@@ -1,8 +1,12 @@
 package it.polito.mad.greit.project;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.sax.StartElementListener;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -25,14 +31,20 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-public class MainActivity extends AppCompatActivity
-    implements NavigationView.OnNavigationItemSelectedListener {
+import java.io.File;
+import java.net.URI;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
   private static String TAG = "Main Activity";
-  private Profile P;
+  private Profile profile;
   private ImageView iw_user;
   private TextView tw_username;
   private TextView tw_name;
+  private StorageReference sr;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -47,40 +59,65 @@ public class MainActivity extends AppCompatActivity
       startActivity(I);
     });
   
-    P = new Profile();
+    profile = new Profile();
   
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
   
     FirebaseDatabase db = FirebaseDatabase.getInstance();
     DatabaseReference dbref = db.getReference("users").child(user.getUid());
     
-    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+    DrawerLayout drawer = findViewById(R.id.drawer_layout);
     ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
         this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
     drawer.addDrawerListener(toggle);
     toggle.syncState();
     
-    NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+    NavigationView navigationView = findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
     View headerView = navigationView.getHeaderView(0);
     
-    tw_username = (TextView) headerView.findViewById(R.id.drawer_username);
-    tw_name = (TextView) headerView.findViewById(R.id.drawer_name);
-    iw_user = (ImageView) headerView.findViewById(R.id.drawer_image);
-    
+    tw_username = headerView.findViewById(R.id.drawer_username);
+    tw_name = headerView.findViewById(R.id.drawer_name);
+    iw_user = headerView.findViewById(R.id.drawer_image);
+
     iw_user.setOnClickListener(v -> {
       Intent I = new Intent(MainActivity.this, ShowProfile.class);
       startActivity(I);
     });
   
-    dbref.addListenerForSingleValueEvent(new ValueEventListener() {
+    dbref.addValueEventListener(new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
-        P = dataSnapshot.getValue(Profile.class);
-        tw_username.setText("@" + P.getUsername());
-        tw_name.setText(P.getName());
-        // Set also the profilePic
-        Log.d("onDataChange", P.getUsername());
+        profile = dataSnapshot.getValue(Profile.class);
+        if(profile == null){
+          Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+          startActivity(intent);
+        }
+        else{
+          tw_username.setText("@" + profile.getUsername());
+          tw_name.setText(profile.getName());
+            if(profile.getPhotoUri() != null){
+                StorageReference sr = FirebaseStorage.getInstance().getReference().child("images/profile.jpg");
+                final long size = 7 * 1024 * 1024;
+                sr.getBytes(size).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        // Data for "images/island.jpg" is returns, use this as needed
+                        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        iw_user.setImageBitmap(bm);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                        exception.printStackTrace();
+                    }
+                });
+            }
+
+          Log.d("onDataChange", profile.getUsername());
+        }
       }
       @Override
       public void onCancelled(DatabaseError e) {}

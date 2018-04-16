@@ -7,17 +7,21 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +29,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 
@@ -35,6 +42,7 @@ public class EditProfile extends AppCompatActivity {
   Profile profile;
   Button bb;
   Uri photo;
+
   
   @Override
   protected void onCreate(Bundle b) {
@@ -80,6 +88,7 @@ public class EditProfile extends AppCompatActivity {
     profile = new Profile();
   
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
   
     FirebaseDatabase db = FirebaseDatabase.getInstance();
     DatabaseReference dbref = db.getReference("users").child(user.getUid());
@@ -119,8 +128,27 @@ public class EditProfile extends AppCompatActivity {
     profile.setLocation(tv.getText().toString());
     tv = findViewById(R.id.edit_biography);
     profile.setBio(tv.getText().toString());
+    //profile.setPhotoUri(photo.toString());
     
     try {
+      StorageReference sr = FirebaseStorage.getInstance().getReference().child("images/profile.jpg");
+      sr.putFile(this.photo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                  // Get a URL to the uploaded content
+                  //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                  profile.setPhotoUri(taskSnapshot.getDownloadUrl().toString());
+                  Log.d("UP", "onSuccess: url " + taskSnapshot.getDownloadUrl().toString());
+                }
+              })
+              .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                  // Handle unsuccessful uploads
+                  // ...
+                  exception.printStackTrace();
+                }
+              });
       profile.saveToDB(FirebaseAuth.getInstance().getCurrentUser().getUid());
       Intent swap = new Intent(EditProfile.this, MainActivity.class);
       swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

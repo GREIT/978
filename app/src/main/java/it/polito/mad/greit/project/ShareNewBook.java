@@ -127,8 +127,8 @@ public class ShareNewBook extends AppCompatActivity {
               Intent I = new Intent(ShareNewBook.this, CompleteBookRegistration.class);
               I.putExtra("book", B);
               startActivity(I);
-            } catch (Exception E) {
-            
+            } catch (Exception e) {
+              e.printStackTrace();
             }
             
           }
