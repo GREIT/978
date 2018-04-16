@@ -15,6 +15,7 @@ public class SharedBook implements Serializable {
   private String conditions;
   private String additionalInformations;
   private String owner;
+  private String addedOn;
   
   public SharedBook() {
   
@@ -82,6 +83,14 @@ public class SharedBook implements Serializable {
 
   public void setOwner(String owner) {
     this.owner = owner;
+  }
+  
+  public String getAddedOn() {
+    return addedOn;
+  }
+  
+  public void setAddedOn(String addedOn) {
+    this.addedOn = addedOn;
   }
   
   public void saveToDB() {

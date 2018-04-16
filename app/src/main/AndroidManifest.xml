@@ -59,7 +59,8 @@
     <activity
       android:name=".ShareNewBook"
       android:theme="@style/AppTheme.NoActionBar" />
-    <activity android:name=".CompleteBookRegistration"></activity>
+    <activity android:name=".CompleteBookRegistration" />
+    <activity android:name=".SharedBooksByUser"></activity>
   </application>
 
 </manifest>

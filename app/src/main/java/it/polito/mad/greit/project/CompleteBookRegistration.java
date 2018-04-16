@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import java.util.Calendar;
+
 public class CompleteBookRegistration extends AppCompatActivity {
   SharedBook book;
   
@@ -66,6 +68,8 @@ public class CompleteBookRegistration extends AppCompatActivity {
       book.setConditions(String.valueOf(rb_conditions.getRating()));
       
       book.setAdditionalInformations(et_additionalInfo.getText().toString());
+      
+      book.setAddedOn(Calendar.getInstance().getTime().toString());
       
       book.saveToDB();
   
