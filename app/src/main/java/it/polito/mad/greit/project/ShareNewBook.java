@@ -64,14 +64,19 @@ public class ShareNewBook extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_share_new_book);
+    
     t = findViewById(R.id.share_new_book_toolbar);
+    t.setTitle("Share a new book");
     setSupportActionBar(t);
+    
+    t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+    t.setNavigationOnClickListener(v -> finish());
     
     button_scan = (Button) findViewById(R.id.share_new_book_scan);
     tw_ISBN = (TextView) findViewById(R.id.share_new_book_ISBN);
     
     button_scan.setOnClickListener(v -> ActivityCompat.requestPermissions(ShareNewBook.this,
-        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION));
+        new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_PERMISSION));
     
     detector = new BarcodeDetector.Builder(getApplicationContext())
         .setBarcodeFormats(Barcode.ALL_FORMATS)
@@ -115,18 +120,35 @@ public class ShareNewBook extends AppCompatActivity {
   public void getBookInfo(String ISBN) {
     RequestQueue queue = Volley.newRequestQueue(this);
     String url = "https://www.googleapis.com/books/v1/volumes?q=" + ISBN;
-  
+    
     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
         (Request.Method.GET, url, (String) null, new Response.Listener<JSONObject>() {
           @Override
           public void onResponse(JSONObject response) {
             try {
-              //check if book found
-              SharedBook B = parseJSONintoBook(response);
               
-              Intent I = new Intent(ShareNewBook.this, CompleteBookRegistration.class);
-              I.putExtra("book", B);
-              startActivity(I);
+              Integer numberOfPossibleBooks = Integer.valueOf(response.getString("totalItems"));
+              
+              if (numberOfPossibleBooks > 0) {
+                
+                SharedBook B = parseJSONintoBook(response);
+                
+                Intent I = new Intent(ShareNewBook.this, CompleteBookRegistration.class);
+                I.putExtra("book", B);
+                startActivity(I);
+                
+              } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ShareNewBook.this);
+                builder.setMessage("Book not found 😞")
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                      @Override
+                      public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "Dialog clicked");
+                      }
+                    });
+                AlertDialog alert = builder.create();
+                alert.show();
+              }
             } catch (Exception e) {
               e.printStackTrace();
             }
@@ -135,21 +157,35 @@ public class ShareNewBook extends AppCompatActivity {
         }, new Response.ErrorListener() {
           @Override
           public void onErrorResponse(VolleyError error) {
-    
+            AlertDialog.Builder builder = new AlertDialog.Builder(ShareNewBook.this);
+            builder.setMessage("Error during the request 🤯")
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                  @Override
+                  public void onClick(DialogInterface dialog, int which) {
+                    Log.d(TAG, "Dialog clicked");
+                  }
+                });
+            AlertDialog alert = builder.create();
+            alert.show();
           }
         });
     
     queue.add(jsonObjectRequest);
   }
   
-  private SharedBook parseJSONintoBook(JSONObject J) throws JSONException{
+  private SharedBook parseJSONintoBook(JSONObject J) throws JSONException {
     SharedBook toBeReturned = new SharedBook();
     JSONArray items = J.getJSONArray("items");
     JSONObject book = (JSONObject) items.get(0);
     JSONObject bookInfo = book.getJSONObject("volumeInfo");
     
     toBeReturned.setTitle(bookInfo.getString("title"));
-    toBeReturned.setPublisher(bookInfo.getString("publisher"));
+    try {
+      toBeReturned.setPublisher(bookInfo.getString("publisher"));
+    } catch (JSONException E) {
+      toBeReturned.setPublisher("null");
+    }
+    
     toBeReturned.setYear(bookInfo.getString("publishedDate").substring(0, 5).replaceAll("-", "/"));
     
     JSONArray authors = bookInfo.getJSONArray("authors");
@@ -170,7 +206,7 @@ public class ShareNewBook extends AppCompatActivity {
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     switch (requestCode) {
-      case REQUEST_WRITE_PERMISSION:
+      case Constants.CAMERA_PERMISSION:
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           takePicture();
         } else {

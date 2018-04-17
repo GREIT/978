@@ -52,8 +52,12 @@ public class CompleteBookRegistration extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_complete_book_registration);
+    
     t = findViewById(R.id.complete_book_toolbar);
+    t.setTitle("Complete book informations");
     setSupportActionBar(t);
+    t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+    t.setNavigationOnClickListener(v -> finish());
     
     book = (SharedBook) getIntent().getSerializableExtra("book");
     
@@ -128,31 +132,34 @@ public class CompleteBookRegistration extends AppCompatActivity {
       
       book.setAddedOn(Calendar.getInstance().getTime().toString());
       
-      
-      try {
-        StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + key + ".jpg");
-        sr.putFile(this.photo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-          @Override
-          public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-            // Get a URL to the uploaded content
-            //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-            book.setPhotoUri(taskSnapshot.getDownloadUrl().toString());
-            book.saveToDB(key);
-            Log.d("UP", "onSuccess: url " + taskSnapshot.getDownloadUrl().toString());
-          }
-        })
-            .addOnFailureListener(new OnFailureListener() {
-              @Override
-              public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                // ...
-                exception.printStackTrace();
-              }
-            });
-        
-       
-      } catch (Exception e) {
-        e.printStackTrace();
+      if (photo == null) {
+        book.saveToDB(key);
+      } else {
+        try {
+          StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + key + ".jpg");
+          sr.putFile(this.photo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+              // Get a URL to the uploaded content
+              //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+              book.setPhotoUri(taskSnapshot.getDownloadUrl().toString());
+              book.saveToDB(key);
+              Log.d("UP", "onSuccess: url " + taskSnapshot.getDownloadUrl().toString());
+            }
+          })
+              .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                  // Handle unsuccessful uploads
+                  // ...
+                  exception.printStackTrace();
+                }
+              });
+          
+          
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
       }
       
       Intent I = new Intent(this, MainActivity.class);

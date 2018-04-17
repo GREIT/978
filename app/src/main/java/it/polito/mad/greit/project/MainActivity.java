@@ -98,7 +98,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
           tw_username.setText("@" + profile.getUsername());
           tw_name.setText(profile.getName());
             if(profile.getPhotoUri() != null){
-                StorageReference sr = FirebaseStorage.getInstance().getReference().child("images/profile.jpg");
+                StorageReference sr = FirebaseStorage.getInstance().getReference()
+                    .child("profile_pictures/" + user.getUid() + ".jpg");
                 final long size = 7 * 1024 * 1024;
                 sr.getBytes(size).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
@@ -120,7 +121,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
       }
       @Override
-      public void onCancelled(DatabaseError e) {}
+      public void onCancelled(DatabaseError e) {
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+      }
     });
   }
   
@@ -165,10 +172,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       Intent intent = new Intent(MainActivity.this, SignInActivity.class);
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
       startActivity(intent);
+      finish();
     }
     
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
     drawer.closeDrawer(GravityCompat.START);
     return true;
   }
+  
 }

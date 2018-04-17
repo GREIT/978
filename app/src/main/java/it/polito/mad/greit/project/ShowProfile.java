@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -14,8 +13,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,33 +28,34 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.io.File;
-import java.net.URI;
 
 
 public class ShowProfile extends AppCompatActivity {
   
-  Toolbar t;
-  Profile profile;
+  private Toolbar t;
+  private Profile profile;
   
   
   @Override
   protected void onCreate(Bundle b) {
     super.onCreate(b);
     setContentView(R.layout.activity_show_profile);
-    t = findViewById(R.id.show_toolbar);
+    
+    t = findViewById(R.id.show_profile_toolbar);
+    t.setTitle("Profile");
     setSupportActionBar(t);
+    t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+    t.setNavigationOnClickListener(view -> onBackPressed());
+    
     Setup();
   }
   
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.show_menu, menu);
+    inflater.inflate(R.menu.show_profile_menu, menu);
     return true;
   }
   
@@ -157,5 +155,6 @@ public class ShowProfile extends AppCompatActivity {
     Intent intent = new Intent(ShowProfile.this, MainActivity.class);
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     startActivity(intent);
+    finish();
   }
 }

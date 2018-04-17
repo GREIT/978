@@ -55,7 +55,6 @@ public class CompleteRegistration extends AppCompatActivity {
       Profile P = new Profile();
       P.setName(U.getDisplayName());
       P.setEmail(U.getEmail());
-      P.setPhotoUri(U.getPhotoUrl().toString());
       P.setBio(edit_bio.getText().toString());
       P.setUsername(edit_nickname.getText().toString());
       P.setLocation(edit_location.getText().toString());

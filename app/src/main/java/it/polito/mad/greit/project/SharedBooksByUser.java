@@ -1,5 +1,7 @@
 package it.polito.mad.greit.project;
 
+import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.support.design.widget.AppBarLayout;
@@ -10,6 +12,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -36,9 +39,12 @@ public class SharedBooksByUser extends AppCompatActivity {
     setContentView(R.layout.activity_shared_books_by_user);
   
     Toolbar toolbar = (Toolbar) findViewById(R.id.shared_books_by_user_toolbar);
+    toolbar.setTitle("Your shared books");
     setSupportActionBar(toolbar);
+    toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+    toolbar.setNavigationOnClickListener(v -> finish());
   
-    initCollapsingToolbar();
+//    initCollapsingToolbar();
   
     recyclerView = (RecyclerView) findViewById(R.id.shared_books_by_user_recycler_view);
     
@@ -54,33 +60,34 @@ public class SharedBooksByUser extends AppCompatActivity {
     prepareBooks();
   }
   
-  private void initCollapsingToolbar() {
-    final CollapsingToolbarLayout collapsingToolbar =
-        (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-    collapsingToolbar.setTitle(" ");
-    AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
-    appBarLayout.setExpanded(true);
-    
-    // hiding & showing the title when toolbar expanded & collapsed
-    appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-      boolean isShow = false;
-      int scrollRange = -1;
-      
-      @Override
-      public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        if (scrollRange == -1) {
-          scrollRange = appBarLayout.getTotalScrollRange();
-        }
-        if (scrollRange + verticalOffset == 0) {
-          collapsingToolbar.setTitle(getString(R.string.app_name));
-          isShow = true;
-        } else if (isShow) {
-          collapsingToolbar.setTitle(" ");
-          isShow = false;
-        }
-      }
-    });
-  }
+//  private void initCollapsingToolbar() {
+//    final CollapsingToolbarLayout collapsingToolbar =
+//        (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+//
+//    collapsingToolbar.setTitle(" ");
+//    AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.shared_books_by_user_appbar);
+//    appBarLayout.setExpanded(true);
+//
+//    // hiding & showing the title when toolbar expanded & collapsed
+//    appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+//      boolean isShow = false;
+//      int scrollRange = -1;
+//
+//      @Override
+//      public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+//        if (scrollRange == -1) {
+//          scrollRange = appBarLayout.getTotalScrollRange();
+//        }
+//        if (scrollRange + verticalOffset == 0) {
+//          collapsingToolbar.setTitle(getString(R.string.app_name));
+//          isShow = true;
+//        } else if (isShow) {
+//          collapsingToolbar.setTitle(" ");
+//          isShow = false;
+//        }
+//      }
+//    });
+//  }
   
   private void prepareBooks() {
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -94,11 +101,15 @@ public class SharedBooksByUser extends AppCompatActivity {
         SharedBook tmp = new SharedBook();
         tmp = dataSnapshot.getValue(SharedBook.class);
         bookList.add(tmp);
+        adapter.notifyDataSetChanged();
       }
   
       @Override
       public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-    
+        SharedBook tmp = new SharedBook();
+        tmp = dataSnapshot.getValue(SharedBook.class);
+        bookList.add(tmp);
+        adapter.notifyDataSetChanged();
       }
   
       @Override
@@ -117,7 +128,7 @@ public class SharedBooksByUser extends AppCompatActivity {
       }
     });
     
-    adapter.notifyDataSetChanged();
+    
   }
   
   public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {

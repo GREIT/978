@@ -8,7 +8,7 @@
   <string name="bio">A short bio</string>
   <string name="bio_sample" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam metus eros, maximus non ipsum ac, luctus ultricies urna. Suspendisse dignissim volutpat sodales. Nullam tincidunt lectus vitae dui finibus, nec egestas neque venenatis.</string>
   <string name="upload"> Upload </string>
-  <string name="camera"> Camera </string>
+  <string name="camera"> 📸 </string>
   <string name="cancel"> Cancel </string>
   <string name="ok"> OK </string>
   <string name="AUTH_ID" translatable="false">1059761957663-g0pf2f234revm5upjo64u3s6v2br3t38.apps.googleusercontent.com</string>

@@ -4,38 +4,12 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@color/white"
   android:orientation="vertical"
-  android:theme="@style/Theme.AppCompat.Light.NoActionBar"
   tools:context=".CompleteBookRegistration">
 
-  <android.support.v7.widget.Toolbar
+  <include
     android:id="@+id/complete_book_toolbar"
-    android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:background="@color/colorPrimaryDark"
-    android:elevation="4dp"
-    android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    app:titleTextColor="@color/colorPrimaryTitle" />
-
-  <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:background="@color/colorPrimary"
-    android:orientation="horizontal"
-    android:padding="30dp">
-
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Complete your book info 🤓"
-      android:textColor="@color/white"
-      android:textSize="45sp"
-      android:textStyle="normal" />
-
-  </LinearLayout>
+    layout="@layout/toolbar" />
 
   <ScrollView
     android:layout_width="match_parent"
@@ -55,8 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:background="@drawable/rounded_corner_button"
-        android:textColor="@color/white"
-        android:text="📸" />
+        android:text="📸"
+        android:textColor="@color/white" />
 
       <LinearLayout
         android:layout_width="match_parent"
@@ -201,12 +175,12 @@
         android:textColorHint="@color/colorPrimaryText">
 
         <EditText
-          android:textSize="15sp"
           android:id="@+id/complete_book_additionalInfo"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:inputType="textMultiLine"
           android:textColor="@color/colorPrimaryText"
+          android:textSize="15sp"
           app:backgroundTint="@color/colorPrimaryText" />
       </android.support.design.widget.TextInputLayout>
 

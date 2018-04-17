@@ -5,37 +5,29 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:orientation="vertical"
-  tools:context=".CompleteRegistration"
-  android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-  android:background="@color/white">
+  tools:context=".CompleteRegistration">
 
-  <android.support.v7.widget.Toolbar
+  <include layout="@layout/toolbar"
     android:id="@+id/share_new_book_toolbar"
-    android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:background="@color/colorPrimaryDark"
-    android:elevation="4dp"
-    android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    app:titleTextColor="@color/colorPrimaryTitle" />
+    />
 
-  <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="30dp"
-    android:layout_gravity="bottom"
-    android:background="@color/colorPrimary">
+  <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:orientation="horizontal"-->
+    <!--android:padding="30dp"-->
+    <!--android:layout_gravity="bottom"-->
+    <!--android:background="@color/colorPrimary">-->
 
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:textSize="45sp"
-      android:textStyle="normal"
-      android:textColor="@color/white"
-      android:text="Share a new book 📖"/>
+    <!--<TextView-->
+      <!--android:layout_width="wrap_content"-->
+      <!--android:layout_height="wrap_content"-->
+      <!--android:textSize="45sp"-->
+      <!--android:textStyle="normal"-->
+      <!--android:textColor="@color/white"-->
+      <!--android:text="Share a new book 📖"/>-->
 
-  </LinearLayout>
+  <!--</LinearLayout>-->
 
   <LinearLayout
     android:layout_width="match_parent"

@@ -15,11 +15,39 @@ public class ISBNValidator {
     //remove any hyphens
     ISBN = ISBN.replaceAll("-", "");
     
-    //must be a 13 digit ISBN
-    if (ISBN.length() != 13) {
+    switch (ISBN.length()) {
+      case 13:
+        return isValid13();
+      
+      case 10:
+        return isValid10();
+      
+      default:
+        return false;
+    }
+  }
+  
+  private boolean isValid10() {
+    try {
+      int tot = 0;
+      for (int i = 0; i < 9; i++) {
+        int digit = Integer.parseInt(this.ISBN.substring(i, i + 1));
+        tot += ((10 - i) * digit);
+      }
+      
+      String checksum = Integer.toString((11 - (tot % 11)) % 11);
+      if ("10".equals(checksum)) {
+        checksum = "X";
+      }
+      
+      return checksum.equals(this.ISBN.substring(9));
+    } catch (NumberFormatException nfe) {
+      //to catch invalid ISBNs that have non-numeric characters in them
       return false;
     }
-    
+  }
+  
+  private boolean isValid13() {
     try {
       int tot = 0;
       for (int i = 0; i < 12; i++) {

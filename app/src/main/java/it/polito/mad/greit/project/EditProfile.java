@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -38,10 +39,10 @@ import java.io.File;
 
 public class EditProfile extends AppCompatActivity {
   
-  Toolbar t;
-  Profile profile;
-  Button bb;
-  Uri photo;
+  private Toolbar t;
+  private Profile profile;
+  private Button bb;
+  private Uri photo;
 
   
   @Override
@@ -49,10 +50,12 @@ public class EditProfile extends AppCompatActivity {
     super.onCreate(b);
     setContentView(R.layout.activity_edit_profile);
     
-    t = findViewById(R.id.edit_toolbar);
+    t = findViewById(R.id.edit_profile_toolbar);
+    t.setTitle("Edit Profile");
     setSupportActionBar(t);
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-    t.setNavigationOnClickListener(view -> RevertInfo());
+    t.setNavigationOnClickListener(v -> RevertInfo());
+    
     
     Setup();
     //Fill();
@@ -67,7 +70,7 @@ public class EditProfile extends AppCompatActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.edit_menu, menu);
+    inflater.inflate(R.menu.edit_profile_menu, menu);
     return true;
   }
   
