@@ -59,9 +59,9 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
     holder.title.setText(book.getTitle());
     holder.author.setText(book.getAuthor());
   
-    if (book.getkey() != null) {
+    if (book.getKey() != null) {
       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-      StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + book.getkey() + ".jpg");
+      StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + book.getKey() + ".jpg");
       sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
         @Override
         public void onSuccess(byte[] bytes) {

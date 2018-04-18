@@ -136,16 +136,17 @@ public class ShareNewBook extends AppCompatActivity {
                 startActivity(I);
                 
               } else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ShareNewBook.this);
-                builder.setMessage("Book not found 😞")
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                      @Override
-                      public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "Dialog clicked");
-                      }
-                    });
-                AlertDialog alert = builder.create();
-                alert.show();
+                SharedBook B = new SharedBook();
+                B.setYear("");
+                B.setISBN("");
+                B.setTitle("");
+                B.setAuthor("");
+                B.setPublisher("");
+                B.setOwner(FirebaseAuth.getInstance().getCurrentUser().getUid());
+  
+                Intent I = new Intent(ShareNewBook.this, CompleteBookRegistration.class);
+                I.putExtra("book", B);
+                startActivity(I);
               }
             } catch (Exception e) {
               e.printStackTrace();
@@ -208,7 +209,7 @@ public class ShareNewBook extends AppCompatActivity {
     }
 
     try {
-      toBeReturned.setYear(bookInfo.getString("publishedDate").substring(0, 5).replaceAll("-", "/"));
+      toBeReturned.setYear(bookInfo.getString("publishedDate").substring(0, 4).replaceAll("-", "/"));
     }
     catch (Exception e){
       toBeReturned.setYear("");

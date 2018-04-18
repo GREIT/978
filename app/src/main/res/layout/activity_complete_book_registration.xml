@@ -38,7 +38,7 @@
         android:orientation="horizontal"
         android:paddingVertical="10dp">
 
-        <EditText
+        <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
@@ -60,7 +60,7 @@
         android:orientation="horizontal"
         android:paddingVertical="10dp">
 
-        <EditText
+        <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
@@ -82,7 +82,7 @@
         android:orientation="horizontal"
         android:paddingVertical="10dp">
 
-        <EditText
+        <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
@@ -104,7 +104,7 @@
         android:orientation="horizontal"
         android:paddingVertical="10dp">
 
-        <EditText
+        <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
@@ -126,7 +126,7 @@
         android:orientation="horizontal"
         android:paddingVertical="10dp">
 
-        <EditText
+        <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
@@ -138,7 +138,8 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:text="Il piccolo principe"
-          android:textColor="@color/colorPrimaryText" />
+          android:textColor="@color/colorPrimaryText"
+          android:inputType="number"/>
 
       </LinearLayout>
 
@@ -148,7 +149,7 @@
         android:orientation="horizontal"
         android:paddingVertical="10dp">
 
-        <EditText
+        <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
@@ -160,9 +161,9 @@
           style="@style/Base.Widget.AppCompat.RatingBar.Small"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:clickable="true"
+          android:focusable="true"
           android:isIndicator="false"
-            android:clickable="true"
-            android:focusable="true"
           android:rating="3"
           android:stepSize="0.5"
           android:theme="@style/RatingBar" />

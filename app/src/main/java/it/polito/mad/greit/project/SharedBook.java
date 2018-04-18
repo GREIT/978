@@ -19,7 +19,6 @@ public class SharedBook implements Serializable {
   private String key;
   
   public SharedBook() {
-  
   }
   
   public String getTitle() {
@@ -94,11 +93,11 @@ public class SharedBook implements Serializable {
     this.addedOn = addedOn;
   }
   
-  public String getkey() {
+  public String getKey() {
     return key;
   }
   
-  public void setkey(String key) { this.key = key; }
+  public void setKey(String key) { this.key = key; }
   
   public void saveToDB(String key) {
     FirebaseDatabase db = FirebaseDatabase.getInstance();
