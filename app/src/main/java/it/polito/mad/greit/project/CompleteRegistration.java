@@ -61,8 +61,9 @@ public class CompleteRegistration extends AppCompatActivity {
   
       P.saveToDB(U.getUid());
       
-      Intent I = new Intent(this, MainActivity.class);
-      startActivity(I);
+      Intent intent = new Intent(this, MainActivity.class);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+      startActivity(intent);
     }
   }
   

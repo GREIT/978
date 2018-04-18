@@ -36,8 +36,7 @@ public class ShowProfile extends AppCompatActivity {
   
   private Toolbar t;
   private Profile profile;
-  
-  
+
   @Override
   protected void onCreate(Bundle b) {
     super.onCreate(b);
@@ -70,11 +69,7 @@ public class ShowProfile extends AppCompatActivity {
   }
   
   private void Setup() {
-    
-    if (ContextCompat.checkSelfPermission(ShowProfile.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(ShowProfile.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.STORAGE_PERMISSION);
-    }
-    
+
     profile = new Profile();
     FirebaseDatabase db = FirebaseDatabase.getInstance();
     DatabaseReference dbref = db.getReference("users").child(FirebaseAuth.getInstance().
@@ -88,35 +83,32 @@ public class ShowProfile extends AppCompatActivity {
         TextView tv = findViewById(R.id.name);
         tv.setText(profile.getName());
         tv = findViewById(R.id.nickname);
-        tv.setText(profile.getUsername());
+        tv.setText("@" + profile.getUsername());
         tv = findViewById(R.id.email);
         tv.setText(profile.getEmail());
         tv = findViewById(R.id.location);
         tv.setText(profile.getLocation());
         tv = findViewById(R.id.biography);
         tv.setText(profile.getBio());
-        
-        if (profile.getPhotoUri() != null) {
+
           ImageView iw = findViewById(R.id.pic);
           FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
           StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
-          final long size = 7 * 1024 * 1024;
-          sr.getBytes(size).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+          sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
-              // Data for "images/island.jpg" is returns, use this as needed
               Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
               iw.setImageBitmap(bm);
+              bm.recycle();
             }
           }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
               // Handle any errors
               exception.printStackTrace();
+              iw.setImageResource(R.mipmap.ic_launcher_round);
             }
           });
-        }
-        
       }
       
       @Override
@@ -126,30 +118,7 @@ public class ShowProfile extends AppCompatActivity {
     
     
   }
-  
-  @Override
-  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-    if (requestCode == Constants.STORAGE_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-      AlertDialog.Builder builder = new AlertDialog.Builder(this);
-      builder.setMessage("You should grant permissions to storage for the app to work properly")
-          .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-              finish();
-            }
-          });
-      AlertDialog alert = builder.create();
-      alert.show();
-    }
-  }
-  
-  protected void onRestart() {
-    super.onRestart();
-    if (ContextCompat.checkSelfPermission(ShowProfile.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(ShowProfile.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.STORAGE_PERMISSION);
-    }
-  }
-  
+
   @Override
   public void onBackPressed() {
     Intent intent = new Intent(ShowProfile.this, MainActivity.class);

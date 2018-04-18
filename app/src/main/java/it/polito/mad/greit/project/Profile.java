@@ -11,7 +11,7 @@ public class Profile implements Serializable{
   private String email;
   private String location;
   private String bio;
-  private String photoUri;
+  //private String photoUri;
   
   public Profile() {}
   
@@ -55,13 +55,9 @@ public class Profile implements Serializable{
     this.bio = bio;
   }
   
-  public String getPhotoUri() {
-    return photoUri;
-  }
+ // public String getPhotoUri(){return photoUri; }
   
-  public void setPhotoUri(String photoUri) {
-    this.photoUri = photoUri;
-  }
+  //public void setPhotoUri(String photoUri) {this.photoUri = photoUri;}
   
   public void saveToDB(String UID) {
     FirebaseDatabase db = FirebaseDatabase.getInstance();

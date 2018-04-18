@@ -48,8 +48,7 @@ import java.io.FileNotFoundException;
 
 public class ShareNewBook extends AppCompatActivity {
   private static final String TAG = "Barcode Scanner API";
-  private static final int PHOTO_REQUEST = 10;
-  private static final int REQUEST_WRITE_PERMISSION = 20;
+  //private static final int PHOTO_REQUEST = 10;
   
   private static final String SAVED_INSTANCE_URI = "uri";
   private static final String SAVED_INSTANCE_RESULT = "result";
@@ -225,11 +224,9 @@ public class ShareNewBook extends AppCompatActivity {
     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     try {
       File img = File.createTempFile("photo", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
-      if (img != null) {
-        imageUri = FileProvider.getUriForFile(this, "it.polito.mad.greit.project", img);
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(takePictureIntent, PHOTO_REQUEST);
-      }
+      imageUri = FileProvider.getUriForFile(this, "it.polito.mad.greit.project", img);
+      takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+      startActivityForResult(takePictureIntent, Constants.REQUEST_IMAGE_CAPTURE);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -237,7 +234,7 @@ public class ShareNewBook extends AppCompatActivity {
   
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == PHOTO_REQUEST && resultCode == RESULT_OK) {
+    if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
       launchMediaScanIntent();
       try {
         Bitmap bitmap = decodeBitmapUri(this, imageUri);
@@ -311,7 +308,7 @@ public class ShareNewBook extends AppCompatActivity {
     mediaScanIntent.setData(imageUri);
     this.sendBroadcast(mediaScanIntent);
   }
-  
+
   protected void onSaveInstanceState(Bundle outState) {
     if (imageUri != null) {
       outState.putString(SAVED_INSTANCE_URI, imageUri.toString());

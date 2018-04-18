@@ -1,8 +1,10 @@
 package it.polito.mad.greit.project;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -34,7 +36,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.lang.reflect.Array;
 
 
 public class EditProfile extends AppCompatActivity {
@@ -42,7 +46,7 @@ public class EditProfile extends AppCompatActivity {
   private Toolbar t;
   private Profile profile;
   private Button bb;
-  private Uri photo;
+  private byte[] photo = null;
 
   
   @Override
@@ -58,7 +62,6 @@ public class EditProfile extends AppCompatActivity {
     
     
     Setup();
-    //Fill();
     
     bb = findViewById(R.id.edit_pic);
     bb.setOnClickListener(view -> UploadPic());
@@ -85,9 +88,6 @@ public class EditProfile extends AppCompatActivity {
   
   
   void Setup() {
-    if (ContextCompat.checkSelfPermission(EditProfile.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(EditProfile.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.STORAGE_PERMISSION);
-    }
     profile = new Profile();
   
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -132,33 +132,36 @@ public class EditProfile extends AppCompatActivity {
     tv = findViewById(R.id.edit_biography);
     profile.setBio(tv.getText().toString());
     //profile.setPhotoUri(photo.toString());
-    
-    try {
-      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-      StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
-      sr.putFile(this.photo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                  // Get a URL to the uploaded content
-                  //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                  profile.setPhotoUri(taskSnapshot.getDownloadUrl().toString());
-                  Log.d("UP", "onSuccess: url " + taskSnapshot.getDownloadUrl().toString());
-                }
-              })
-              .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                  // Handle unsuccessful uploads
-                  // ...
-                  exception.printStackTrace();
-                }
-              });
-      profile.saveToDB(FirebaseAuth.getInstance().getCurrentUser().getUid());
-      Intent swap = new Intent(EditProfile.this, MainActivity.class);
-      swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-      startActivity(swap);
-    } catch (Exception e) {
-      e.printStackTrace();
+
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    profile.saveToDB(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+    if(this.photo != null){
+      try {
+        StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
+        ProgressDialog dialog = ProgressDialog.show(EditProfile.this, "", "Uploading, please wait...", true);
+        sr.putBytes(this.photo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+          @Override
+          public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+            Log.d("UP", "onSuccess: url " + taskSnapshot.getDownloadUrl().toString());
+            dialog.dismiss();
+            Intent swap = new Intent(EditProfile.this, ShowProfile.class);
+            swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(swap);
+          }
+        }).addOnFailureListener(new OnFailureListener() {
+                  @Override
+                  public void onFailure(@NonNull Exception exception) {
+                    exception.printStackTrace();
+                    dialog.dismiss();
+                    Intent swap = new Intent(EditProfile.this, ShowProfile.class);
+                    swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(swap);
+                  }
+                });
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
   }
   
@@ -170,38 +173,55 @@ public class EditProfile extends AppCompatActivity {
   
   
   private void UploadPic() {
+//    if (ContextCompat.checkSelfPermission(EditProfile.this,
+//            Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//      ActivityCompat.requestPermissions(EditProfile.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+//              Constants.STORAGE_PERMISSION);
+//    }
+
     Intent gallery = new Intent(Intent.ACTION_OPEN_DOCUMENT);
     gallery.setType("image/*");
-    gallery.setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+    //gallery.setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+    gallery.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     startActivityForResult(gallery, Constants.REQUEST_GALLERY);
   }
   
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+    Bitmap bm = null;
     
     if (requestCode == Constants.REQUEST_GALLERY && resultCode == RESULT_OK) {
-      this.photo = data.getData();
+      Uri uri = data.getData();
+      try {
+        bm = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+      }catch (Exception e){
+        e.printStackTrace();
+      }
     }
-    //else if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_CANCELED) {}
+    else if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+      bm = (Bitmap) data.getExtras().get("data");
+    }
+
+    if(bm != null){
+      ByteArrayOutputStream stream = new ByteArrayOutputStream();
+      bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
+      this.photo = stream.toByteArray();
+      bm.recycle();
+    }
+
     
   }
   
   void Camera() {
-    if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_PERMISSION);
-    }
-    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    try {
-      File img = File.createTempFile("photo", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
-      if (img != null) {
-        photo = FileProvider.getUriForFile(this, "it.polito.mad.greit.project", img);
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photo);
+
+      if (ContextCompat.checkSelfPermission(EditProfile.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+          ActivityCompat.requestPermissions(EditProfile.this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_PERMISSION);
+      }
+      else{
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(takePictureIntent, Constants.REQUEST_IMAGE_CAPTURE);
       }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
   }
   
   @Override
@@ -211,16 +231,10 @@ public class EditProfile extends AppCompatActivity {
     }
   }
   
-  protected void onRestart() {
-    super.onRestart();
-    if (ContextCompat.checkSelfPermission(EditProfile.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(EditProfile.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.STORAGE_PERMISSION);
-    }
-  }
-  
   @Override
   public void onBackPressed() {
-    Intent intent = new Intent(EditProfile.this, MainActivity.class);
+    Intent intent = new Intent(EditProfile.this, ShowProfile.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     startActivity(intent);
   }
 }
