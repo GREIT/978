@@ -105,13 +105,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         // Data for "images/island.jpg" is returns, use this as needed
                         Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         iw_user.setImageBitmap(bm);
-                        bm.recycle();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Handle any errors
                         exception.printStackTrace();
+                        iw_user.setImageResource(R.mipmap.ic_launcher_round);
                     }
                 });
 

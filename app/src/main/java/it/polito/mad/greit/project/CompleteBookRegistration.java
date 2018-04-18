@@ -1,6 +1,7 @@
 package it.polito.mad.greit.project;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -88,16 +89,16 @@ public class CompleteBookRegistration extends AppCompatActivity {
     if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_PERMISSION);
     }
-    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    try {
-      File img = File.createTempFile("photoBook", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
-      if (img != null) {
+    else {
+      Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+      try {
+        File img = File.createTempFile("photoBook", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
         photo = FileProvider.getUriForFile(this, "it.polito.mad.greit.project", img);
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photo);
         startActivityForResult(takePictureIntent, Constants.REQUEST_IMAGE_CAPTURE);
+      } catch (Exception e) {
+        e.printStackTrace();
       }
-    } catch (Exception e) {
-      e.printStackTrace();
     }
   }
   
@@ -137,14 +138,19 @@ public class CompleteBookRegistration extends AppCompatActivity {
       } else {
         try {
           StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + key + ".jpg");
+          ProgressDialog dialog = ProgressDialog.show(CompleteBookRegistration.this, "", "Uploading, please wait...", true);
           sr.putFile(this.photo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
               // Get a URL to the uploaded content
               //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-              book.setPhotoUri(taskSnapshot.getDownloadUrl().toString());
+              book.setkey(key);
               book.saveToDB(key);
               Log.d("UP", "onSuccess: url " + taskSnapshot.getDownloadUrl().toString());
+              dialog.dismiss();
+                Intent intent = new Intent(CompleteBookRegistration.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             }
           })
               .addOnFailureListener(new OnFailureListener() {
@@ -153,18 +159,16 @@ public class CompleteBookRegistration extends AppCompatActivity {
                   // Handle unsuccessful uploads
                   // ...
                   exception.printStackTrace();
+                  dialog.dismiss();
+                    Intent intent = new Intent(CompleteBookRegistration.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                 }
               });
-          
-          
         } catch (Exception e) {
           e.printStackTrace();
         }
       }
-      
-      Intent I = new Intent(this, MainActivity.class);
-      I.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-      startActivity(I);
       
       return true;
     } else return super.onOptionsItemSelected(item);

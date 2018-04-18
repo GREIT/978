@@ -38,14 +38,14 @@
         android:orientation="horizontal"
         android:paddingVertical="10dp">
 
-        <TextView
+        <EditText
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
           android:text="Title: "
           android:textColor="@color/colorPrimaryText" />
 
-        <TextView
+        <EditText
           android:id="@+id/complete_book_title"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -60,14 +60,14 @@
         android:orientation="horizontal"
         android:paddingVertical="10dp">
 
-        <TextView
+        <EditText
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
           android:text="Author: "
           android:textColor="@color/colorPrimaryText" />
 
-        <TextView
+        <EditText
           android:id="@+id/complete_book_author"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -82,14 +82,14 @@
         android:orientation="horizontal"
         android:paddingVertical="10dp">
 
-        <TextView
+        <EditText
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
           android:text="ISBN: "
           android:textColor="@color/colorPrimaryText" />
 
-        <TextView
+        <EditText
           android:id="@+id/complete_book_ISBN"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -104,14 +104,14 @@
         android:orientation="horizontal"
         android:paddingVertical="10dp">
 
-        <TextView
+        <EditText
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
           android:text="Publisher: "
           android:textColor="@color/colorPrimaryText" />
 
-        <TextView
+        <EditText
           android:id="@+id/complete_book_publisher"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -126,14 +126,14 @@
         android:orientation="horizontal"
         android:paddingVertical="10dp">
 
-        <TextView
+        <EditText
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
           android:text="Year: "
           android:textColor="@color/colorPrimaryText" />
 
-        <TextView
+        <EditText
           android:id="@+id/complete_book_year"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -148,7 +148,7 @@
         android:orientation="horizontal"
         android:paddingVertical="10dp">
 
-        <TextView
+        <EditText
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
@@ -161,6 +161,8 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:isIndicator="false"
+            android:clickable="true"
+            android:focusable="true"
           android:rating="3"
           android:stepSize="0.5"
           android:theme="@style/RatingBar" />

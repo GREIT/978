@@ -39,8 +39,9 @@ public class CompleteRegistration extends AppCompatActivity {
     EditText edit_location = findViewById(R.id.complete_location);
     EditText edit_bio = findViewById(R.id.complete_biography);
     
-    if (TextUtils.isEmpty(edit_nickname.getText()) || TextUtils.isEmpty(edit_location.getText())
-        || TextUtils.isEmpty(edit_bio.getText())) {
+//    if (TextUtils.isEmpty(edit_nickname.getText()) || TextUtils.isEmpty(edit_location.getText())
+//        || TextUtils.isEmpty(edit_bio.getText())) {
+      if(TextUtils.isEmpty(edit_nickname.getText())){
       AlertDialog.Builder builder = new AlertDialog.Builder(this);
       builder.setMessage(R.string.fill_fields)
           .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {

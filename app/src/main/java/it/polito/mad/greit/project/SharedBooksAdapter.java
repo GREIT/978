@@ -59,17 +59,15 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
     holder.title.setText(book.getTitle());
     holder.author.setText(book.getAuthor());
   
-    if (book.getPhotoUri() != null) {
+    if (book.getkey() != null) {
       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-      StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
-      final long size = 7 * 1024 * 1024;
-      sr.getBytes(size).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+      StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + book.getkey() + ".jpg");
+      sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
         @Override
         public void onSuccess(byte[] bytes) {
-          // Data for "images/island.jpg" is returns, use this as needed
           Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
           ByteArrayOutputStream stream = new ByteArrayOutputStream();
-          bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+          bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
           Glide
               .with(mContext)
               .load(stream.toByteArray())
@@ -83,8 +81,16 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
         public void onFailure(@NonNull Exception exception) {
           // Handle any errors
           exception.printStackTrace();
+
         }
       });
+    }
+    else{
+      Glide
+              .with(mContext)
+              .load(R.drawable.ic_book_blue_grey_900_48dp)
+              .asBitmap()
+              .into(holder.thumbnail);
     }
   }
   
