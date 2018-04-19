@@ -85,13 +85,13 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
         }
       });
     }
-    else{
-      Glide
-              .with(mContext)
-              .load(R.drawable.ic_book_blue_grey_900_48dp)
-              .asBitmap()
-              .into(holder.thumbnail);
-    }
+//    else{
+//      Glide
+//              .with(mContext)
+//              .load(R.drawable.ic_book_blue_grey_900_48dp)
+//              .asBitmap()
+//              .into(holder.thumbnail);
+//    }
   }
   
   @Override

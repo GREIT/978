@@ -1,6 +1,7 @@
 package it.polito.mad.greit.project;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -42,7 +43,7 @@ public class SharedBooksByUser extends AppCompatActivity {
     toolbar.setTitle(R.string.activity_shared_books);
     setSupportActionBar(toolbar);
     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-    toolbar.setNavigationOnClickListener(v -> finish());
+    toolbar.setNavigationOnClickListener(v -> onBackPressed());
   
 //    initCollapsingToolbar();
   
@@ -88,6 +89,12 @@ public class SharedBooksByUser extends AppCompatActivity {
 //      }
 //    });
 //  }
+
+  public void onBackPressed(){
+    Intent intent = new Intent(SharedBooksByUser.this,MainActivity.class);
+    //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    startActivity(intent);
+  }
   
   private void prepareBooks() {
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
