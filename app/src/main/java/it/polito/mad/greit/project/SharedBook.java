@@ -16,10 +16,9 @@ public class SharedBook implements Serializable {
   private String additionalInformations;
   private String owner;
   private String addedOn;
-  private String photoUri;
+  private String key;
   
   public SharedBook() {
-  
   }
   
   public String getTitle() {
@@ -94,17 +93,15 @@ public class SharedBook implements Serializable {
     this.addedOn = addedOn;
   }
   
-  public String getPhotoUri() {
-    return photoUri;
+  public String getKey() {
+    return key;
   }
   
-  public void setPhotoUri(String photoUri) {
-    this.photoUri = photoUri;
-  }
+  public void setKey(String key) { this.key = key; }
   
   public void saveToDB(String key) {
     FirebaseDatabase db = FirebaseDatabase.getInstance();
     DatabaseReference dbref = db.getReference("books").child(key);
     dbref.setValue(this);
-    }
+  }
 }

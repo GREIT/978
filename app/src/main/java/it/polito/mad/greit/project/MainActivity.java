@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     iw_user = headerView.findViewById(R.id.drawer_image);
 
     iw_user.setOnClickListener(v -> {
-      Intent I = new Intent(MainActivity.this, ShowProfile.class);
-      startActivity(I);
+      Intent intent = new Intent(MainActivity.this, ShowProfile.class);
+      startActivity(intent);
     });
   
     dbref.addValueEventListener(new ValueEventListener() {
@@ -97,11 +97,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else{
           tw_username.setText("@" + profile.getUsername());
           tw_name.setText(profile.getName());
-            if(profile.getPhotoUri() != null){
                 StorageReference sr = FirebaseStorage.getInstance().getReference()
                     .child("profile_pictures/" + user.getUid() + ".jpg");
-                final long size = 7 * 1024 * 1024;
-                sr.getBytes(size).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
                         // Data for "images/island.jpg" is returns, use this as needed
@@ -113,9 +111,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onFailure(@NonNull Exception exception) {
                         // Handle any errors
                         exception.printStackTrace();
+                        iw_user.setImageResource(R.mipmap.ic_launcher_round);
                     }
                 });
-            }
 
           Log.d("onDataChange", profile.getUsername());
         }

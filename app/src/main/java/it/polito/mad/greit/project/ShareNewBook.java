@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -48,16 +49,12 @@ import java.io.FileNotFoundException;
 
 public class ShareNewBook extends AppCompatActivity {
   private static final String TAG = "Barcode Scanner API";
-  private static final int PHOTO_REQUEST = 10;
-  private static final int REQUEST_WRITE_PERMISSION = 20;
-  
-  private static final String SAVED_INSTANCE_URI = "uri";
-  private static final String SAVED_INSTANCE_RESULT = "result";
   
   private BarcodeDetector detector;
   private Button button_scan;
   private Uri imageUri;
   private TextView tw_ISBN;
+  private String ISBN;
   Toolbar t;
   
   @Override
@@ -98,6 +95,7 @@ public class ShareNewBook extends AppCompatActivity {
     
     if (R.id.share_new_book_confirm == item.getItemId()) {
       EditText et_ISBN = (EditText) findViewById(R.id.share_new_book_ISBN);
+      this.ISBN = et_ISBN.getText().toString();
       ISBNValidator V = new ISBNValidator(et_ISBN.getText().toString());
       if (V.isValid()) {
         getBookInfo(et_ISBN.getText().toString());
@@ -138,16 +136,17 @@ public class ShareNewBook extends AppCompatActivity {
                 startActivity(I);
                 
               } else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ShareNewBook.this);
-                builder.setMessage("Book not found 😞")
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                      @Override
-                      public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "Dialog clicked");
-                      }
-                    });
-                AlertDialog alert = builder.create();
-                alert.show();
+                SharedBook B = new SharedBook();
+                B.setYear("");
+                B.setISBN("");
+                B.setTitle("");
+                B.setAuthor("");
+                B.setPublisher("");
+                B.setOwner(FirebaseAuth.getInstance().getCurrentUser().getUid());
+  
+                Intent I = new Intent(ShareNewBook.this, CompleteBookRegistration.class);
+                I.putExtra("book", B);
+                startActivity(I);
               }
             } catch (Exception e) {
               e.printStackTrace();
@@ -175,29 +174,61 @@ public class ShareNewBook extends AppCompatActivity {
   
   private SharedBook parseJSONintoBook(JSONObject J) throws JSONException {
     SharedBook toBeReturned = new SharedBook();
-    JSONArray items = J.getJSONArray("items");
-    JSONObject book = (JSONObject) items.get(0);
-    JSONObject bookInfo = book.getJSONObject("volumeInfo");
-    
-    toBeReturned.setTitle(bookInfo.getString("title"));
+    JSONArray items;
+    JSONObject book;
+    JSONObject bookInfo = null;
+    try {
+       items = J.getJSONArray("items");
+       book = (JSONObject) items.get(0);
+       bookInfo = book.getJSONObject("volumeInfo");
+    }catch (Exception e){
+      AlertDialog.Builder builder = new AlertDialog.Builder(ShareNewBook.this);
+      builder.setMessage("Book not found")
+              .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  Log.d(TAG, "Dialog clicked");
+                }
+              });
+      AlertDialog alert = builder.create();
+      alert.show();
+    }
+
+    try {
+      toBeReturned.setTitle(bookInfo.getString("title"));
+    }
+    catch (Exception e){
+      toBeReturned.setTitle("");
+    }
+
     try {
       toBeReturned.setPublisher(bookInfo.getString("publisher"));
-    } catch (JSONException E) {
-      toBeReturned.setPublisher("null");
     }
-    
-    toBeReturned.setYear(bookInfo.getString("publishedDate").substring(0, 5).replaceAll("-", "/"));
-    
-    JSONArray authors = bookInfo.getJSONArray("authors");
-    toBeReturned.setAuthor((String) authors.get(0));
-    
+    catch (Exception e){
+      toBeReturned.setPublisher("");
+    }
+
+    try {
+      toBeReturned.setYear(bookInfo.getString("publishedDate").substring(0, 4).replaceAll("-", "/"));
+    }
+    catch (Exception e){
+      toBeReturned.setYear("");
+    }
+
+    try {
+      JSONArray authors = bookInfo.getJSONArray("authors");
+      toBeReturned.setAuthor((String) authors.get(0));
+    }
+    catch (Exception e){
+      toBeReturned.setAuthor("");
+    }
+
     toBeReturned.setOwner(FirebaseAuth.getInstance().getCurrentUser().getUid());
     
-    JSONArray industryIdentifiers = bookInfo.getJSONArray("industryIdentifiers");
-    JSONObject ISBN13 = (JSONObject) industryIdentifiers.get(0);
+    //JSONArray industryIdentifiers = bookInfo.getJSONArray("industryIdentifiers");
+    //JSONObject ISBN13 = (JSONObject) industryIdentifiers.get(0);
     
-    toBeReturned.setISBN(ISBN13.getString("identifier"));
-    
+    toBeReturned.setISBN(this.ISBN);
     
     return toBeReturned;
   }
@@ -216,28 +247,26 @@ public class ShareNewBook extends AppCompatActivity {
   }
   
   private void takePicture() {
-//    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//    File photo = new File(Environment.getExternalStorageDirectory(), "picture.jpg");
-//    imageUri = FileProvider.getUriForFile(ShareNewBook.this,
-//        BuildConfig.APPLICATION_ID + ".provider", photo);
-//    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-//    startActivityForResult(intent, PHOTO_REQUEST);
-    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    try {
-      File img = File.createTempFile("photo", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
-      if (img != null) {
+
+    if (ContextCompat.checkSelfPermission(ShareNewBook.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(ShareNewBook.this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_PERMISSION);
+    }
+    else{
+      Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+      try {
+        File img = File.createTempFile("barcode", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
         imageUri = FileProvider.getUriForFile(this, "it.polito.mad.greit.project", img);
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(takePictureIntent, PHOTO_REQUEST);
+        startActivityForResult(takePictureIntent, Constants.REQUEST_IMAGE_CAPTURE);
+      } catch (Exception e) {
+        e.printStackTrace();
       }
-    } catch (Exception e) {
-      e.printStackTrace();
     }
   }
   
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == PHOTO_REQUEST && resultCode == RESULT_OK) {
+    if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
       launchMediaScanIntent();
       try {
         Bitmap bitmap = decodeBitmapUri(this, imageUri);
@@ -311,11 +340,11 @@ public class ShareNewBook extends AppCompatActivity {
     mediaScanIntent.setData(imageUri);
     this.sendBroadcast(mediaScanIntent);
   }
-  
+
   protected void onSaveInstanceState(Bundle outState) {
     if (imageUri != null) {
-      outState.putString(SAVED_INSTANCE_URI, imageUri.toString());
-      outState.putString(SAVED_INSTANCE_RESULT, tw_ISBN.getText().toString());
+      outState.putString(Constants.SAVED_INSTANCE_URI, imageUri.toString());
+      outState.putString(Constants.SAVED_INSTANCE_RESULT, tw_ISBN.getText().toString());
     }
     super.onSaveInstanceState(outState);
   }

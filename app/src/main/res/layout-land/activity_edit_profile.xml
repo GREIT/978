@@ -69,19 +69,6 @@
         <android.support.design.widget.TextInputLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:hint="@string/surname">
-
-          <EditText
-            android:id="@+id/edit_surname"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
           android:hint="@string/username">
 
           <EditText

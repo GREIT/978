@@ -45,7 +45,7 @@
           android:text="Title: "
           android:textColor="@color/colorPrimaryText" />
 
-        <TextView
+        <EditText
           android:id="@+id/complete_book_title"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
           android:text="Author: "
           android:textColor="@color/colorPrimaryText" />
 
-        <TextView
+        <EditText
           android:id="@+id/complete_book_author"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
           android:text="ISBN: "
           android:textColor="@color/colorPrimaryText" />
 
-        <TextView
+        <EditText
           android:id="@+id/complete_book_ISBN"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -111,7 +111,7 @@
           android:text="Publisher: "
           android:textColor="@color/colorPrimaryText" />
 
-        <TextView
+        <EditText
           android:id="@+id/complete_book_publisher"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -133,12 +133,13 @@
           android:text="Year: "
           android:textColor="@color/colorPrimaryText" />
 
-        <TextView
+        <EditText
           android:id="@+id/complete_book_year"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:text="Il piccolo principe"
-          android:textColor="@color/colorPrimaryText" />
+          android:textColor="@color/colorPrimaryText"
+          android:inputType="number"/>
 
       </LinearLayout>
 
@@ -160,6 +161,8 @@
           style="@style/Base.Widget.AppCompat.RatingBar.Small"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:clickable="true"
+          android:focusable="true"
           android:isIndicator="false"
           android:rating="3"
           android:stepSize="0.5"

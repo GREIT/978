@@ -1,6 +1,7 @@
 package it.polito.mad.greit.project;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -39,11 +40,11 @@ public class CompleteBookRegistration extends AppCompatActivity {
   
   private Button bb;
   private Uri photo;
-  private TextView tw_ISBN;
-  private TextView tw_author;
-  private TextView tw_year;
-  private TextView tw_title;
-  private TextView tw_publisher;
+  private EditText et_ISBN;
+  private EditText et_author;
+  private EditText et_year;
+  private EditText et_title;
+  private EditText et_publisher;
   private RatingBar rb_conditions;
   private EditText et_additionalInfo;
   Toolbar t;
@@ -61,20 +62,20 @@ public class CompleteBookRegistration extends AppCompatActivity {
     
     book = (SharedBook) getIntent().getSerializableExtra("book");
     
-    tw_ISBN = (TextView) findViewById(R.id.complete_book_ISBN);
-    tw_ISBN.setText(book.getISBN());
+    et_ISBN = (EditText) findViewById(R.id.complete_book_ISBN);
+    et_ISBN.setText(book.getISBN());
     
-    tw_author = (TextView) findViewById(R.id.complete_book_author);
-    tw_author.setText(book.getAuthor());
+    et_author = (EditText) findViewById(R.id.complete_book_author);
+    et_author.setText(book.getAuthor());
     
-    tw_year = (TextView) findViewById(R.id.complete_book_year);
-    tw_year.setText(book.getYear());
+    et_year = (EditText) findViewById(R.id.complete_book_year);
+    et_year.setText(book.getYear());
     
-    tw_publisher = (TextView) findViewById(R.id.complete_book_publisher);
-    tw_publisher.setText(book.getPublisher());
+    et_publisher = (EditText) findViewById(R.id.complete_book_publisher);
+    et_publisher.setText(book.getPublisher());
     
-    tw_title = (TextView) findViewById(R.id.complete_book_title);
-    tw_title.setText(book.getTitle());
+    et_title = (EditText) findViewById(R.id.complete_book_title);
+    et_title.setText(book.getTitle());
     
     rb_conditions = (RatingBar) findViewById(R.id.complete_book_conditions);
     
@@ -87,17 +88,16 @@ public class CompleteBookRegistration extends AppCompatActivity {
   void camera() {
     if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_PERMISSION);
-    }
-    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    try {
-      File img = File.createTempFile("photoBook", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
-      if (img != null) {
+    } else {
+      Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+      try {
+        File img = File.createTempFile("photoBook", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
         photo = FileProvider.getUriForFile(this, "it.polito.mad.greit.project", img);
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photo);
         startActivityForResult(takePictureIntent, Constants.REQUEST_IMAGE_CAPTURE);
+      } catch (Exception e) {
+        e.printStackTrace();
       }
-    } catch (Exception e) {
-      e.printStackTrace();
     }
   }
   
@@ -126,25 +126,44 @@ public class CompleteBookRegistration extends AppCompatActivity {
       FirebaseDatabase db = FirebaseDatabase.getInstance();
       String key = db.getReference("books").push().getKey();
       
+      book.setTitle(et_title.getText().toString());
+      
+      book.setAuthor(et_author.getText().toString());
+      
+      book.setISBN(et_ISBN.getText().toString());
+      
+      book.setPublisher(et_publisher.getText().toString());
+      
+      book.setYear(et_year.getText().toString());
+      
       book.setConditions(String.valueOf(rb_conditions.getRating()));
       
       book.setAdditionalInformations(et_additionalInfo.getText().toString());
       
       book.setAddedOn(Calendar.getInstance().getTime().toString());
       
+      book.setKey(key);
+      
       if (photo == null) {
         book.saveToDB(key);
+        Intent intent = new Intent(CompleteBookRegistration.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
       } else {
         try {
-          StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + key + ".jpg");
+          StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + book.getKey() + ".jpg");
+          ProgressDialog dialog = ProgressDialog.show(CompleteBookRegistration.this, "", "Uploading, please wait...", true);
           sr.putFile(this.photo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
               // Get a URL to the uploaded content
               //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-              book.setPhotoUri(taskSnapshot.getDownloadUrl().toString());
               book.saveToDB(key);
               Log.d("UP", "onSuccess: url " + taskSnapshot.getDownloadUrl().toString());
+              dialog.dismiss();
+              Intent intent = new Intent(CompleteBookRegistration.this, MainActivity.class);
+              intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+              startActivity(intent);
             }
           })
               .addOnFailureListener(new OnFailureListener() {
@@ -153,18 +172,16 @@ public class CompleteBookRegistration extends AppCompatActivity {
                   // Handle unsuccessful uploads
                   // ...
                   exception.printStackTrace();
+                  dialog.dismiss();
+                  Intent intent = new Intent(CompleteBookRegistration.this, MainActivity.class);
+                  intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                  startActivity(intent);
                 }
               });
-          
-          
         } catch (Exception e) {
           e.printStackTrace();
         }
       }
-      
-      Intent I = new Intent(this, MainActivity.class);
-      I.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-      startActivity(I);
       
       return true;
     } else return super.onOptionsItemSelected(item);
