@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  tools:context=".CompleteBookRegistration">
+
+  <include
+    android:id="@+id/complete_book_toolbar"
+    layout="@layout/toolbar" />
+
+  <ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:orientation="vertical"
+      android:padding="30dp">
+
+      <Button
+        android:id="@+id/complete_book_snap_pic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@drawable/rounded_corner_button"
+        android:text="@string/camera"
+        android:textColor="@color/white" />
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="10dp">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginRight="10dp"
+          android:text="@string/title"
+          android:textColor="@color/colorPrimaryText"
+          android:textStyle="bold" />
+
+        <EditText
+          android:id="@+id/complete_book_title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text=""
+          android:textColor="@color/colorPrimaryText" />
+
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="10dp">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginRight="10dp"
+          android:text="@string/author"
+          android:textColor="@color/colorPrimaryText"
+          android:textStyle="bold" />
+
+        <EditText
+          android:id="@+id/complete_book_author"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text=""
+          android:textColor="@color/colorPrimaryText" />
+
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="10dp">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginRight="10dp"
+          android:text="@string/ISBN"
+          android:textColor="@color/colorPrimaryText"
+          android:textStyle="bold" />
+
+        <EditText
+          android:id="@+id/complete_book_ISBN"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text=""
+          android:textColor="@color/colorPrimaryText" />
+
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="10dp">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginRight="10dp"
+          android:text="@string/publisher"
+          android:textColor="@color/colorPrimaryText"
+          android:textStyle="bold" />
+
+        <EditText
+          android:id="@+id/complete_book_publisher"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text=""
+          android:textColor="@color/colorPrimaryText" />
+
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="10dp">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginRight="10dp"
+          android:text="@string/published"
+          android:textColor="@color/colorPrimaryText"
+          android:textStyle="bold" />
+
+        <EditText
+          android:id="@+id/complete_book_year"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:inputType="number"
+          android:text=""
+          android:textColor="@color/colorPrimaryText" />
+
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="10dp">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginRight="10dp"
+          android:text="@string/conditions"
+          android:textColor="@color/colorPrimaryText"
+          android:textStyle="bold" />
+
+        <RatingBar
+          android:id="@+id/complete_book_conditions"
+          style="@style/Base.Widget.AppCompat.RatingBar.Small"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:clickable="true"
+          android:focusable="true"
+          android:isIndicator="false"
+          android:rating="3"
+          android:stepSize="0.5"
+          android:theme="@style/RatingBar" />
+
+      </LinearLayout>
+
+      <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/additional_info"
+        android:textColor="@color/colorPrimaryText"
+        android:textColorHint="@color/colorPrimaryText"
+        android:textStyle="bold">
+
+        <EditText
+          android:id="@+id/complete_book_additionalInfo"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:inputType="textMultiLine"
+          android:textColor="@color/colorPrimaryText"
+          android:textSize="15sp"
+          app:backgroundTint="@color/colorPrimaryText" />
+      </android.support.design.widget.TextInputLayout>
+
+    </LinearLayout>
+
+  </ScrollView>
+
+</LinearLayout>

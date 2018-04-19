@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:background="@drawable/side_nav_bar"
+  android:gravity="bottom"
+  android:orientation="vertical"
+  android:padding="16dp"
+  android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+  <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_image"
+    android:layout_width="75dp"
+    android:layout_height="75dp"
+    android:layout_gravity="start"
+    android:layout_marginTop="15dp"
+    android:layout_weight="4"
+    android:clickable="true"
+    android:contentDescription="@string/nav_header_desc"
+    android:focusable="true"
+    app:civ_border_color="@color/colorAccent"
+    app:civ_border_width="3dp"
+    app:srcCompat="@mipmap/ic_launcher_round" />
+
+  <TextView
+    android:id="@+id/drawer_name"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:paddingTop="@dimen/nav_header_vertical_spacing"
+    android:text=""
+    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+    android:textSize="14sp"
+    android:textStyle="bold" />
+
+  <TextView
+    android:id="@+id/drawer_username"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:paddingTop="@dimen/nav_header_vertical_spacing"
+    android:text=""
+    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+    android:textColor="@color/colorSecondaryTitle"
+    android:textSize="14sp" />
+
+
+</LinearLayout>

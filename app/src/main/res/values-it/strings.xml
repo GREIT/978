@@ -1,16 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Project</string>
-    <string name="name">Nome</string>
-    <string name="surname">Cognome</string>
-    <string name="email" translatable="false">Email</string>
-    <string name="nickname" translatable="false">Nickname</string>
-    <string name="location">Indirizzo</string>
-    <string name="bio">Una piccola bio</string>
-    <string name="bio_sample" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam metus eros, maximus non ipsum ac, luctus ultricies urna. Suspendisse dignissim volutpat sodales. Nullam tincidunt lectus vitae dui finibus, nec egestas neque venenatis.</string>
-    <string name="upload"> Carica </string>
-    <string name="camera"> Foto </string>
-    <string name="cancel"> Annulla </string>
-    <string name="ok"> OK </string>
+  <string name="app_name">Project</string>
+  <string name="title_activity_main">Home</string>
 
+  // Authentication
+  <string name="signout">Sign out</string>
+
+  // Complete Profile
+  <string name="activity_complete_profile">Completa il tuo profilo</string>
+
+  // Profile
+  <string name="activity_show_profile">Il tuo profilo</string>
+  <string name="name">Nome</string>
+  <string name="email" translatable="false">Email</string>
+  <string name="username" translatable="false">Username</string>
+  <string name="location">Luogo</string>
+  <string name="bio">Parlaci di te</string>
+
+  // Edit Profile
+  <string name="activity_edit_profile">Modifica il tuo profilo</string>
+
+  // Shared Books
+  <string name="shared_books">Libri condivisi</string>
+  <string name="activity_shared_books">I tuoi libri condivisi</string>
+  <string name="title">Titolo</string>
+  <string name="author">Autore</string>
+  <string name="ISBN">ISBN</string>
+  <string name="publisher">Casa editrice</string>
+  <string name="published">Anno</string>
+  <string name="conditions">Condizioni</string>
+  <string name="additional_info">Ulteriori informazioni</string>
+
+  // Share new book
+  <string name="activity_share_book">Condividi un nuovo libro</string>
+  <string name="insert_isbn">Inserisci qui l\'ISBN del libro</string>
+  <string name="or">oppure</string>
+  <string name="scan_qr">Scannerizza il QR code</string>
+  <string name="isbn_not_valid">ISBN non valido 😕</string>
+  <string name="request_error">Errore durante la richiesta 🤯</string>
+  <string name="image_upload_failed">Errore durant eil caricamento dell\'immagine</string>
+  <string name="detector_error">Impossibile impostare il detector!</string>
+  <string name="scan_failed">Non abbiamo trovato nulla da scannerizzare</string>
+  <string name="book_not_found">Libro non trovato!</string>
+
+  // Complete book's informations
+  <string name="actvity_complete_book_info">Completa le informazioni sul libro</string>
+
+  // Miscellaneous
+  <string name="AUTH_ID" translatable="false">1059761957663-g0pf2f234revm5upjo64u3s6v2br3t38.apps.googleusercontent.com</string>
+  <string name="ok"> OK </string>
+  <string name="upload"> Carica </string>
+  <string name="camera"> 📸 </string>
+  <string name="cancel"> Elimina </string>
+  <string name="fill_fields">Completa tutti i campi obbligatori!</string>
+  <string name="dialog_clicked">Dialog clicked</string>
+  <string name="denied">Permesso negato</string>
+
+
+  <string name="navigation_drawer_open">Open navigation drawer</string>
+  <string name="navigation_drawer_close">Close navigation drawer</string>
+  <string name="nav_header_desc">Navigation header</string>
 </resources>
