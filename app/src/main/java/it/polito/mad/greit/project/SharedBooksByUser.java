@@ -39,7 +39,7 @@ public class SharedBooksByUser extends AppCompatActivity {
     setContentView(R.layout.activity_shared_books_by_user);
   
     Toolbar toolbar = (Toolbar) findViewById(R.id.shared_books_by_user_toolbar);
-    toolbar.setTitle("Your shared books");
+    toolbar.setTitle(R.string.activity_shared_books);
     setSupportActionBar(toolbar);
     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
     toolbar.setNavigationOnClickListener(v -> finish());

@@ -144,7 +144,7 @@
           android:layout_gravity="center_vertical"
 
           android:contentDescription="Biography"
-          android:text="@string/bio_sample"
+          android:text="@string/bio"
           android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
           android:textColor="@color/colorPrimaryText" />
       </LinearLayout>

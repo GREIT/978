@@ -7,11 +7,11 @@
     <item
       android:id="@+id/nav_shared_books"
       android:icon="@drawable/ic_book_blue_grey_900_48dp"
-      android:title="Shared books" />
+      android:title="@string/shared_books" />
     <item
       android:id="@+id/nav_sign_out"
       android:icon="@drawable/ic_exit_to_app_blue_grey_900_48dp"
-      android:title="Sign out" />
+      android:title="@string/signout" />
   </group>
 
   <item android:title="">

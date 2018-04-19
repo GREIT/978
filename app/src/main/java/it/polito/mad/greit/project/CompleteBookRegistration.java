@@ -55,7 +55,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
     setContentView(R.layout.activity_complete_book_registration);
     
     t = findViewById(R.id.complete_book_toolbar);
-    t.setTitle("Complete book informations");
+    t.setTitle(R.string.actvity_complete_book_info);
     setSupportActionBar(t);
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
     t.setNavigationOnClickListener(v -> finish());

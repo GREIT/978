@@ -55,7 +55,7 @@ public class EditProfile extends AppCompatActivity {
     setContentView(R.layout.activity_edit_profile);
     
     t = findViewById(R.id.edit_profile_toolbar);
-    t.setTitle("Edit Profile");
+    t.setTitle(R.string.activity_edit_profile);
     setSupportActionBar(t);
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
     t.setNavigationOnClickListener(v -> RevertInfo());

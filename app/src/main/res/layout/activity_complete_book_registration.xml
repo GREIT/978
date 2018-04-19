@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:background="@drawable/rounded_corner_button"
-        android:text="📸"
+        android:text="@string/camera"
         android:textColor="@color/white" />
 
       <LinearLayout
@@ -42,14 +42,15 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
-          android:text="Title: "
-          android:textColor="@color/colorPrimaryText" />
+          android:text="@string/title"
+          android:textColor="@color/colorPrimaryText"
+          android:textStyle="bold" />
 
         <EditText
           android:id="@+id/complete_book_title"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Il piccolo principe"
+          android:text=""
           android:textColor="@color/colorPrimaryText" />
 
       </LinearLayout>
@@ -64,14 +65,15 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
-          android:text="Author: "
-          android:textColor="@color/colorPrimaryText" />
+          android:text="@string/author"
+          android:textColor="@color/colorPrimaryText"
+          android:textStyle="bold" />
 
         <EditText
           android:id="@+id/complete_book_author"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Il piccolo principe"
+          android:text=""
           android:textColor="@color/colorPrimaryText" />
 
       </LinearLayout>
@@ -86,14 +88,15 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
-          android:text="ISBN: "
-          android:textColor="@color/colorPrimaryText" />
+          android:text="@string/ISBN"
+          android:textColor="@color/colorPrimaryText"
+          android:textStyle="bold" />
 
         <EditText
           android:id="@+id/complete_book_ISBN"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Il piccolo principe"
+          android:text=""
           android:textColor="@color/colorPrimaryText" />
 
       </LinearLayout>
@@ -108,14 +111,15 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
-          android:text="Publisher: "
-          android:textColor="@color/colorPrimaryText" />
+          android:text="@string/publisher"
+          android:textColor="@color/colorPrimaryText"
+          android:textStyle="bold" />
 
         <EditText
           android:id="@+id/complete_book_publisher"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Il piccolo principe"
+          android:text=""
           android:textColor="@color/colorPrimaryText" />
 
       </LinearLayout>
@@ -130,16 +134,17 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
-          android:text="Year: "
-          android:textColor="@color/colorPrimaryText" />
+          android:text="@string/published"
+          android:textColor="@color/colorPrimaryText"
+          android:textStyle="bold" />
 
         <EditText
           android:id="@+id/complete_book_year"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Il piccolo principe"
-          android:textColor="@color/colorPrimaryText"
-          android:inputType="number"/>
+          android:inputType="number"
+          android:text=""
+          android:textColor="@color/colorPrimaryText" />
 
       </LinearLayout>
 
@@ -153,8 +158,9 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
-          android:text="Conditions: "
-          android:textColor="@color/colorPrimaryText" />
+          android:text="@string/conditions"
+          android:textColor="@color/colorPrimaryText"
+          android:textStyle="bold" />
 
         <RatingBar
           android:id="@+id/complete_book_conditions"
@@ -173,9 +179,10 @@
       <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Additional comments"
+        android:hint="@string/additional_info"
         android:textColor="@color/colorPrimaryText"
-        android:textColorHint="@color/colorPrimaryText">
+        android:textColorHint="@color/colorPrimaryText"
+        android:textStyle="bold">
 
         <EditText
           android:id="@+id/complete_book_additionalInfo"

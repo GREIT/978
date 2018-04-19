@@ -43,7 +43,7 @@ public class ShowProfile extends AppCompatActivity {
     setContentView(R.layout.activity_show_profile);
     
     t = findViewById(R.id.show_profile_toolbar);
-    t.setTitle("Profile");
+    t.setTitle(R.string.activity_show_profile);
     setSupportActionBar(t);
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
     t.setNavigationOnClickListener(view -> onBackPressed());

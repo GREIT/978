@@ -29,7 +29,7 @@
     android:layout_height="wrap_content"
     android:layout_weight="1"
     android:paddingTop="@dimen/nav_header_vertical_spacing"
-    android:text="@string/name"
+    android:text=""
     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
     android:textSize="14sp"
     android:textStyle="bold" />
@@ -40,7 +40,7 @@
     android:layout_height="wrap_content"
     android:layout_weight="1"
     android:paddingTop="@dimen/nav_header_vertical_spacing"
-    android:text="@string/nav_header_title"
+    android:text=""
     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
     android:textColor="@color/colorSecondaryTitle"
     android:textSize="14sp" />

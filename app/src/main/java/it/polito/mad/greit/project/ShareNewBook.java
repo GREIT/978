@@ -63,7 +63,7 @@ public class ShareNewBook extends AppCompatActivity {
     setContentView(R.layout.activity_share_new_book);
     
     t = findViewById(R.id.share_new_book_toolbar);
-    t.setTitle("Share a new book");
+    t.setTitle(R.string.activity_share_book);
     setSupportActionBar(t);
     
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
@@ -101,7 +101,7 @@ public class ShareNewBook extends AppCompatActivity {
         getBookInfo(et_ISBN.getText().toString());
       } else {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("ISBN is not valid 😕")
+        builder.setMessage(R.string.isbn_not_valid)
             .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
               @Override
               public void onClick(DialogInterface dialog, int which) {
@@ -143,7 +143,7 @@ public class ShareNewBook extends AppCompatActivity {
                 B.setAuthor("");
                 B.setPublisher("");
                 B.setOwner(FirebaseAuth.getInstance().getCurrentUser().getUid());
-  
+                
                 Intent I = new Intent(ShareNewBook.this, CompleteBookRegistration.class);
                 I.putExtra("book", B);
                 startActivity(I);
@@ -157,7 +157,7 @@ public class ShareNewBook extends AppCompatActivity {
           @Override
           public void onErrorResponse(VolleyError error) {
             AlertDialog.Builder builder = new AlertDialog.Builder(ShareNewBook.this);
-            builder.setMessage("Error during the request 🤯")
+            builder.setMessage(R.string.request_error)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                   @Override
                   public void onClick(DialogInterface dialog, int which) {
@@ -178,51 +178,47 @@ public class ShareNewBook extends AppCompatActivity {
     JSONObject book;
     JSONObject bookInfo = null;
     try {
-       items = J.getJSONArray("items");
-       book = (JSONObject) items.get(0);
-       bookInfo = book.getJSONObject("volumeInfo");
-    }catch (Exception e){
+      items = J.getJSONArray("items");
+      book = (JSONObject) items.get(0);
+      bookInfo = book.getJSONObject("volumeInfo");
+    } catch (Exception e) {
       AlertDialog.Builder builder = new AlertDialog.Builder(ShareNewBook.this);
-      builder.setMessage("Book not found")
-              .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                  Log.d(TAG, "Dialog clicked");
-                }
-              });
+      builder.setMessage(R.string.book_not_found)
+          .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              Log.d(TAG, "Dialog clicked");
+            }
+          });
       AlertDialog alert = builder.create();
       alert.show();
     }
-
+    
     try {
       toBeReturned.setTitle(bookInfo.getString("title"));
-    }
-    catch (Exception e){
+    } catch (Exception e) {
       toBeReturned.setTitle("");
     }
-
+    
     try {
       toBeReturned.setPublisher(bookInfo.getString("publisher"));
-    }
-    catch (Exception e){
+    } catch (Exception e) {
       toBeReturned.setPublisher("");
     }
-
+    
     try {
       toBeReturned.setYear(bookInfo.getString("publishedDate").substring(0, 4).replaceAll("-", "/"));
-    }
-    catch (Exception e){
+    } catch (Exception e) {
       toBeReturned.setYear("");
     }
-
+    
     try {
       JSONArray authors = bookInfo.getJSONArray("authors");
       toBeReturned.setAuthor((String) authors.get(0));
-    }
-    catch (Exception e){
+    } catch (Exception e) {
       toBeReturned.setAuthor("");
     }
-
+    
     toBeReturned.setOwner(FirebaseAuth.getInstance().getCurrentUser().getUid());
     
     //JSONArray industryIdentifiers = bookInfo.getJSONArray("industryIdentifiers");
@@ -241,17 +237,16 @@ public class ShareNewBook extends AppCompatActivity {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           takePicture();
         } else {
-          Toast.makeText(ShareNewBook.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+          Toast.makeText(ShareNewBook.this, R.string.denied, Toast.LENGTH_SHORT).show();
         }
     }
   }
   
   private void takePicture() {
-
+    
     if (ContextCompat.checkSelfPermission(ShareNewBook.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions(ShareNewBook.this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_PERMISSION);
-    }
-    else{
+    } else {
       Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
       try {
         File img = File.createTempFile("barcode", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
@@ -322,13 +317,13 @@ public class ShareNewBook extends AppCompatActivity {
             }
           }
           if (barcodes.size() == 0) {
-            tw_ISBN.setText("Scan Failed: Found nothing to scan");
+            tw_ISBN.setText(R.string.scan_failed);
           }
         } else {
-          tw_ISBN.setText("Could not set up the detector!");
+          tw_ISBN.setText(R.string.detector_error);
         }
       } catch (Exception e) {
-        Toast.makeText(this, "Failed to load Image", Toast.LENGTH_SHORT)
+        Toast.makeText(this, R.string.image_upload_failed, Toast.LENGTH_SHORT)
             .show();
         Log.e(TAG, e.toString());
       }
@@ -340,7 +335,7 @@ public class ShareNewBook extends AppCompatActivity {
     mediaScanIntent.setData(imageUri);
     this.sendBroadcast(mediaScanIntent);
   }
-
+  
   protected void onSaveInstanceState(Bundle outState) {
     if (imageUri != null) {
       outState.putString(Constants.SAVED_INSTANCE_URI, imageUri.toString());
