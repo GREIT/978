@@ -31,7 +31,6 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
     public TextView title, author;
     public ImageView thumbnail;
     
-    
     public MyViewHolder(View view) {
       super(view);
       title = (TextView) view.findViewById(R.id.book_card_title);
@@ -58,7 +57,7 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
     SharedBook book = bookList.get(position);
     holder.title.setText(book.getTitle());
     holder.author.setText(book.getAuthor());
-  
+    
     if (book.getKey() != null) {
       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + book.getKey() + ".jpg");
@@ -81,16 +80,15 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
         public void onFailure(@NonNull Exception exception) {
           // Handle any errors
           exception.printStackTrace();
-
+          
         }
       });
-    }
-    else{
+    } else {
       Glide
-              .with(mContext)
-              .load(R.drawable.ic_book_blue_grey_900_48dp)
-              .asBitmap()
-              .into(holder.thumbnail);
+          .with(mContext)
+          .load(R.drawable.ic_book_blue_grey_900_48dp)
+          .asBitmap()
+          .into(holder.thumbnail);
     }
   }
   

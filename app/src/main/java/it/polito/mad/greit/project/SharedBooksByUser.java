@@ -1,11 +1,13 @@
 package it.polito.mad.greit.project;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -32,6 +34,7 @@ public class SharedBooksByUser extends AppCompatActivity {
   private RecyclerView recyclerView;
   private SharedBooksAdapter adapter;
   private List<SharedBook> bookList;
+  private FloatingActionButton fab;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,12 @@ public class SharedBooksByUser extends AppCompatActivity {
     toolbar.setNavigationOnClickListener(v -> finish());
   
 //    initCollapsingToolbar();
+    
+    fab = (FloatingActionButton) findViewById(R.id.fab_add_book_from_shared_books);
+    fab.setOnClickListener(v -> {
+      Intent intent = new Intent(this, ShareNewBook.class);
+      startActivity(intent);
+    });
   
     recyclerView = (RecyclerView) findViewById(R.id.shared_books_by_user_recycler_view);
     
