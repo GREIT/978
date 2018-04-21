@@ -90,6 +90,7 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
           .asBitmap()
           .into(holder.thumbnail);
     }
+    
   }
   
   @Override
