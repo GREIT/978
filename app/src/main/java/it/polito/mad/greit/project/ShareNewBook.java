@@ -118,7 +118,7 @@ public class ShareNewBook extends AppCompatActivity {
   public void getBookInfo(String ISBN) {
     RequestQueue queue = Volley.newRequestQueue(this);
     
-    String url = "https://www.googleapis.com/books/v1/volumes?q=" + ISBN.replaceAll("-", "");
+    String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + ISBN.replaceAll("-", "").replaceAll(" ", "");
     
     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
         (Request.Method.GET, url, (String) null, new Response.Listener<JSONObject>() {
