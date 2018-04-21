@@ -98,7 +98,7 @@ public class ShareNewBook extends AppCompatActivity {
       this.ISBN = et_ISBN.getText().toString();
       ISBNValidator V = new ISBNValidator(et_ISBN.getText().toString());
       if (V.isValid()) {
-        getBookInfo(et_ISBN.getText().toString());
+        getBookInfo(et_ISBN.getText().toString().replaceAll("-", ""));
       } else {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.isbn_not_valid)
