@@ -98,7 +98,7 @@ public class ShareNewBook extends AppCompatActivity {
       this.ISBN = et_ISBN.getText().toString();
       ISBNValidator V = new ISBNValidator(et_ISBN.getText().toString());
       if (V.isValid()) {
-        getBookInfo(et_ISBN.getText().toString());
+        getBookInfo(et_ISBN.getText().toString().replaceAll("-", "").replaceAll(" ", ""));
       } else {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.isbn_not_valid)
@@ -117,7 +117,8 @@ public class ShareNewBook extends AppCompatActivity {
   
   public void getBookInfo(String ISBN) {
     RequestQueue queue = Volley.newRequestQueue(this);
-    String url = "https://www.googleapis.com/books/v1/volumes?q=" + ISBN;
+    
+    String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + ISBN.replaceAll("-", "").replaceAll(" ", "");
     
     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
         (Request.Method.GET, url, (String) null, new Response.Listener<JSONObject>() {

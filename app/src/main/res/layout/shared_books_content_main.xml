@@ -16,4 +16,15 @@
     android:clipToPadding="false"
     android:scrollbars="vertical" />
 
+  <android.support.design.widget.FloatingActionButton
+    android:id="@+id/fab_add_book_from_shared_books"
+    app:backgroundTint="@color/colorAccent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentEnd="true"
+    android:layout_margin="@dimen/fab_margin"
+    app:srcCompat="@drawable/ic_add_white_48dp" />
+
 </RelativeLayout>
