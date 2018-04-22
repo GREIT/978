@@ -90,33 +90,31 @@ public class ShowProfile extends AppCompatActivity {
         tv.setText(profile.getLocation());
         tv = findViewById(R.id.biography);
         tv.setText(profile.getBio());
-
-          ImageView iw = findViewById(R.id.pic);
-          FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-          StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
-          sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-              Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-              iw.setImageBitmap(bm);
-              bm.recycle();
-            }
-          }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-              // Handle any errors
-              exception.printStackTrace();
-              iw.setImageResource(R.mipmap.ic_launcher_round);
-            }
-          });
       }
-      
       @Override
       public void onCancelled(DatabaseError e) {
       }
     });
-    
-    
+
+
+    ImageView iw = findViewById(R.id.pic);
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
+    sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+      @Override
+      public void onSuccess(byte[] bytes) {
+        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        iw.setImageBitmap(bm);
+      }
+    }).addOnFailureListener(new OnFailureListener() {
+      @Override
+      public void onFailure(@NonNull Exception exception) {
+        // Handle any errors
+        exception.printStackTrace();
+        iw.setImageResource(R.mipmap.ic_launcher_round);
+      }
+    });
+
   }
 
   @Override
@@ -124,6 +122,5 @@ public class ShowProfile extends AppCompatActivity {
     Intent intent = new Intent(ShowProfile.this, MainActivity.class);
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     startActivity(intent);
-    finish();
   }
 }

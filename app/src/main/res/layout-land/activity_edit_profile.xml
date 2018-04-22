@@ -23,23 +23,20 @@
       android:orientation="vertical"
       android:padding="30dp">
 
-      <Button
-        android:id="@+id/edit_pic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:background="@drawable/rounded_corner_button"
-        android:textColor="@color/white"
-        android:text="@string/upload" />
-
-      <Button
-        android:id="@+id/snap_pic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded_corner_button"
-        android:layout_margin="5dp"
-        android:textColor="@color/white"
-        android:text="@string/camera" />
+      <de.hdodenhof.circleimageview.CircleImageView
+          xmlns:app="http://schemas.android.com/apk/res-auto"
+          android:id="@+id/edit_pic"
+          android:layout_width="100dp"
+          android:layout_height="100dp"
+          android:clickable="true"
+          android:focusable="true"
+          android:contentDescription="EditPic"
+          android:layout_marginEnd="20dp"
+          android:layout_marginRight="20dp"
+          android:layout_gravity="center_vertical"
+          app:civ_border_color="@color/colorAccent"
+          app:srcCompat="@mipmap/ic_launcher_round"
+          app:civ_border_width="3dp" />
     </LinearLayout>
 
     <ScrollView
@@ -58,10 +55,11 @@
           android:layout_height="wrap_content"
           android:hint="@string/name">
 
-          <EditText
+          <android.support.design.widget.TextInputEditText
             android:id="@+id/edit_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:inputType="text" />
 
         </android.support.design.widget.TextInputLayout>
@@ -71,10 +69,11 @@
           android:layout_height="wrap_content"
           android:hint="@string/username">
 
-          <EditText
+          <android.support.design.widget.TextInputEditText
             android:id="@+id/edit_nickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:inputType="text" />
 
         </android.support.design.widget.TextInputLayout>
@@ -84,10 +83,11 @@
           android:layout_height="wrap_content"
           android:hint="@string/email">
 
-          <EditText
+          <android.support.design.widget.TextInputEditText
             android:id="@+id/edit_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:inputType="textEmailAddress" />
 
         </android.support.design.widget.TextInputLayout>
@@ -97,7 +97,7 @@
           android:layout_height="wrap_content"
           android:hint="@string/location">
 
-          <EditText
+          <android.support.design.widget.TextInputEditText
             android:id="@+id/edit_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -110,7 +110,7 @@
           android:layout_height="wrap_content"
           android:hint="@string/bio">
 
-          <EditText
+          <android.support.design.widget.TextInputEditText
             android:id="@+id/edit_biography"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
