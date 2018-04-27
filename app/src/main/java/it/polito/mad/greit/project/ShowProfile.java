@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -116,14 +117,15 @@ public class ShowProfile extends AppCompatActivity {
         @Override
         public void onSuccess(byte[] bytes) {
           try{
-            File pic = File.createTempFile("pic", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+            File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg");
             Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            iw.setImageBitmap(bm);
             OutputStream outs = new FileOutputStream(pic);
             bm.compress(Bitmap.CompressFormat.JPEG, 85,outs);
-            iw.setImageBitmap(bm);
+            outs.flush();
+            outs.close();
           }catch (Exception e){
             e.printStackTrace();
-            pic.delete();
             iw.setImageResource(R.mipmap.ic_launcher_round);
           }
         }

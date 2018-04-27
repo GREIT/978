@@ -77,7 +77,6 @@ public class EditProfile extends AppCompatActivity {
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
     t.setNavigationOnClickListener(v -> RevertInfo());
 
-
     Setup(b);
 
     ciw = findViewById(R.id.edit_pic);
@@ -181,7 +180,7 @@ public class EditProfile extends AppCompatActivity {
         @Override
         public void onSuccess(byte[] bytes) {
           try{
-            File pic = File.createTempFile("pic", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+            File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg");
             Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             OutputStream outs = new FileOutputStream(pic);
             bm.compress(Bitmap.CompressFormat.JPEG, 85,outs);
@@ -234,6 +233,7 @@ public class EditProfile extends AppCompatActivity {
               Bitmap bm = BitmapFactory.decodeByteArray(photo,0,photo.length);
               OutputStream outs = new FileOutputStream(new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg"));
               bm.compress(Bitmap.CompressFormat.JPEG, 85, outs);
+              outs.close();
               dialog.dismiss();
               Intent swap = new Intent(EditProfile.this, ShowProfile.class);
               swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -311,9 +311,14 @@ public class EditProfile extends AppCompatActivity {
       this.photo = stream.toByteArray();
       this.createpic(bm);
       bm.recycle();
+      try{
+          stream.close();
+      }catch (Exception e){
+          e.printStackTrace();
+      }
+
+
     }
-
-
   }
 
   void Camera() {
