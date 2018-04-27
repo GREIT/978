@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -30,6 +32,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 
 public class ShowProfile extends AppCompatActivity {
@@ -97,24 +103,39 @@ public class ShowProfile extends AppCompatActivity {
     });
 
 
+    File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg");
     ImageView iw = findViewById(R.id.pic);
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
-    sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-      @Override
-      public void onSuccess(byte[] bytes) {
-        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        iw.setImageBitmap(bm);
-      }
-    }).addOnFailureListener(new OnFailureListener() {
-      @Override
-      public void onFailure(@NonNull Exception exception) {
-        // Handle any errors
-        exception.printStackTrace();
-        iw.setImageResource(R.mipmap.ic_launcher_round);
-      }
-    });
-
+    if(pic.exists()){
+      iw.setImageURI(Uri.fromFile(pic));
+    }
+    else{
+      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+      StorageReference sr = FirebaseStorage.getInstance().getReference()
+              .child("profile_pictures/" + user.getUid() + ".jpg");
+      sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        @Override
+        public void onSuccess(byte[] bytes) {
+          try{
+            File pic = File.createTempFile("pic", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+            Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            OutputStream outs = new FileOutputStream(pic);
+            bm.compress(Bitmap.CompressFormat.JPEG, 85,outs);
+            iw.setImageBitmap(bm);
+          }catch (Exception e){
+            e.printStackTrace();
+            pic.delete();
+            iw.setImageResource(R.mipmap.ic_launcher_round);
+          }
+        }
+      }).addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception exception) {
+          // Handle any errors
+          exception.printStackTrace();
+          iw.setImageResource(R.mipmap.ic_launcher_round);
+        }
+      });
+    }
   }
 
   @Override

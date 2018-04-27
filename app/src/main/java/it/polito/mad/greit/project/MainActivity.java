@@ -5,9 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.sax.StartElementListener;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -36,6 +38,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -97,25 +102,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else{
           tw_username.setText("@" + profile.getUsername());
           tw_name.setText(profile.getName());
-                StorageReference sr = FirebaseStorage.getInstance().getReference()
-                    .child("profile_pictures/" + user.getUid() + ".jpg");
-                sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        // Data for "images/island.jpg" is returns, use this as needed
-                        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        iw_user.setImageBitmap(bm);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                        exception.printStackTrace();
-                        iw_user.setImageResource(R.mipmap.ic_launcher_round);
-                    }
-                });
+          File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg");
+          if(pic.exists()){
+            iw_user.setImageURI(Uri.fromFile(pic));
+          }
+          else {
+              StorageReference sr = FirebaseStorage.getInstance().getReference()
+                      .child("profile_pictures/" + user.getUid() + ".jpg");
+              sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                  try{
+                    File pic = File.createTempFile("pic", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+                    Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    OutputStream outs = new FileOutputStream(pic);
+                    bm.compress(Bitmap.CompressFormat.JPEG, 85,outs);
+                    iw_user.setImageBitmap(bm);
+                  }catch (Exception e){
+                    e.printStackTrace();
+                    pic.delete();
+                    iw_user.setImageResource(R.mipmap.ic_launcher_round);
+                  }
+                }
+              }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                  // Handle any errors
+                  exception.printStackTrace();
+                  iw_user.setImageResource(R.mipmap.ic_launcher_round);
+                }
+              });
+          }
 
-          Log.d("onDataChange", profile.getUsername());
         }
       }
       @Override

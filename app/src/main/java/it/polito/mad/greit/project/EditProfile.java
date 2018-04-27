@@ -50,6 +50,9 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Array;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -125,8 +128,6 @@ public class EditProfile extends AppCompatActivity {
     profile = new Profile();
 
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-
     FirebaseDatabase db = FirebaseDatabase.getInstance();
     DatabaseReference dbref = db.getReference("USERS").child(user.getUid());
 
@@ -167,21 +168,40 @@ public class EditProfile extends AppCompatActivity {
     }
 
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
-    sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-      @Override
-      public void onSuccess(byte[] bytes) {
-        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        createpic(bm);
-      }
-    }).addOnFailureListener(new OnFailureListener() {
-      @Override
-      public void onFailure(@NonNull Exception exception) {
-        // Handle any errors
-        exception.printStackTrace();
-        ciw.setImageResource(R.mipmap.ic_launcher_round);
-      }
-    });
+    File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg");
+    if(pic.exists()){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        createpic(BitmapFactory.decodeFile(pic.toString(), options));
+    }
+    else {
+      StorageReference sr = FirebaseStorage.getInstance().getReference()
+              .child("profile_pictures/" + user.getUid() + ".jpg");
+      sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        @Override
+        public void onSuccess(byte[] bytes) {
+          try{
+            File pic = File.createTempFile("pic", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+            Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            OutputStream outs = new FileOutputStream(pic);
+            bm.compress(Bitmap.CompressFormat.JPEG, 85,outs);
+            createpic(bm);
+          }catch (Exception e){
+            e.printStackTrace();
+            pic.delete();
+            ciw.setImageResource(R.mipmap.ic_launcher_round);
+          }
+        }
+      }).addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception exception) {
+          // Handle any errors
+          exception.printStackTrace();
+          ciw.setImageResource(R.mipmap.ic_launcher_round);
+        }
+      });
+    }
+
   }
 
   void SaveInfo() {
@@ -198,7 +218,6 @@ public class EditProfile extends AppCompatActivity {
     //profile.setPhotoUri(photo.toString());
 
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    
     FirebaseDatabase db = FirebaseDatabase.getInstance();
     DatabaseReference dbref = db.getReference("USERS").child(user.getUid());
     dbref.setValue(profile);
@@ -211,10 +230,22 @@ public class EditProfile extends AppCompatActivity {
           @Override
           public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
             Log.d("UP", "onSuccess: url " + taskSnapshot.getDownloadUrl().toString());
-            dialog.dismiss();
-            Intent swap = new Intent(EditProfile.this, ShowProfile.class);
-            swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(swap);
+            try{
+              Bitmap bm = BitmapFactory.decodeByteArray(photo,0,photo.length);
+              OutputStream outs = new FileOutputStream(new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg"));
+              bm.compress(Bitmap.CompressFormat.JPEG, 85, outs);
+              dialog.dismiss();
+              Intent swap = new Intent(EditProfile.this, ShowProfile.class);
+              swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+              startActivity(swap);
+            }catch (Exception e){
+              if(dialog.isShowing()) {
+                dialog.dismiss();
+              }
+                Intent swap = new Intent(EditProfile.this, ShowProfile.class);
+                swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(swap);
+            }
           }
         }).addOnFailureListener(new OnFailureListener() {
           @Override
