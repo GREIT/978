@@ -270,6 +270,13 @@ public class ShareNewBook extends AppCompatActivity {
     } catch (Exception E) {
       toBeReturned.setISBN(this.ISBN);
     }
+  
+    try {
+      JSONObject images = bookInfo.getJSONObject("imageLinks");
+      toBeReturned.setCover(images.getString("smallThumbnail"));
+    } catch (Exception E) {
+      toBeReturned.setCover("");
+    }
     
     return toBeReturned;
   }
