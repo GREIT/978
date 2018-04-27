@@ -37,8 +37,11 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,6 +49,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ShareNewBook extends AppCompatActivity {
   private static final String TAG = "Barcode Scanner API";
@@ -96,9 +101,9 @@ public class ShareNewBook extends AppCompatActivity {
     if (R.id.share_new_book_confirm == item.getItemId()) {
       EditText et_ISBN = (EditText) findViewById(R.id.share_new_book_ISBN);
       this.ISBN = et_ISBN.getText().toString();
-      ISBNValidator V = new ISBNValidator(et_ISBN.getText().toString());
+      ISBNUtilities V = new ISBNUtilities(et_ISBN.getText().toString());
       if (V.isValid()) {
-        getBookInfo(et_ISBN.getText().toString().replaceAll("-", "").replaceAll(" ", ""));
+        getBookInfo(V.convertToISBN13());
       } else {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.isbn_not_valid)
@@ -115,10 +120,35 @@ public class ShareNewBook extends AppCompatActivity {
     } else return super.onOptionsItemSelected(item);
   }
   
-  public void getBookInfo(String ISBN) {
+  private void getBookInfo(String ISBN) {
+    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+    DatabaseReference dbref = db.child("BOOKS").child(ISBN);
+    ValueEventListener eventListener = new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        if (!dataSnapshot.exists()) {
+          searchOnGoogleDB(ISBN);
+        } else {
+          Book tmpBook = new Book();
+          tmpBook = dataSnapshot.getValue(Book.class);
+          
+          Intent I = new Intent(ShareNewBook.this, CompleteBookRegistration.class);
+          I.putExtra("book", tmpBook);
+          startActivity(I);
+        }
+      }
+      
+      @Override
+      public void onCancelled(DatabaseError databaseError) {
+      }
+    };
+    dbref.addListenerForSingleValueEvent(eventListener);
+  }
+  
+  private void searchOnGoogleDB(String ISBN) {
     RequestQueue queue = Volley.newRequestQueue(this);
     
-    String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + ISBN.replaceAll("-", "").replaceAll(" ", "");
+    String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + ISBN;
     
     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
         (Request.Method.GET, url, (String) null, new Response.Listener<JSONObject>() {
@@ -126,28 +156,33 @@ public class ShareNewBook extends AppCompatActivity {
           public void onResponse(JSONObject response) {
             try {
               
-              Integer numberOfPossibleBooks = Integer.valueOf(response.getString("totalItems"));
+              Integer numberOfPossibleBooks = Integer.valueOf(
+                  response.getString("totalItems"));
               
               if (numberOfPossibleBooks > 0) {
                 
-                SharedBook B = parseJSONintoBook(response);
+                Book B = parseJSONintoBook(response);
                 
-                Intent I = new Intent(ShareNewBook.this, CompleteBookRegistration.class);
+                FirebaseDatabase db = FirebaseDatabase.getInstance();
+                DatabaseReference dbref = db.getReference("BOOKS").child(B.getISBN());
+                dbref.setValue(B);
+                
+                Intent I = new Intent(ShareNewBook.this,
+                    CompleteBookRegistration.class);
                 I.putExtra("book", B);
                 startActivity(I);
                 
               } else {
-                SharedBook B = new SharedBook();
-                B.setYear("");
-                B.setISBN("");
-                B.setTitle("");
-                B.setAuthor("");
-                B.setPublisher("");
-                B.setOwner(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                
-                Intent I = new Intent(ShareNewBook.this, CompleteBookRegistration.class);
-                I.putExtra("book", B);
-                startActivity(I);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ShareNewBook.this);
+                builder.setMessage(R.string.book_not_found)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                      @Override
+                      public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "Dialog clicked");
+                      }
+                    });
+                AlertDialog alert = builder.create();
+                alert.show();
               }
             } catch (Exception e) {
               e.printStackTrace();
@@ -173,8 +208,9 @@ public class ShareNewBook extends AppCompatActivity {
     queue.add(jsonObjectRequest);
   }
   
-  private SharedBook parseJSONintoBook(JSONObject J) throws JSONException {
-    SharedBook toBeReturned = new SharedBook();
+  
+  private Book parseJSONintoBook(JSONObject J) throws JSONException {
+    Book toBeReturned = new Book();
     JSONArray items;
     JSONObject book;
     JSONObject bookInfo = null;
@@ -208,24 +244,32 @@ public class ShareNewBook extends AppCompatActivity {
     }
     
     try {
-      toBeReturned.setYear(bookInfo.getString("publishedDate").substring(0, 4).replaceAll("-", "/"));
+      toBeReturned.setYear(bookInfo.getString("publishedDate").substring(0, 4).
+          replaceAll("-", "/"));
     } catch (Exception e) {
       toBeReturned.setYear("");
     }
     
+    List<String> as = new ArrayList<>();
     try {
       JSONArray authors = bookInfo.getJSONArray("authors");
-      toBeReturned.setAuthor((String) authors.get(0));
+      
+      for (int i = 0; i < authors.length(); i++) {
+        as.add((String) authors.get(i));
+      }
+      toBeReturned.setAuthors(as);
     } catch (Exception e) {
-      toBeReturned.setAuthor("");
+      as.add("");
+      toBeReturned.setAuthors(as);
     }
     
-    toBeReturned.setOwner(FirebaseAuth.getInstance().getCurrentUser().getUid());
-    
-    //JSONArray industryIdentifiers = bookInfo.getJSONArray("industryIdentifiers");
-    //JSONObject ISBN13 = (JSONObject) industryIdentifiers.get(0);
-    
-    toBeReturned.setISBN(this.ISBN);
+    try {
+      JSONArray industryIdentifiers = bookInfo.getJSONArray("industryIdentifiers");
+      JSONObject ISBN13 = (JSONObject) industryIdentifiers.get(1);
+      toBeReturned.setISBN(ISBN13.getString("identifier"));
+    } catch (Exception E) {
+      toBeReturned.setISBN(this.ISBN);
+    }
     
     return toBeReturned;
   }
@@ -272,50 +316,6 @@ public class ShareNewBook extends AppCompatActivity {
           for (int index = 0; index < barcodes.size(); index++) {
             Barcode code = barcodes.valueAt(index);
             tw_ISBN.setText(code.displayValue);
-            
-            //Required only if you need to extract the type of barcode
-            int type = barcodes.valueAt(index).valueFormat;
-            switch (type) {
-              case Barcode.CONTACT_INFO:
-                Log.i(TAG, code.contactInfo.title);
-                break;
-              case Barcode.EMAIL:
-                Log.i(TAG, code.email.address);
-                break;
-              case Barcode.ISBN:
-                Log.i(TAG, code.rawValue);
-                break;
-              case Barcode.PHONE:
-                Log.i(TAG, code.phone.number);
-                break;
-              case Barcode.PRODUCT:
-                Log.i(TAG, code.rawValue);
-                break;
-              case Barcode.SMS:
-                Log.i(TAG, code.sms.message);
-                break;
-              case Barcode.TEXT:
-                Log.i(TAG, code.rawValue);
-                break;
-              case Barcode.URL:
-                Log.i(TAG, "url: " + code.url.url);
-                break;
-              case Barcode.WIFI:
-                Log.i(TAG, code.wifi.ssid);
-                break;
-              case Barcode.GEO:
-                Log.i(TAG, code.geoPoint.lat + ":" + code.geoPoint.lng);
-                break;
-              case Barcode.CALENDAR_EVENT:
-                Log.i(TAG, code.calendarEvent.description);
-                break;
-              case Barcode.DRIVER_LICENSE:
-                Log.i(TAG, code.driverLicense.licenseNumber);
-                break;
-              default:
-                Log.i(TAG, code.rawValue);
-                break;
-            }
           }
           if (barcodes.size() == 0) {
             tw_ISBN.setText(R.string.scan_failed);

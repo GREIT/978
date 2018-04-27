@@ -59,10 +59,4 @@ public class Profile implements Serializable{
   
   //public void setPhotoUri(String photoUri) {this.photoUri = photoUri;}
   
-  public void saveToDB(String UID) {
-    FirebaseDatabase db = FirebaseDatabase.getInstance();
-    DatabaseReference dbref = db.getReference("users").child(UID);
-    dbref.setValue(this);
-  }
-  
 }

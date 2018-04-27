@@ -18,6 +18,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,6 +27,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +42,13 @@ public class SharedBooksByUser extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_shared_books_by_user);
-  
+    
     Toolbar toolbar = (Toolbar) findViewById(R.id.shared_books_by_user_toolbar);
     toolbar.setTitle(R.string.activity_shared_books);
     setSupportActionBar(toolbar);
     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
     toolbar.setNavigationOnClickListener(v -> onBackPressed());
-  
+
 //    initCollapsingToolbar();
     
     fab = (FloatingActionButton) findViewById(R.id.fab_add_book_from_shared_books);
@@ -54,21 +56,21 @@ public class SharedBooksByUser extends AppCompatActivity {
       Intent intent = new Intent(this, ShareNewBook.class);
       startActivity(intent);
     });
-  
+    
     recyclerView = (RecyclerView) findViewById(R.id.shared_books_by_user_recycler_view);
     
     bookList = new ArrayList<>();
     adapter = new SharedBooksAdapter(this, bookList);
-  
+    
     RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
     recyclerView.setLayoutManager(mLayoutManager);
     recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
     recyclerView.setItemAnimator(new DefaultItemAnimator());
     recyclerView.setAdapter(adapter);
-  
+    
     prepareBooks();
   }
-  
+
 //  private void initCollapsingToolbar() {
 //    final CollapsingToolbarLayout collapsingToolbar =
 //        (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
@@ -97,18 +99,18 @@ public class SharedBooksByUser extends AppCompatActivity {
 //      }
 //    });
 //  }
-
-  public void onBackPressed(){
-    Intent intent = new Intent(SharedBooksByUser.this,MainActivity.class);
+  
+  public void onBackPressed() {
+    Intent intent = new Intent(SharedBooksByUser.this, MainActivity.class);
     //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     startActivity(intent);
   }
   
   private void prepareBooks() {
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-  
+    
     FirebaseDatabase db = FirebaseDatabase.getInstance();
-    DatabaseReference dbref = db.getReference("books");
+    DatabaseReference dbref = db.getReference("SHARED_BOOKS");
     
     dbref.orderByChild("owner").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
       @Override
@@ -118,7 +120,7 @@ public class SharedBooksByUser extends AppCompatActivity {
         bookList.add(tmp);
         adapter.notifyDataSetChanged();
       }
-  
+      
       @Override
       public void onChildChanged(DataSnapshot dataSnapshot, String s) {
         SharedBook tmp = new SharedBook();
@@ -126,20 +128,20 @@ public class SharedBooksByUser extends AppCompatActivity {
         bookList.add(tmp);
         adapter.notifyDataSetChanged();
       }
-  
+      
       @Override
       public void onChildRemoved(DataSnapshot dataSnapshot) {
-    
+      
       }
-  
+      
       @Override
       public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-    
+      
       }
-  
+      
       @Override
       public void onCancelled(DatabaseError databaseError) {
-    
+      
       }
     });
     

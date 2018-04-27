@@ -72,7 +72,7 @@ public class ShowProfile extends AppCompatActivity {
 
     profile = new Profile();
     FirebaseDatabase db = FirebaseDatabase.getInstance();
-    DatabaseReference dbref = db.getReference("users").child(FirebaseAuth.getInstance().
+    DatabaseReference dbref = db.getReference("USERS").child(FirebaseAuth.getInstance().
         getCurrentUser().getUid());
     
     dbref.addListenerForSingleValueEvent(new ValueEventListener() {

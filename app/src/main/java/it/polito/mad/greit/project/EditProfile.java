@@ -128,7 +128,7 @@ public class EditProfile extends AppCompatActivity {
 
 
     FirebaseDatabase db = FirebaseDatabase.getInstance();
-    DatabaseReference dbref = db.getReference("users").child(user.getUid());
+    DatabaseReference dbref = db.getReference("USERS").child(user.getUid());
 
     dbref.addListenerForSingleValueEvent(new ValueEventListener() {
       @Override
@@ -198,7 +198,10 @@ public class EditProfile extends AppCompatActivity {
     //profile.setPhotoUri(photo.toString());
 
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    profile.saveToDB(FirebaseAuth.getInstance().getCurrentUser().getUid());
+    
+    FirebaseDatabase db = FirebaseDatabase.getInstance();
+    DatabaseReference dbref = db.getReference("USERS").child(user.getUid());
+    dbref.setValue(profile);
 
     if (this.photo != null) {
       try {

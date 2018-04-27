@@ -1,10 +1,11 @@
 package it.polito.mad.greit.project;
 
-public class ISBNValidator {
+public class ISBNUtilities {
   private String ISBN;
   
-  public ISBNValidator(String ISBN) {
-    this.ISBN = ISBN;
+  public ISBNUtilities(String ISBN) {
+    this.ISBN = ISBN.replaceAll("-", "")
+        .replaceAll(" ", "");
   }
   
   public boolean isValid() {
@@ -66,5 +67,29 @@ public class ISBNValidator {
       //to catch invalid ISBNs that have non-numeric characters in them
       return false;
     }
+  }
+  
+  public String convertToISBN13() {
+    if (ISBN.length() == 13)
+      return this.ISBN;
+    
+    ISBN = ISBN.substring(0, 9);
+    ISBN = "978" + ISBN;
+    
+    int checkValue = 0;
+  
+    for (int i = 0; i < ISBN.length(); i++){
+      char c = ISBN.charAt(i);
+      
+      if ((i % 2) == 0) {
+        checkValue += Integer.valueOf(c) - 48;
+      } else {
+        checkValue += (Integer.valueOf(c) - 48) * 3;
+      }
+    }
+    
+    checkValue = (10 - (checkValue % 10)) % 10;
+    
+    return ISBN + String.valueOf(checkValue);
   }
 }

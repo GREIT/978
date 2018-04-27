@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
   
     FirebaseDatabase db = FirebaseDatabase.getInstance();
-    DatabaseReference dbref = db.getReference("users").child(user.getUid());
+    DatabaseReference dbref = db.getReference("USERS").child(user.getUid());
     
     DrawerLayout drawer = findViewById(R.id.drawer_layout);
     ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
