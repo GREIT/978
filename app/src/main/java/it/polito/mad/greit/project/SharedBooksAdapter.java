@@ -5,12 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -61,7 +61,7 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
     if (book.getKey() != null) {
       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + book.getKey() + ".jpg");
-      sr.getBytes(2*Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+      sr.getBytes(5*Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
         @Override
         public void onSuccess(byte[] bytes) {
           Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -79,8 +79,7 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
         @Override
         public void onFailure(@NonNull Exception exception) {
           // Handle any errors
-          exception.printStackTrace();
-          
+          Log.d("Image", "onFailure: This book has no image");
         }
       });
     } else {
@@ -90,7 +89,7 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
           .asBitmap()
           .into(holder.thumbnail);
     }
-    
+
   }
   
   @Override
