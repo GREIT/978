@@ -1,10 +1,15 @@
 package it.polito.mad.greit.project;
 
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -12,6 +17,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +26,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
 
 public class SharedBooksByUserSplitted extends AppCompatActivity {
 
@@ -100,31 +117,122 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
          * The fragment argument representing the section number for this
          * fragment.
          */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+        private static final String DISCRMINATOR_STRING = "discriminator";
+        private RecyclerView recView;
+        private ArrayList<SharedBook> bookList;
+        private SharedBooksAdapter adapter;
+        private String discriminator;
 
-        public PlaceholderFragment() {
+        public PlaceholderFragment(){
         }
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static PlaceholderFragment newInstance(String string){
+            PlaceholderFragment placeholder = new PlaceholderFragment();
             Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
+            args.putString(DISCRMINATOR_STRING, string);
+            placeholder.setArguments(args);
+            return placeholder;
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
             View rootView = inflater.inflate(R.layout.fragment_shared_books_by_user_splitted, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            recView = (RecyclerView) rootView.findViewById(R.id.shared_books_by_user_split_recycler_view);
+            bookList = new ArrayList<>();
+            adapter = new SharedBooksAdapter(this.getContext(), bookList);
+
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this.getContext(), 2);
+            recView.setLayoutManager(mLayoutManager);
+            recView.addItemDecoration(new PlaceholderFragment.GridSpacingItemDecoration(2, dpToPx(10), true));
+            recView.setItemAnimator(new DefaultItemAnimator());
+            recView.setAdapter(adapter);
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            FirebaseDatabase db = FirebaseDatabase.getInstance();
+            DatabaseReference dbref = db.getReference("SHARED_BOOKS");
+            discriminator =  getArguments().getString(DISCRMINATOR_STRING);
+            Log.d("TabbedInfo", "onCreateView: called on Tab " + discriminator);
+            dbref.orderByChild(discriminator).equalTo(user.getUid()).addChildEventListener(
+                    new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                            SharedBook tmp = new SharedBook();
+                            tmp = dataSnapshot.getValue(SharedBook.class);
+                            bookList.add(tmp);
+                            adapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                            SharedBook tmp = new SharedBook();
+                            tmp = dataSnapshot.getValue(SharedBook.class);
+                            bookList.add(tmp);
+                            adapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    }
+                );
             return rootView;
         }
+
+
+        //TODO this must be done as standalone classes/functions
+        private int dpToPx(int dp) {
+            Resources r = getResources();
+            return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+        }
+
+        public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+
+            private int spanCount;
+            private int spacing;
+            private boolean includeEdge;
+
+            public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+                this.spanCount = spanCount;
+                this.spacing = spacing;
+                this.includeEdge = includeEdge;
+            }
+
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                int position = parent.getChildAdapterPosition(view); // item position
+                int column = position % spanCount; // item column
+
+                if (includeEdge) {
+                    outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                    outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                    if (position < spanCount) { // top edge
+                        outRect.top = spacing;
+                    }
+                    outRect.bottom = spacing; // item bottom
+                } else {
+                    outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+                    outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                    if (position >= spanCount) {
+                        outRect.top = spacing; // item top
+                    }
+                }
+            }
+        }
+
     }
 
     /**
@@ -133,21 +241,25 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        PlaceholderFragment shared, borrowed;
+
+        public SectionsPagerAdapter(FragmentManager fm)
+        {
             super(fm);
+            shared = PlaceholderFragment.newInstance("owner");
+            borrowed = PlaceholderFragment.newInstance("borrowTo");
         }
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return (position==0) ? shared : borrowed ;
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 2 total pages.
             return 2;
         }
     }
+
 }
