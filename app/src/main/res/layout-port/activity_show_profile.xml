@@ -84,7 +84,7 @@
           android:layout_height="wrap_content"
           android:layout_gravity="top"
           android:layout_marginRight="40dp"
-          android:src="@drawable/ic_email_black_24dp"
+          app:srcCompat="@drawable/ic_email_black_24dp"
           android:tint="@color/colorPrimaryDark" />
 
         <TextView
@@ -109,7 +109,7 @@
           android:layout_height="wrap_content"
           android:layout_gravity="top"
           android:layout_marginRight="40dp"
-          android:src="@drawable/ic_place_black_24dp"
+          app:srcCompat="@drawable/ic_place_black_24dp"
           android:tint="@color/colorPrimaryDark" />
 
         <TextView
@@ -134,7 +134,7 @@
           android:layout_height="wrap_content"
           android:layout_gravity="top"
           android:layout_marginRight="40dp"
-          android:src="@drawable/ic_description_black_24dp"
+          app:srcCompat="@drawable/ic_description_black_24dp"
           android:tint="@color/colorPrimaryDark" />
 
         <TextView
@@ -142,7 +142,6 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_gravity="center_vertical"
-
           android:contentDescription="Biography"
           android:text="@string/bio"
           android:textAppearance="@style/TextAppearance.AppCompat.Subhead"

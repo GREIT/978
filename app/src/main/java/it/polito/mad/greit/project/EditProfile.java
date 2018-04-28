@@ -122,7 +122,6 @@ public class EditProfile extends AppCompatActivity {
     } else return super.onOptionsItemSelected(item);
   }
 
-
   void Setup(Bundle b) {
     profile = new Profile();
 
@@ -200,7 +199,6 @@ public class EditProfile extends AppCompatActivity {
         }
       });
     }
-
   }
 
   void SaveInfo() {
@@ -214,7 +212,6 @@ public class EditProfile extends AppCompatActivity {
     profile.setLocation(tv.getText().toString());
     tv = findViewById(R.id.edit_biography);
     profile.setBio(tv.getText().toString());
-    //profile.setPhotoUri(photo.toString());
 
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     FirebaseDatabase db = FirebaseDatabase.getInstance();
@@ -228,7 +225,6 @@ public class EditProfile extends AppCompatActivity {
         sr.putBytes(this.photo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
           @Override
           public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-            Log.d("UP", "onSuccess: url " + taskSnapshot.getDownloadUrl().toString());
             try{
               Bitmap bm = BitmapFactory.decodeByteArray(photo,0,photo.length);
               OutputStream outs = new FileOutputStream(new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg"));
@@ -276,11 +272,6 @@ public class EditProfile extends AppCompatActivity {
 
 
   private void UploadPic() {
-//    if (ContextCompat.checkSelfPermission(EditProfile.this,
-//            Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//      ActivityCompat.requestPermissions(EditProfile.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//              Constants.STORAGE_PERMISSION);
-//    }
 
     Intent gallery = new Intent(Intent.ACTION_OPEN_DOCUMENT);
     gallery.setType("image/*");
@@ -348,8 +339,6 @@ public class EditProfile extends AppCompatActivity {
 
   private void createpic(Bitmap bm) {
 
-    //Bitmap imageBitmap = Bitmap.createBitmap(ciw.getWidth(), ciw.getHeight(), Bitmap.Config.ARGB_8888);
-    //Bitmap imageBitmap = bm.copy(Bitmap.Config.ARGB_8888,true);
     int width = ciw.getWidth();
     int height = ciw.getHeight();
     Bitmap imageBitmap = Bitmap.createScaledBitmap(bm, width, height, false);
