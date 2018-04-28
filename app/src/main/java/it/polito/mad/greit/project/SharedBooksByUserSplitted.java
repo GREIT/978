@@ -36,6 +36,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.EventListener;
 
 public class SharedBooksByUserSplitted extends AppCompatActivity {
 
@@ -59,8 +60,11 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shared_books_by_user_splitted);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.shared_books_by_user_split_toolbar);
+        toolbar.setTitle(R.string.activity_shared_books);
         setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -82,11 +86,17 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStop(){
+        super.onStop();
+        mSectionsPagerAdapter.closeConnection();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_shared_books_by_user_splitted, menu);
+        //getMenuInflater().inflate(R.menu.menu_shared_books_by_user_splitted, menu);
         return true;
     }
 
@@ -97,18 +107,9 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
-
-
-    //TODO modificare i campi sotto per mettere i fragment apposta che sono i nostri due reciclerView
-    // il page adapter deve swithcare le reciclerView mentre il Fragment sará la recycler view vera e propria
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -122,8 +123,11 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
         private ArrayList<SharedBook> bookList;
         private SharedBooksAdapter adapter;
         private String discriminator;
+        private DatabaseReference dbref;
+        private ChildEventListener ev;
 
         public PlaceholderFragment(){
+            super();
         }
 
         public static PlaceholderFragment newInstance(String string){
@@ -151,10 +155,10 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
 
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             FirebaseDatabase db = FirebaseDatabase.getInstance();
-            DatabaseReference dbref = db.getReference("SHARED_BOOKS");
+            dbref = db.getReference("SHARED_BOOKS");
             discriminator =  getArguments().getString(DISCRMINATOR_STRING);
             Log.d("TabbedInfo", "onCreateView: called on Tab " + discriminator);
-            dbref.orderByChild(discriminator).equalTo(user.getUid()).addChildEventListener(
+            ev = dbref.orderByChild(discriminator).equalTo(user.getUid()).addChildEventListener(
                     new ChildEventListener() {
                         @Override
                         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -191,6 +195,9 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
             return rootView;
         }
 
+        public void closeConnection(){
+            dbref.removeEventListener(ev);
+        }
 
         //TODO this must be done as standalone classes/functions
         private int dpToPx(int dp) {
@@ -259,6 +266,11 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
         public int getCount() {
             // Show 2 total pages.
             return 2;
+        }
+
+        public void closeConnection(){
+            shared.closeConnection();
+            borrowed.closeConnection();
         }
     }
 
