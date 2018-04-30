@@ -14,7 +14,7 @@ public class Book implements Serializable {
   private String year;
   private String cover;
   private Map<String, String> list;
-  
+
   public Book() {
     this.list = new HashMap<>();
   }
