@@ -34,7 +34,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-//import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,6 +54,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static String TAG = "Main Activity";
     private Profile profile;
@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageButton mSearchButton;
     private RecyclerView mResultList;
     private DatabaseReference mUserDatabase;
-    private FirebaseRecyclerAdapter<Book, BooksViewHolder> adapter;
 
 
     @Override
@@ -176,8 +175,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mResultList.setHasFixedSize(true);
         mResultList.setLayoutManager(new LinearLayoutManager(this));
 
-//        bookSearch("Il Gatto");
-
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -201,59 +198,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });*/
     }
-/*
+
     private void bookSearch(String searchText) {
-        Log.d("bookSearch", searchText);
-
-        Query query = FirebaseDatabase.getInstance().getReference("BOOKS").orderByChild("title").startAt(searchText).endAt(searchText + "\uf8ff");
-        FirebaseRecyclerOptions<Book> options = new FirebaseRecyclerOptions.Builder<Book>().setQuery(query, Book.class).build();
-
-        adapter = new FirebaseRecyclerAdapter<Book, BooksViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull BooksViewHolder holder, int position, @NonNull Book model) {
-                Log.d("bookSearch", "onBindViewHolder");
-                holder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().get(0), null);
-            }
-
-            @NonNull
-            @Override
-            public BooksViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.book_card, parent, false);
-                Log.d("bookSearch", "onCreateViewHolder");
-                return new BooksViewHolder(view);
-            }
-        };
-
-        mResultList.setAdapter(adapter);
-        adapter.startListening();
-    }
-*/
-    private void bookSearch(String searchText) {
-
-        Toast.makeText(MainActivity.this, "Started Search", Toast.LENGTH_LONG).show();
-
         Query firebaseSearchQuery = mUserDatabase.orderByChild("title").startAt(searchText).endAt(searchText + "\uf8ff");
 
         FirebaseRecyclerAdapter<Book, BooksViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BooksViewHolder>(
-
                 Book.class,
                 R.layout.book_card,
                 BooksViewHolder.class,
                 firebaseSearchQuery
-
         ) {
             @Override
             protected void populateViewHolder(BooksViewHolder viewHolder, Book model, int position) {
-
-
                 viewHolder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().get(0), null);
-
             }
         };
 
         mResultList.setAdapter(firebaseRecyclerAdapter);
-
     }
 
     // View Holder Class
@@ -277,19 +238,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //          Glide.with(ctx).load(bookThumb).into(book_thumb);
         }
     }
-/*
-    @Override
-    protected void onStart() {
-        super.onStart();
-        adapter.startListening();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        adapter.stopListening();
-    }
-*/
+    
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
