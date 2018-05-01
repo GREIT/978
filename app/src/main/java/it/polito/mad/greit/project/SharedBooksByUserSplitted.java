@@ -2,7 +2,11 @@ package it.polito.mad.greit.project;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -25,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +40,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.EventListener;
 
@@ -152,6 +158,71 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
             recView.addItemDecoration(new PlaceholderFragment.GridSpacingItemDecoration(2, dpToPx(10), true));
             recView.setItemAnimator(new DefaultItemAnimator());
             recView.setAdapter(adapter);
+
+            ItemClickSupport.addTo(recView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                @Override
+                public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                    SharedBook current = bookList.get(position);
+                    Intent intent = new Intent(getActivity(),ShowBookActivity.class);
+
+                    try {
+                        intent.putExtra("title", current.getTitle());
+                    }catch (Exception e){
+                        intent.putExtra("title","");
+                    }
+
+                    String temp = "";
+                    try {
+                        for(String author : current.getAuthors()){
+                            temp = author + "," + temp;
+                        }
+                        intent.putExtra("authors",temp);
+                    }catch (Exception e){
+                        intent.putExtra("authors","");
+                    }
+
+                    try {
+                        intent.putExtra("ISBN",current.getISBN());
+                    }catch (Exception e){
+                        intent.putExtra("ISBN","");
+                    }
+
+                    try {
+                        intent.putExtra("pub",current.getPublisher());
+                    }catch (Exception e){
+                        intent.putExtra("pub","");
+                    }
+
+                    try {
+                        intent.putExtra("year",current.getYear());
+                    }catch (Exception e){
+                        intent.putExtra("year","");
+                    }
+
+                    try {
+                        temp = "";
+                        for(String tag : current.getTAGs().values()){
+                            temp = tag + "," + temp;
+                        }
+                        intent.putExtra("tags",temp);
+                    }catch (Exception e){
+                        intent.putExtra("tags","");
+                    }
+
+                    try{
+                        ImageView iv = v.findViewById(R.id.book_card_thumbnail);
+                        Bitmap bitmap = ((BitmapDrawable)iv.getDrawable()).getBitmap();
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                        byte[] bitmapdata = stream.toByteArray();
+                        intent.putExtra("pic",bitmapdata);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    startActivity(intent);
+                }
+            });
 
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             FirebaseDatabase db = FirebaseDatabase.getInstance();
@@ -273,5 +344,4 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
             borrowed.closeConnection();
         }
     }
-
 }

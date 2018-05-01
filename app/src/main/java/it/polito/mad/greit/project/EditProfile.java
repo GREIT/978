@@ -101,7 +101,6 @@ public class EditProfile extends AppCompatActivity {
                   }
                 }
               });
-
       builder.show();
     }
   }
@@ -286,8 +285,8 @@ public class EditProfile extends AppCompatActivity {
     Bitmap bm = null;
 
     if (requestCode == Constants.REQUEST_GALLERY && resultCode == RESULT_OK) {
-      Uri uri = data.getData();
       try {
+        Uri uri = data.getData();
         bm = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
       } catch (Exception e) {
         e.printStackTrace();

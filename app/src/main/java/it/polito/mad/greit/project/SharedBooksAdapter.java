@@ -57,37 +57,37 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
     SharedBook book = bookList.get(position);
     holder.title.setText(book.getTitle());
     holder.author.setText(book.getAuthors().get(0));
-    
+
     if (book.getKey() != null) {
       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + book.getKey() + ".jpg");
-      sr.getBytes(5*Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+      sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
         @Override
         public void onSuccess(byte[] bytes) {
-          Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-          ByteArrayOutputStream stream = new ByteArrayOutputStream();
-          bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-          Glide
-              .with(mContext)
-              .load(stream.toByteArray())
-              .asBitmap()
-              .error(R.drawable.ic_book_blue_grey_900_48dp)
-              //.transform(new CircleTransform(this))
-              .into(holder.thumbnail);
+          try {
+            Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
+            Glide
+                    .with(mContext)
+                    .load(stream.toByteArray())
+                    .asBitmap()
+                    .error(R.drawable.ic_book_blue_grey_900_48dp)
+                    //.transform(new CircleTransform(this))
+                    .into(holder.thumbnail);
+          }catch (Exception e){
+            e.printStackTrace();
+            holder.thumbnail.setImageResource(R.drawable.ic_book_blue_700_48dp);
+          }
         }
       }).addOnFailureListener(new OnFailureListener() {
         @Override
         public void onFailure(@NonNull Exception exception) {
           // Handle any errors
-          Log.d("Image", "onFailure: This book has no image");
         }
       });
     } else {
-      Glide
-          .with(mContext)
-          .load(R.drawable.ic_book_blue_grey_900_48dp)
-          .asBitmap()
-          .into(holder.thumbnail);
+      holder.thumbnail.setImageResource(R.drawable.ic_book_blue_700_48dp);
     }
 
   }

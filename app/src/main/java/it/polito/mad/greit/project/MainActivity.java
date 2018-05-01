@@ -121,8 +121,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     outs.close();
                   }catch (Exception e){
                     e.printStackTrace();
-                    pic.delete();
-                    iw_user.setImageResource(R.mipmap.ic_launcher_round);
+                    //pic.delete();
+                    //iw_user.setImageResource(R.mipmap.ic_launcher_round);
                   }
                 }
               }).addOnFailureListener(new OnFailureListener() {
