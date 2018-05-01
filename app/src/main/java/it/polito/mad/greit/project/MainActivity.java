@@ -322,28 +322,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             book_author.setText(bookAuthor);
 
             StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + bookKey + ".jpg");
-            sr.getBytes(5*Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
+            sr.getBytes(5*Constants.SIZE).addOnSuccessListener(bytes -> {
                     Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-                    Glide
-                            .with(ctx)
+                    Glide.with(ctx)
                             .asBitmap()
                             .load(stream.toByteArray())
                             .into(book_image);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    Glide
-                            .with(ctx)
+            }).addOnFailureListener(e ->
+                    Glide.with(ctx)
                             .asBitmap()
                             .load(R.drawable.ic_book_blue_grey_900_48dp)
-                            .into(book_image);
-                }
-            });
+                            .into(book_image)
+            );
 
             itemView.setOnClickListener(v -> {
                 mClickListener.onItemClick(v, "0000");
