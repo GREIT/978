@@ -3,18 +3,23 @@ package it.polito.mad.greit.project;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -31,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,6 +51,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -162,10 +169,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mBookDb = FirebaseDatabase.getInstance().getReference("BOOKS");
         mSharedBookDb = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS");
-
         mResultList = (RecyclerView) findViewById(R.id.result_list);
-        mResultList.setHasFixedSize(true);
-        mResultList.setLayoutManager(new LinearLayoutManager(this));
+        mResultList.setItemAnimator(new DefaultItemAnimator());
 
         mSearchField = (EditText) findViewById(R.id.search_field);
         mSearchField.addTextChangedListener(new TextWatcher() {
@@ -185,6 +190,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void bookSearch(String searchText) {
+        mResultList.setLayoutManager(new LinearLayoutManager(this));
+        mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
+
         if (searchText.isEmpty()) {
             mResultList.setAdapter(null);
             return;
@@ -255,18 +263,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void bookExpand(String ISBN) {
+        mResultList.setLayoutManager(new GridLayoutManager(this, 2));
+        mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(2, dpToPx(10), true));
+
         Log.d("bookExpand", ISBN);
 
-        Query firebaseSearchQuery = mSharedBookDb.orderByChild("ISBN").equalTo(ISBN);
+        Query firebaseSearchQuery = mSharedBookDb.orderByChild("ISBN");
         FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder>(
                 SharedBook.class,
-                R.layout.book_search_item,
+                R.layout.book_card,
                 SharedBookViewHolder.class,
                 firebaseSearchQuery
         ) {
             @Override
             protected void populateViewHolder(SharedBookViewHolder viewHolder, SharedBook model, int position) {
-                viewHolder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().get(0), "0000");
+                viewHolder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().get(0), model.getKey());
             }
 
             @Override
@@ -302,15 +313,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mClickListener = clickListener;
         }
 
-        public void setDetails(Context ctx, String bookTitle, String bookAuthor, String ISBN){
+        public void setDetails(Context ctx, String bookTitle, String bookAuthor, String bookKey){
             TextView book_title = (TextView) mView.findViewById(R.id.book_card_title);
             TextView book_author = (TextView) mView.findViewById(R.id.book_card_author);
+            ImageView book_image = (ImageView) mView.findViewById(R.id.book_card_thumbnail);
 
             book_title.setText(bookTitle);
             book_author.setText(bookAuthor);
 
+            StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + bookKey + ".jpg");
+            sr.getBytes(5*Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
+                    Glide
+                            .with(ctx)
+                            .asBitmap()
+                            .load(stream.toByteArray())
+                            .into(book_image);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Glide
+                            .with(ctx)
+                            .asBitmap()
+                            .load(R.drawable.ic_book_blue_grey_900_48dp)
+                            .into(book_image);
+                }
+            });
+
             itemView.setOnClickListener(v -> {
-                mClickListener.onItemClick(v, ISBN);
+                mClickListener.onItemClick(v, "0000");
             });
         }
     }
@@ -373,5 +409,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             view = new View(activity);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+
+        private int spanCount;
+        private int spacing;
+        private boolean includeEdge;
+
+        public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+            this.spanCount = spanCount;
+            this.spacing = spacing;
+            this.includeEdge = includeEdge;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view); // item position
+            int column = position % spanCount; // item column
+
+            if (includeEdge) {
+                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                if (position < spanCount) { // top edge
+                    outRect.top = spacing;
+                }
+                outRect.bottom = spacing; // item bottom
+            } else {
+                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                if (position >= spanCount) {
+                    outRect.top = spacing; // item top
+                }
+            }
+        }
+    }
+
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 }
