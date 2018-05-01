@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.firebase.ui.database.ChangeEventListener;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -266,9 +267,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mResultList.setLayoutManager(new GridLayoutManager(this, 2));
         mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(2, dpToPx(10), true));
 
-        Log.d("bookExpand", ISBN);
-
-        Query firebaseSearchQuery = mSharedBookDb.orderByChild("ISBN");
+        Query firebaseSearchQuery = mSharedBookDb.orderByChild("isbn").equalTo(ISBN);
         FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder>(
                 SharedBook.class,
                 R.layout.book_card,
