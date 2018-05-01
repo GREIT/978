@@ -70,12 +70,12 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
             bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
             Glide
                     .with(mContext)
-                    .load(stream.toByteArray())
                     .asBitmap()
-                    .error(R.drawable.ic_book_blue_grey_900_48dp)
+                    .load(stream.toByteArray())
+                    //.error(R.drawable.ic_book_blue_grey_900_48dp)
                     //.transform(new CircleTransform(this))
                     .into(holder.thumbnail);
-          }catch (Exception e){
+          } catch (Exception e) {
             e.printStackTrace();
             holder.thumbnail.setImageResource(R.drawable.ic_book_blue_700_48dp);
           }
@@ -89,9 +89,10 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
     } else {
       holder.thumbnail.setImageResource(R.drawable.ic_book_blue_700_48dp);
     }
+  }
 
-    @Override
-    public int getItemCount() {
-        return bookList.size();
-    }
+  @Override
+  public int getItemCount() {
+    return bookList.size();
+  }
 }
