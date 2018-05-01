@@ -284,8 +284,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 SharedBookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
                 viewHolder.setOnClickListener(new SharedBookViewHolder.ClickListener() {
                     @Override
-                    public void onItemClick(View view, String ISBN) {
-                        Toast.makeText(MainActivity.this, "Item: " + ISBN, Toast.LENGTH_SHORT).show();
+                    public void onItemClick(View view) {
+                        Toast.makeText(MainActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
                     }
                 });
                 return viewHolder;
@@ -305,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         public interface ClickListener{
-            void onItemClick(View view, String title);
+            void onItemClick(View view);
         }
 
         public void setOnClickListener(SharedBookViewHolder.ClickListener clickListener){
@@ -337,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             );
 
             itemView.setOnClickListener(v -> {
-                mClickListener.onItemClick(v, "0000");
+                mClickListener.onItemClick(v);
             });
         }
     }
