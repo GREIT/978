@@ -1,5 +1,6 @@
 package it.polito.mad.greit.project;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -7,16 +8,13 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.sax.StartElementListener;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -27,8 +25,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,15 +42,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -65,9 +60,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // Search variables
     private EditText mSearchField;
-    private ImageButton mSearchButton;
     private RecyclerView mResultList;
-    private DatabaseReference mUserDatabase;
+    private DatabaseReference mBookDb, mSharedBookDb;
 
 
     @Override
@@ -166,23 +160,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        mUserDatabase = FirebaseDatabase.getInstance().getReference("BOOKS");
+        mBookDb = FirebaseDatabase.getInstance().getReference("BOOKS");
+        mSharedBookDb = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS");
 
-        mSearchField = (EditText) findViewById(R.id.search_field);
-        mSearchButton = (ImageButton) findViewById(R.id.search_button);
         mResultList = (RecyclerView) findViewById(R.id.result_list);
-
         mResultList.setHasFixedSize(true);
         mResultList.setLayoutManager(new LinearLayoutManager(this));
 
-        mSearchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String searchText = mSearchField.getText().toString();
-                bookSearch(searchText);
-            }
-        });
-/*
+        mSearchField = (EditText) findViewById(R.id.search_field);
         mSearchField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -196,49 +181,140 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void afterTextChanged(Editable editable) {
                 bookSearch(editable.toString());
             }
-        });*/
+        });
     }
 
     private void bookSearch(String searchText) {
-        Query firebaseSearchQuery = mUserDatabase.orderByChild("title").startAt(searchText).endAt(searchText + "\uf8ff");
+        if (searchText.isEmpty()) {
+            mResultList.setAdapter(null);
+            return;
+        }
 
-        FirebaseRecyclerAdapter<Book, BooksViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BooksViewHolder>(
+        Query firebaseSearchQuery = mBookDb.orderByChild("title").startAt(searchText).endAt(searchText + "\uf8ff");
+        FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
                 Book.class,
-                R.layout.book_card,
-                BooksViewHolder.class,
+                R.layout.book_item,
+                BookViewHolder.class,
                 firebaseSearchQuery
         ) {
             @Override
-            protected void populateViewHolder(BooksViewHolder viewHolder, Book model, int position) {
-                viewHolder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().get(0), null);
+            protected void populateViewHolder(BookViewHolder viewHolder, Book model, int position) {
+                viewHolder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().get(0), model.getISBN());
+            }
+
+            @Override
+            public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                BookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
+                viewHolder.setOnClickListener(new BookViewHolder.ClickListener() {
+                    @Override
+                    public void onItemClick(View view, String ISBN) {
+                        hideKeyboard(MainActivity.this);
+
+                        mSearchField.setText("");
+                        mResultList.requestFocus();
+                        mResultList.setAdapter(null);
+
+                        bookExpand(ISBN);
+                    }
+                });
+                return viewHolder;
             }
         };
 
         mResultList.setAdapter(firebaseRecyclerAdapter);
     }
 
-    // View Holder Class
-    public static class BooksViewHolder extends RecyclerView.ViewHolder {
+    public static class BookViewHolder extends RecyclerView.ViewHolder {
         View mView;
+        private BookViewHolder.ClickListener mClickListener;
 
-        public BooksViewHolder(View itemView) {
+        public BookViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
         }
 
-        public void setDetails(Context ctx, String bookTitle, String bookAuthor, String bookThumb){
+        public interface ClickListener{
+            void onItemClick(View view, String ISBN);
+        }
+
+        public void setOnClickListener(BookViewHolder.ClickListener clickListener){
+            mClickListener = clickListener;
+        }
+
+        public void setDetails(Context ctx, String bookTitle, String bookAuthor, String ISBN){
             TextView book_title = (TextView) mView.findViewById(R.id.book_card_title);
             TextView book_author = (TextView) mView.findViewById(R.id.book_card_author);
-//          ImageView book_thumb = (ImageView) mView.findViewById(R.id.book_card_thumbnail);
-
-            Log.d("Set details", "Title: "+bookTitle+" Author: "+bookAuthor);
 
             book_title.setText(bookTitle);
             book_author.setText(bookAuthor);
-//          Glide.with(ctx).load(bookThumb).into(book_thumb);
+
+            itemView.setOnClickListener(v -> {
+                mClickListener.onItemClick(v, ISBN);
+            });
         }
     }
-    
+
+    private void bookExpand(String ISBN) {
+        Log.d("bookExpand", ISBN);
+
+        Query firebaseSearchQuery = mSharedBookDb.orderByChild("ISBN").equalTo(ISBN);
+        FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder>(
+                SharedBook.class,
+                R.layout.book_search_item,
+                SharedBookViewHolder.class,
+                firebaseSearchQuery
+        ) {
+            @Override
+            protected void populateViewHolder(SharedBookViewHolder viewHolder, SharedBook model, int position) {
+                viewHolder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().get(0), "0000");
+            }
+
+            @Override
+            public SharedBookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                SharedBookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
+                viewHolder.setOnClickListener(new SharedBookViewHolder.ClickListener() {
+                    @Override
+                    public void onItemClick(View view, String ISBN) {
+                        Toast.makeText(MainActivity.this, "Item: " + ISBN, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return viewHolder;
+            }
+        };
+
+        mResultList.setAdapter(firebaseRecyclerAdapter);
+    }
+
+    public static class SharedBookViewHolder extends RecyclerView.ViewHolder {
+        View mView;
+        private SharedBookViewHolder.ClickListener mClickListener;
+
+        public SharedBookViewHolder(View itemView) {
+            super(itemView);
+            mView = itemView;
+        }
+
+        public interface ClickListener{
+            void onItemClick(View view, String title);
+        }
+
+        public void setOnClickListener(SharedBookViewHolder.ClickListener clickListener){
+            mClickListener = clickListener;
+        }
+
+        public void setDetails(Context ctx, String bookTitle, String bookAuthor, String ISBN){
+            TextView book_title = (TextView) mView.findViewById(R.id.book_card_title);
+            TextView book_author = (TextView) mView.findViewById(R.id.book_card_author);
+
+            book_title.setText(bookTitle);
+            book_author.setText(bookAuthor);
+
+            itemView.setOnClickListener(v -> {
+                mClickListener.onItemClick(v, ISBN);
+            });
+        }
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -286,5 +362,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
