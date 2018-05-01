@@ -55,9 +55,14 @@
         <activity
             android:name=".SharedBooksByUserSplitted"
             android:label="@string/title_activity_shared_books_by_user_splitted"
-            android:theme="@style/MaterialTheme"/>
+            android:theme="@style/MaterialTheme"></activity>
         <activity
             android:name=".ShowBookActivity"/>
+      
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+      
     </application>
 
 </manifest>

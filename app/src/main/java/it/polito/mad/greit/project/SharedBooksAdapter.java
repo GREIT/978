@@ -90,10 +90,8 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
       holder.thumbnail.setImageResource(R.drawable.ic_book_blue_700_48dp);
     }
 
-  }
-  
-  @Override
-  public int getItemCount() {
-    return bookList.size();
-  }
+    @Override
+    public int getItemCount() {
+        return bookList.size();
+    }
 }
