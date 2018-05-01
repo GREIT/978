@@ -1,6 +1,7 @@
 package it.polito.mad.greit.project;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -149,7 +150,7 @@ public class ShareNewBook extends AppCompatActivity {
     RequestQueue queue = Volley.newRequestQueue(this);
     
     String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + ISBN;
-    
+
     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
         (Request.Method.GET, url, (String) null, new Response.Listener<JSONObject>() {
           @Override

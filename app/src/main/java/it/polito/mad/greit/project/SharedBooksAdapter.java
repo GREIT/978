@@ -23,73 +23,71 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.MyViewHolder> {
-    private Context mContext;
-    private List<SharedBook> bookList;
-
-
-    public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, author;
-        public ImageView thumbnail;
-
-        public MyViewHolder(View view) {
-            super(view);
-            title = (TextView) view.findViewById(R.id.book_card_title);
-            author = (TextView) view.findViewById(R.id.book_card_author);
-            thumbnail = (ImageView) view.findViewById(R.id.book_card_thumbnail);
-        }
+  private Context mContext;
+  private List<SharedBook> bookList;
+  
+  
+  public class MyViewHolder extends RecyclerView.ViewHolder {
+    public TextView title, author;
+    public ImageView thumbnail;
+    
+    public MyViewHolder(View view) {
+      super(view);
+      title = (TextView) view.findViewById(R.id.book_card_title);
+      author = (TextView) view.findViewById(R.id.book_card_author);
+      thumbnail = (ImageView) view.findViewById(R.id.book_card_thumbnail);
     }
+  }
+  
+  public SharedBooksAdapter(Context mContext, List<SharedBook> bookList) {
+    this.mContext = mContext;
+    this.bookList = bookList;
+  }
+  
+  @Override
+  public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    View itemView = LayoutInflater.from(parent.getContext())
+        .inflate(R.layout.book_card, parent, false);
+    
+    return new MyViewHolder(itemView);
+  }
+  
+  @Override
+  public void onBindViewHolder(MyViewHolder holder, int position) {
+    SharedBook book = bookList.get(position);
+    holder.title.setText(book.getTitle());
+    holder.author.setText(book.getAuthors().get(0));
 
-    public SharedBooksAdapter(Context mContext, List<SharedBook> bookList) {
-        this.mContext = mContext;
-        this.bookList = bookList;
-    }
-
-    @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.book_card, parent, false);
-
-        return new MyViewHolder(itemView);
-    }
-
-    @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-        SharedBook book = bookList.get(position);
-        holder.title.setText(book.getTitle());
-        holder.author.setText(book.getAuthors().get(0));
-
-        if (book.getKey() != null) {
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + book.getKey() + ".jpg");
-            sr.getBytes(5*Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-                    Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-                    Glide
-                            .with(mContext)
-                            .asBitmap()
-                            .load(stream.toByteArray())
-                            //.error(R.drawable.ic_book_blue_grey_900_48dp)
-                            //.transform(new CircleTransform(this))
-                            .into(holder.thumbnail);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                    Log.d("Image", "onFailure: This book has no image");
-                }
-            });
-        } else {
+    if (book.getKey() != null) {
+      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+      StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + book.getKey() + ".jpg");
+      sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        @Override
+        public void onSuccess(byte[] bytes) {
+          try {
+            Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
             Glide
                     .with(mContext)
+                    .load(stream.toByteArray())
                     .asBitmap()
-                    .load(R.drawable.ic_book_blue_grey_900_48dp)
+                    .error(R.drawable.ic_book_blue_grey_900_48dp)
+                    //.transform(new CircleTransform(this))
                     .into(holder.thumbnail);
+          }catch (Exception e){
+            e.printStackTrace();
+            holder.thumbnail.setImageResource(R.drawable.ic_book_blue_700_48dp);
+          }
         }
-
+      }).addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception exception) {
+          // Handle any errors
+        }
+      });
+    } else {
+      holder.thumbnail.setImageResource(R.drawable.ic_book_blue_700_48dp);
     }
 
     @Override
