@@ -82,7 +82,7 @@ public class ShowBookActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(ShowBookActivity.this, SharedBooksByUserSplitted.class);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 }
