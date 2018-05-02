@@ -73,6 +73,30 @@ public class ShowBookActivity extends AppCompatActivity {
                 iv.setImageResource(R.drawable.ic_book_blue_grey_900_48dp);
             }
         }
+        else if(intent.hasExtra("key") && !intent.getStringExtra("key").isEmpty()){
+            StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + intent.getStringExtra("key") + ".jpg");
+            sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    try {
+                        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        Resources resources = getApplicationContext().getResources();
+                        DisplayMetrics metrics = resources.getDisplayMetrics();
+                        float px = 300 * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+                        Bitmap scaled = Bitmap.createScaledBitmap(bm, (int)px, (int)px, false);
+                        iv.setImageBitmap(scaled);
+                    } catch (Exception e) {
+                        iv.setImageResource(R.drawable.ic_book_blue_grey_900_48dp);
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                    iv.setImageResource(R.drawable.ic_book_blue_grey_900_48dp);
+                }
+            });
+        }
         else{
             iv.setImageResource(R.drawable.ic_book_blue_grey_900_48dp);
         }

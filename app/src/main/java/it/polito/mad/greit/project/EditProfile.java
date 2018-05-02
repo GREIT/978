@@ -18,6 +18,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -32,9 +33,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,12 +57,16 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.w3c.dom.Text;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -81,6 +94,40 @@ public class EditProfile extends AppCompatActivity {
 
     ciw = findViewById(R.id.edit_pic);
     ciw.setOnClickListener(v -> pic_action());
+
+    PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+            getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+    autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+      @Override
+      public void onPlaceSelected(Place place) {
+        // TODO: Get info about the selected place.
+        try {
+          TextView tv = findViewById(R.id.edit_location);
+          tv.setText(place.getAddress().toString());
+        }catch (Exception e){
+          e.printStackTrace();
+        }
+      }
+
+      @Override
+      public void onError(Status status) {
+        // TODO: Handle the error.
+      }
+    });
+
+    ImageView icon = findViewById(R.id.place_picker_button);
+    icon.setOnClickListener(view -> placepicker());
+  }
+
+  public  void placepicker(){
+    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
+    try {
+      startActivityForResult(builder.build(this), Constants.PLACE_PICKER_REQUEST);
+    }catch (Exception e){
+      e.printStackTrace();
+    }
   }
 
   private void pic_action() {
@@ -209,6 +256,19 @@ public class EditProfile extends AppCompatActivity {
     profile.setEmail(tv.getText().toString());
     tv = findViewById(R.id.edit_location);
     profile.setLocation(tv.getText().toString());
+    if(tv.getText().toString().isEmpty()){
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      builder
+              .setMessage(R.string.location_error)
+              .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int id) {
+          dialog.dismiss();
+        }
+      });
+      AlertDialog dialog = builder.create();
+      dialog.show();
+      return;
+    }
     tv = findViewById(R.id.edit_biography);
     profile.setBio(tv.getText().toString());
 
@@ -291,8 +351,23 @@ public class EditProfile extends AppCompatActivity {
       } catch (Exception e) {
         e.printStackTrace();
       }
-    } else if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-      bm = (Bitmap) data.getExtras().get("data");
+    }
+    else if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+      try{
+        bm = (Bitmap) data.getExtras().get("data");
+      }catch (Exception e){
+        e.printStackTrace();
+      }
+    }
+    else if (requestCode == Constants.PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
+      try {
+        Place place = PlacePicker.getPlace(this, data);
+        TextView tv = findViewById(R.id.edit_location);
+        tv.setText(place.getAddress().toString());
+        Toast.makeText(this, R.string.location_msg + place.getAddress().toString(), Toast.LENGTH_LONG).show();
+      }catch (Exception e){
+        e.printStackTrace();
+      }
     }
 
     if (bm != null) {
@@ -306,8 +381,6 @@ public class EditProfile extends AppCompatActivity {
       }catch (Exception e){
           e.printStackTrace();
       }
-
-
     }
   }
 
