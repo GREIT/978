@@ -19,6 +19,9 @@
 
   // Edit Profile
   <string name="activity_edit_profile">Modifica il tuo profilo</string>
+  <string name="error_size">Il file selezionato è troppo grande (dimensione massima 1MB)</string>
+  <string name="location_msg">Selezionata posizione </string>
+  <string name="location_error">Devi selezionare una posizione</string>
 
   // Shared Books
   <string name="shared_books">Libri condivisi</string>
@@ -61,6 +64,5 @@
   <string name="navigation_drawer_close">Close navigation drawer</string>
   <string name="nav_header_desc">Navigation header</string>
 
-  <string name="error_size">Il file selezionato è troppo grande (dimensione massima 1MB)</string>
 
 </resources>

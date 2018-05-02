@@ -216,6 +216,12 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
                     }
 
                     try{
+                        intent.putExtra("key",current.getKey());
+                    }catch (Exception e){
+                        intent.putExtra("key","");
+                    }
+
+                    try{
                         ImageView iv = v.findViewById(R.id.book_card_thumbnail);
                         Bitmap bitmap = ((BitmapDrawable)iv.getDrawable()).getBitmap();
                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
