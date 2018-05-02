@@ -19,7 +19,7 @@
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:gravity="center"
+      android:gravity="top|center"
       android:orientation="vertical"
       android:padding="30dp">
 
@@ -75,6 +75,30 @@
           android:layout_height="wrap_content"
           android:text=""
           android:textColor="@color/colorPrimaryText" />
+
+      </LinearLayout>
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:paddingVertical="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:text="@string/tag"
+            android:textColor="@color/colorPrimaryText"
+            android:textStyle="bold" />
+
+        <it.polito.mad.greit.project.TagEditText
+            android:id="@+id/complete_book_tags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
 
       </LinearLayout>
 
@@ -175,24 +199,6 @@
           android:theme="@style/RatingBar" />
 
       </LinearLayout>
-
-      <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/additional_info"
-        android:textColor="@color/colorPrimaryText"
-        android:textColorHint="@color/colorPrimaryText"
-        android:textStyle="bold">
-
-        <EditText
-          android:id="@+id/complete_book_additionalInfo"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:inputType="textMultiLine"
-          android:textColor="@color/colorPrimaryText"
-          android:textSize="15sp"
-          app:backgroundTint="@color/colorPrimaryText" />
-      </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
 

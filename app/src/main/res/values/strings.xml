@@ -28,7 +28,7 @@
     <string name="publisher">Publisher</string>
     <string name="published">Year</string>
     <string name="conditions">Conditions</string>
-    <string name="additional_info">Additional informations</string>
+    <string name="tag">Tags</string>
 
     // Share new book
     <string name="activity_share_book">Share a new book</string>

@@ -115,7 +115,7 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/additional_info">
+                android:hint="@string/tag">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/show_book_tags"

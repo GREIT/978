@@ -5,6 +5,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ public class SharedBook extends Book implements Serializable {
   private String borrowTo;
   private String addedOn;
   private Boolean shared;
-  private Map<String, String> TAGs;
+  private Map<String, String> tags;
   
   public SharedBook() {
   }
@@ -82,11 +83,13 @@ public class SharedBook extends Book implements Serializable {
     this.shared = shared;
   }
   
-  public Map<String, String> getTAGs() {
-    return TAGs;
+  public Map<String, String> getTags() {
+
+    if( tags == null) tags = new HashMap<>();
+    return tags;
   }
   
-  public void setTAGs(Map<String, String> TAGs) {
-    this.TAGs = TAGs;
+  public void setTags(Map<String, String> TAGs) {
+    this.tags = tags;
   }
 }

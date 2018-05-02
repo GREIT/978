@@ -8,4 +8,5 @@
     <color name="colorPrimaryTitle">#FFFFFF</color>
     <color name="colorSecondaryTitle">#B2FFFFFF</color>
     <color name="white">#fff</color>
+    <color name="transparent">#11FFFFFF</color>
 </resources>
