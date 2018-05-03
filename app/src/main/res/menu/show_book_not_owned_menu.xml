@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/book_show_action_borrow"
+        android:orderInCategory="100"
+        android:title="@string/ask_borrow" />
+
+    <item
+        android:id="@+id/book_show_action_star"
+        android:orderInCategory="101"
+        android:title="@string/add_to_star" />
+</menu>
