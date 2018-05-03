@@ -135,7 +135,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
       
       sb.setConditions(String.valueOf(rb_conditions.getRating()));
 
-      String[] tagString = tags.getText().toString().toLowerCase().replaceAll("[///.#$/[/]]", "").split(" ");
+      String[] tagString = tags.getText().toString().toLowerCase().replaceAll("[///.#$/[/]]", "").split(",");
 
       sb.setAddedOn(Calendar.getInstance().getTime().toString());
       
