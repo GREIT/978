@@ -17,15 +17,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -39,13 +37,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.firebase.ui.database.ChangeEventListener;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -64,7 +63,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -74,10 +72,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   private TextView tw_username;
   private TextView tw_name;
   private TextView tw_searchText;
-  private StorageReference sr;
   
   // Search variables
-  private EditText mSearchField;
+  //private EditText mSearchField;
   private RecyclerView mResultList;
   private DatabaseReference mBookDb, mSharedBookDb;
   
@@ -101,30 +98,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     FirebaseDatabase db = FirebaseDatabase.getInstance();
     DatabaseReference dbref = db.getReference("USERS").child(user.getUid());
-    
-    SpannableString ss = new SpannableString("Search books by title");
-    ClickableSpan clickableSpan = new ClickableSpan() {
-      @Override
-      public void onClick(View textView) {
-        CharSequence colors[] = new CharSequence[] {"red", "green", "blue", "black"};
-  
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Pick a color");
-        builder.setItems(colors, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            // the user clicked on colors[which]
-          }
-        });
-        builder.show();
-      }
-    };
-    ss.setSpan(clickableSpan, 16, 21, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-    ss.setSpan(new ForegroundColorSpan(Color.MAGENTA), 16, 21, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-    
-    tw_searchText = (TextView) findViewById(R.id.search_text_main);
-    tw_searchText.setText(ss);
-    //tw_searchText.setMovementMethod(LinkMovementMethod.getInstance());
     
     DrawerLayout drawer = findViewById(R.id.drawer_layout);
     ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -207,34 +180,74 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     mResultList = (RecyclerView) findViewById(R.id.result_list);
     mResultList.setItemAnimator(new DefaultItemAnimator());
     
-    mSearchField = (EditText) findViewById(R.id.search_field);
-    mSearchField.addTextChangedListener(new TextWatcher() {
+    setupSearchBox("title");
+    
+  }
+  
+  private void setupSearchBox(String field) {
+    String fixedString = "Search books by ";
+    
+    SpannableString ss = new SpannableString(fixedString + field.toUpperCase());
+    ClickableSpan clickableSpan = new ClickableSpan() {
       @Override
-      public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+      public void onClick(View textView) {
+        chooseSearchField();
+      }
+    };
+    ss.setSpan(clickableSpan, fixedString.length(), fixedString.length() + field.length(),
+        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    ss.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorAccent)),
+        fixedString.length(), fixedString.length() + field.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    
+    tw_searchText = (TextView) findViewById(R.id.search_text_main);
+    tw_searchText.setText(ss);
+    tw_searchText.setMovementMethod(LinkMovementMethod.getInstance());
+    
+    //Create a new ArrayAdapter with your context and the simple layout for the dropdown menu provided by Android
+    final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+    
+    DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    database.child("BOOKS").addValueEventListener(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        autoComplete.clear();
+        //Basically, this says "For each DataSnapshot *Data* in dataSnapshot, do what's inside the method.
+        for (DataSnapshot suggestionSnapshot : dataSnapshot.getChildren()) {
+          //Get the suggestion by childing the key of the string you want to get.
+          String suggestion = suggestionSnapshot.child(field).getValue(String.class);
+          //Add the retrieved string to the list
+          autoComplete.add(suggestion);
+        }
       }
       
       @Override
-      public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-      }
+      public void onCancelled(DatabaseError databaseError) {
       
+      }
+    });
+    AutoCompleteTextView ACTV = (AutoCompleteTextView) findViewById(R.id.search_field);
+    ACTV.setAdapter(autoComplete);
+    ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
-      public void afterTextChanged(Editable editable) {
-        bookSearch(editable.toString());
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        bookExpand(field, autoComplete.getItem(position));
       }
     });
   }
   
-  public void showDialog() {
+  public void chooseSearchField() {
     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-    builder.setTitle("Which field?");
+    builder.setTitle("Choose search field:");
     
     //list of items
-    String[] items = {"Title", "ISBN", "Author"};
+    String[] items = {"Title", "Author", "ISBN", "Year"};
+    final int[] choice = new int[1];
+    
     builder.setSingleChoiceItems(items, 0,
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            Toast.makeText(MainActivity.this, String.valueOf(which), Toast.LENGTH_SHORT).show();
+            choice[0] = which;
           }
         });
     
@@ -243,7 +256,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            // positive button logic
+            String finalField = "title";
+            switch (choice[0]) {
+              case 0:
+                finalField = "title";
+                break;
+              
+              case 1:
+                finalField = "author";
+                break;
+              
+              case 2:
+                finalField = "isbn";
+                break;
+              
+              case 3:
+                finalField = "year";
+                break;
+            }
+            
+            setupSearchBox(finalField);
           }
         });
     
@@ -259,49 +291,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     AlertDialog dialog = builder.create();
     // display dialog
     dialog.show();
-  }
-  
-  private void bookSearch(String searchText) {
-    mResultList.setLayoutManager(new LinearLayoutManager(this));
-    mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
-    
-    if (searchText.isEmpty()) {
-      mResultList.setAdapter(null);
-      return;
-    }
-    
-    Query firebaseSearchQuery = mBookDb.orderByChild("title").startAt(searchText).endAt(searchText + "\uf8ff");
-    FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
-        Book.class,
-        R.layout.book_item,
-        BookViewHolder.class,
-        firebaseSearchQuery
-    ) {
-      @Override
-      protected void populateViewHolder(BookViewHolder viewHolder, Book model, int position) {
-        viewHolder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().get(0), model.getISBN());
-      }
-      
-      @Override
-      public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        BookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
-        viewHolder.setOnClickListener(new BookViewHolder.ClickListener() {
-          @Override
-          public void onItemClick(View view, String ISBN) {
-            hideKeyboard(MainActivity.this);
-            
-            mSearchField.setText("");
-            mResultList.requestFocus();
-            mResultList.setAdapter(null);
-            
-            bookExpand(ISBN);
-          }
-        });
-        return viewHolder;
-      }
-    };
-    
-    mResultList.setAdapter(firebaseRecyclerAdapter);
   }
   
   public static class BookViewHolder extends RecyclerView.ViewHolder {
@@ -334,11 +323,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
   }
   
-  private void bookExpand(String ISBN) {
+  private void bookExpand(String field, String value) {
     mResultList.setLayoutManager(new GridLayoutManager(this, 2));
     mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(2, dpToPx(10), true));
     
-    Query firebaseSearchQuery = mSharedBookDb.orderByChild("isbn").equalTo(ISBN);
+    Query firebaseSearchQuery = mSharedBookDb.orderByChild(field).equalTo(value);
     FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder>(
         SharedBook.class,
         R.layout.book_card,
