@@ -9,7 +9,7 @@ import java.util.Map;
 public class Book implements Serializable {
   private String ISBN;
   private String title;
-  private List<String> authors;
+  private Map<String, String> authors;
   private String publisher;
   private String year;
   private String cover;
@@ -37,11 +37,11 @@ public class Book implements Serializable {
     this.title = title;
   }
   
-  public List<String> getAuthors() {
+  public Map<String, String> getAuthors() {
     return authors;
   }
   
-  public void setAuthors(List<String> authors) {
+  public void setAuthors(Map<String, String> authors) {
     this.authors = authors;
   }
   

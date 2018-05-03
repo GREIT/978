@@ -51,6 +51,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -105,7 +106,8 @@ public class ShareNewBook extends AppCompatActivity {
       this.ISBN = et_ISBN.getText().toString();
       ISBNUtilities V = new ISBNUtilities(et_ISBN.getText().toString());
       if (V.isValid()) {
-        getBookInfo(V.convertToISBN13());
+        this.ISBN = V.convertToISBN13();
+        getBookInfo(this.ISBN);
       } else {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.isbn_not_valid)
@@ -172,7 +174,7 @@ public class ShareNewBook extends AppCompatActivity {
                   tags.put(s, "true");
                 }
 
-                for(String s : B.getAuthors()) {
+                for(String s : B.getAuthors().keySet()) {
                   tags.put(cleanAuthor(s), "true");
                 }
                 tags.put(B.getISBN(), "true");
@@ -267,16 +269,16 @@ public class ShareNewBook extends AppCompatActivity {
       toBeReturned.setYear("");
     }
     
-    List<String> as = new ArrayList<>();
+    Map<String, String> as = new HashMap<>();
     try {
       JSONArray authors = bookInfo.getJSONArray("authors");
       
       for (int i = 0; i < authors.length(); i++) {
-        as.add((String) authors.get(i));
+        as.put((String) authors.get(i), (String) authors.get(i));
       }
       toBeReturned.setAuthors(as);
     } catch (Exception e) {
-      as.add("");
+      as.put("", "");
       toBeReturned.setAuthors(as);
     }
     
