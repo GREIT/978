@@ -348,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ) {
                     @Override
                     protected void populateViewHolder(SharedBookViewHolder viewHolder, SharedBook model, int position) {
-                        viewHolder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().get(0), model.getKey());
+                        viewHolder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().keySet().iterator().next(), model.getKey());
                     }
 
                     @Override

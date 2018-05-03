@@ -56,7 +56,7 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
   public void onBindViewHolder(MyViewHolder holder, int position) {
     SharedBook book = bookList.get(position);
     holder.title.setText(book.getTitle());
-    holder.author.setText(book.getAuthors().get(0));
+    holder.author.setText(book.getAuthors().keySet().iterator().next());
 
     if (book.getKey() != null) {
       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
