@@ -304,14 +304,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   private void bookSearch(String field, String value) {
     mResultList.setLayoutManager(new LinearLayoutManager(this));
     mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
-    
-    Query firebaseSearchQuery;
-    
-    if (field.equals("authors") || field.equals("tags")) {
-      firebaseSearchQuery = mSharedBookDb.orderByChild(field + "/" + value).equalTo(value);
-    } else {
-      firebaseSearchQuery = mSharedBookDb.orderByChild(field).equalTo(value);
+  
+    if (value.isEmpty()) {
+      mResultList.setAdapter(null);
+      return;
     }
+  
+    Query firebaseSearchQuery;
+  
+    if (field.equals("authors") || field.equals("tags")) {
+      firebaseSearchQuery = mBookDb.orderByChild(field + "/" + value).equalTo(value);
+    } else {
+      firebaseSearchQuery = mBookDb.orderByChild(field).equalTo(value);
+    }
+    
     FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
         Book.class,
         R.layout.book_item,
