@@ -25,7 +25,7 @@ public class TagEditText extends android.support.v7.widget.AppCompatEditText  {
 
     String lastString;
 
-    String separator = " ";
+    String separator = ",";
 
     public TagEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
