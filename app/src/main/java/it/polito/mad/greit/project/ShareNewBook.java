@@ -292,7 +292,7 @@ public class ShareNewBook extends AppCompatActivity {
   
     try {
       JSONObject images = bookInfo.getJSONObject("imageLinks");
-      toBeReturned.setCover(images.getString("smallThumbnail"));
+      toBeReturned.setCover(images.getString("thumbnail"));
     } catch (Exception E) {
       toBeReturned.setCover("");
     }

@@ -13,11 +13,10 @@ public class Book implements Serializable {
   private String publisher;
   private String year;
   private String cover;
-  private Map<String, String> list;
   private Map<String, String> tags;
 
   public Book() {
-    this.list = new HashMap<>();
+    this.authors = new HashMap<>();
     this.tags = new HashMap<>();
   }
   
@@ -67,14 +66,6 @@ public class Book implements Serializable {
   
   public void setCover(String cover) {
     this.cover = cover;
-  }
-  
-  public Map<String, String> getList() {
-    return list;
-  }
-  
-  public void setList(Map<String, String> list) {
-    this.list = list;
   }
 
   public Map<String, String> getTags() {
