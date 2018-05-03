@@ -214,9 +214,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Basically, this says "For each DataSnapshot *Data* in dataSnapshot, do what's inside the method.
         for (DataSnapshot suggestionSnapshot : dataSnapshot.getChildren()) {
           //Get the suggestion by childing the key of the string you want to get.
-          if (field.equals("author")) {
+          if (field.equals("authors")) {
             for (DataSnapshot A : suggestionSnapshot.child(field).getChildren()) {
-              System.out.println(A.getValue());
               autoComplete.add(A.getKey());
             }
           } else {
@@ -271,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
               
               case 1:
-                finalField = "author";
+                finalField = "authors";
                 break;
               
               case 2:
@@ -341,9 +340,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   
     Query firebaseSearchQuery;
     
-    if (field.equals("author") || field.equals("tags")) {
-      mBookDb.child(field).orderByKey().equalTo(value);
-      firebaseSearchQuery = mSharedBookDb.child(field).orderByChild(field).equalTo(value);
+    if (field.equals("authors")) {
+      firebaseSearchQuery = mSharedBookDb.orderByChild(field + "/" + value).equalTo(value);
     } else {
       firebaseSearchQuery = mSharedBookDb.orderByChild(field).equalTo(value);
     }
