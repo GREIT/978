@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 break;
 
                             case 1:
-                                finalField = "author";
+                                finalField = "authors";
                                 break;
 
                             case 2:
