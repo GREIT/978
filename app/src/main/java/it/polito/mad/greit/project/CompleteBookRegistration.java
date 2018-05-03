@@ -71,7 +71,11 @@ public class CompleteBookRegistration extends AppCompatActivity {
     tw_ISBN.setText(book.getISBN());
     
     tw_author = (TextView) findViewById(R.id.complete_book_author);
-    tw_author.setText(book.getAuthors().get(0));
+    String as = new String();
+    for (String S : book.getAuthors().keySet()) {
+      as += S + " ";
+    }
+    tw_author.setText(as);
     
     tw_year = (TextView) findViewById(R.id.complete_book_year);
     tw_year.setText(book.getYear());
@@ -134,31 +138,30 @@ public class CompleteBookRegistration extends AppCompatActivity {
       SharedBook sb = new SharedBook(book);
       
       sb.setConditions(String.valueOf(rb_conditions.getRating()));
-
+      
       String[] tagString = tags.getText().toString().toLowerCase().replaceAll("[///.#$/[/]]", "").split(",");
-
+      
       sb.setAddedOn(Calendar.getInstance().getTime().toString());
       
       sb.setOwner(FirebaseAuth.getInstance().getCurrentUser().getUid());
       
       sb.setShared(false);
-            
+      
       sb.setKey(key);
-
+      
       DatabaseReference dbref = db.getReference("SHARED_BOOKS").child(key);
       dbref.setValue(sb);
-
+      
       dbref = db.getReference("BOOKS/" + book.getISBN());
-
+      
       dbref.child("sharedInstances").push().setValue(sb.getKey());
-
-      for(String x : tagString){
-        dbref.child("tags").child(x).setValue("true");
+      
+      for (String x : tagString) {
+        dbref.child("tags").child(x).setValue(x);
       }
-
-
+      
       if (photo == null) {
-
+        
         Intent intent = new Intent(CompleteBookRegistration.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -171,7 +174,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
               // Get a URL to the uploaded content
               //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-
+              
               Log.d("UP", "onSuccess: url " + taskSnapshot.getDownloadUrl().toString());
               dialog.dismiss();
               Intent intent = new Intent(CompleteBookRegistration.this, MainActivity.class);

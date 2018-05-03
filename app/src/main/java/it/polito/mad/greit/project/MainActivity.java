@@ -214,9 +214,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Basically, this says "For each DataSnapshot *Data* in dataSnapshot, do what's inside the method.
         for (DataSnapshot suggestionSnapshot : dataSnapshot.getChildren()) {
           //Get the suggestion by childing the key of the string you want to get.
-          String suggestion = suggestionSnapshot.child(field).getValue(String.class);
-          //Add the retrieved string to the list
-          autoComplete.add(suggestion);
+          if (field.equals("author")) {
+            for (DataSnapshot A : suggestionSnapshot.child(field).getChildren()) {
+              System.out.println(A.getValue());
+              autoComplete.add(A.getKey());
+            }
+          } else {
+            String suggestion = suggestionSnapshot.child(field).getValue(String.class);
+            autoComplete.add(suggestion);
+          }
         }
       }
       
@@ -224,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       public void onCancelled(DatabaseError databaseError) {
       
       }
+      
     });
     AutoCompleteTextView ACTV = (AutoCompleteTextView) findViewById(R.id.search_field);
     ACTV.setAdapter(autoComplete);
@@ -241,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     builder.setTitle("Choose search field:");
     
     //list of items
-    String[] items = {"Title", "Author", "ISBN", "Year"};
+    String[] items = {"Title", "Author", "ISBN", "Year", "TAGs"};
     final int[] choice = new int[1];
     
     builder.setSingleChoiceItems(items, 0,
@@ -273,6 +280,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
               
               case 3:
                 finalField = "year";
+                break;
+              
+              case 4:
+                finalField = "tags";
                 break;
             }
             
@@ -327,9 +338,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   private void bookExpand(String field, String value) {
     mResultList.setLayoutManager(new GridLayoutManager(this, 2));
     mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(2, dpToPx(10), true));
+  
+    Query firebaseSearchQuery;
     
-    Query firebaseSearchQuery = mSharedBookDb.orderByChild(field).equalTo(value);
-    FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder>(
+    if (field.equals("author") || field.equals("tags")) {
+      mBookDb.child(field).orderByKey().equalTo(value);
+      firebaseSearchQuery = mSharedBookDb.child(field).orderByChild(field).equalTo(value);
+    } else {
+      firebaseSearchQuery = mSharedBookDb.orderByChild(field).equalTo(value);
+    }
+    FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder> firebaseRecyclerAdapter =
+        new FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder>(
         SharedBook.class,
         R.layout.book_card,
         SharedBookViewHolder.class,

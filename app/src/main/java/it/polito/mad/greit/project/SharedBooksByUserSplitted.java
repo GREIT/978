@@ -179,7 +179,7 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
 
                     String temp = "";
                     try {
-                        for(String author : current.getAuthors()){
+                        for(String author : current.getAuthors().keySet()){
                             temp = author + "," + temp;
                         }
                         intent.putExtra("authors",temp);
