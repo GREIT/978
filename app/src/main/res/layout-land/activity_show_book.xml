@@ -4,47 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="it.polito.mad.greit.project.ShowBookActivity">
+    android:orientation="vertical">
 
     <include
         android:id="@+id/show_book_toolbar"
         layout="@layout/toolbar" />
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fillViewport="true">
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:focusableInTouchMode="true">
-
-            <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp"
+                android:orientation="vertical"
+                android:layout_weight="3"
+                android:gravity="top"
+                android:padding="30dp"
                 android:background="@color/colorPrimary">
 
-                <ImageView
-                    android:layout_margin="10dp"
-                    android:id="@+id/show_book_pic"
-                    android:src="@color/cardview_dark_background"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:layout_gravity="center" />
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/show_book_pic"
+                android:src="@color/cardview_dark_background"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:layout_margin="10dp" />
 
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fillViewport="true"
+            android:layout_weight="4"
+            android:layout_gravity="center_vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:paddingTop="20dp"
                 android:paddingHorizontal="20dp">
 
 
@@ -101,7 +101,7 @@
                         android:contentDescription="@string/author"
                         android:fontFamily="@font/nunito_semibold"
                         android:text="Qualcuno che non mi viene in mente e qualcun'altro di sicuro,
-                            poi potremmo aggiungere ancora altri autori"
+                                poi potremmo aggiungere ancora altri autori"
                         android:maxLines="2"
                         android:ellipsize="end"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
@@ -198,7 +198,6 @@
 
             </LinearLayout>
 
-        </LinearLayout>
-    </ScrollView>
-
+        </ScrollView>
+    </LinearLayout>
 </LinearLayout>
