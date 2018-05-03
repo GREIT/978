@@ -230,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        hideKeyboard(MainActivity.this);
         bookExpand(field, autoComplete.getItem(position));
       }
     });
