@@ -178,8 +178,13 @@ public class ShareNewBook extends AppCompatActivity {
                   tags.put(cleanAuthor(s), "true");
                 }
                 tags.put(B.getISBN(), "true");
-                if(!B.getPublisher().equals(""))
-                  tags.put(B.getPublisher().toLowerCase(), "true");
+                if(!B.getPublisher().equals("")){
+                  List<String> pubs = cleanTitle(B.getPublisher());
+                  for(String s : pubs) {
+                    tags.put(s, "true");
+                  }
+                }
+
 
                 FirebaseDatabase db = FirebaseDatabase.getInstance();
 
@@ -391,7 +396,7 @@ public class ShareNewBook extends AppCompatActivity {
   private static String cleanAuthor( String s ){
     String[] lasts = s.split(" ");
     String last = lasts[lasts.length-1];
-    last = last.replaceAll("[///.#$/[/]]", "");
+    last = last.replaceAll("[\\/\\#\\.\\/\\$\\[]", "");
     last = last.toLowerCase();
     return last;
   }
@@ -401,8 +406,8 @@ public class ShareNewBook extends AppCompatActivity {
     List<String> ret = new ArrayList<>();
     String tmp;
     for (String last : lasts){
-      tmp = last.replaceAll("[///.#$/[/]]", "");
-      tmp = last.toLowerCase();
+      tmp = last.replaceAll("[\\/\\#\\.\\/\\$\\[]", "");
+      tmp = tmp.toLowerCase();
       ret.add(new String(tmp));
     }
     return ret;

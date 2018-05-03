@@ -17,7 +17,7 @@ public class SharedBook extends Book implements Serializable {
   private String borrowTo;
   private String addedOn;
   private Boolean shared;
-  private Map<String, String> tags;
+  //private Map<String, String> tags;
   
   public SharedBook() {
   }
@@ -82,14 +82,5 @@ public class SharedBook extends Book implements Serializable {
   public void setShared(Boolean shared) {
     this.shared = shared;
   }
-  
-  public Map<String, String> getTags() {
 
-    if( tags == null) tags = new HashMap<>();
-    return tags;
-  }
-  
-  public void setTags(Map<String, String> TAGs) {
-    this.tags = tags;
-  }
 }

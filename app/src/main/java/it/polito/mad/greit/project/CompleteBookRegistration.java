@@ -139,7 +139,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
       
       sb.setConditions(String.valueOf(rb_conditions.getRating()));
       
-      String[] tagString = tags.getText().toString().toLowerCase().replaceAll("[///.#$/[/]]", "").split(",");
+      String[] tagString = tags.getText().toString().toLowerCase().replaceAll("[\\/\\#\\.\\/\\$\\[]", "").split(",");
       
       sb.setAddedOn(Calendar.getInstance().getTime().toString());
       
@@ -155,7 +155,8 @@ public class CompleteBookRegistration extends AppCompatActivity {
       dbref = db.getReference("BOOKS/" + book.getISBN());
       
       for (String x : tagString) {
-        dbref.child("tags").child(x).setValue(x);
+        if(!x.isEmpty())
+          dbref.child("tags").child(x).setValue(x);
       }
       
       if (photo == null) {
