@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,12 +18,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -74,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   private TextView tw_username;
   private TextView tw_name;
   private TextView tw_searchText;
+  private TextView tw_searchMain;
   
   // Search variables
   //private EditText mSearchField;
@@ -107,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
     drawer.addDrawerListener(toggle);
     toggle.syncState();
+    
+    tw_searchMain = (TextView) findViewById(R.id.main_title_search);
     
     NavigationView navigationView = findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
@@ -185,7 +181,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     setupSearchBox("title");
     
+    startupRecycleView();
+    
   }
+  
+  
   
   private void setupSearchBox(String field) {
     
@@ -301,10 +301,56 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     dialog.show();
   }
   
-  private void bookSearch(String field, String value) {
-    mResultList.setLayoutManager(new LinearLayoutManager(this));
-    mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
+  private void startupRecycleView() {
+    mResultList.setLayoutManager(new GridLayoutManager(this, 3));
+    mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(10), true));
+    
+    tw_searchMain.setText("Popular this period");
   
+    Query firebaseSearchQuery = mBookDb.orderByChild("title");
+ 
+    FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
+        Book.class,
+        R.layout.book_card,
+        BookViewHolder.class,
+        firebaseSearchQuery
+    ) {
+      @Override
+      protected void populateViewHolder(BookViewHolder viewHolder, Book model, int position) {
+        viewHolder.setDetails(getApplicationContext(), model.getCover(),model.getISBN());
+      }
+    
+      @Override
+      public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        BookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
+        viewHolder.setOnClickListener(new BookViewHolder.ClickListener() {
+          @Override
+          public void onItemClick(View view, String ISBN) {
+            hideKeyboard(MainActivity.this);
+          
+            mResultList.requestFocus();
+            mResultList.setAdapter(null);
+          
+            bookExpand(ISBN);
+          }
+        });
+        return viewHolder;
+      }
+    };
+  
+    mResultList.setAdapter(firebaseRecyclerAdapter);
+  }
+  
+  private void bookSearch(String field, String value) {
+  
+    mResultList.setLayoutManager(new GridLayoutManager(this, 3));
+    mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(10), true));
+  
+    tw_searchMain.setText("Choose the book that you're searching");
+//
+//    mResultList.setLayoutManager(new LinearLayoutManager(this));
+//    mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
+//
     if (value.isEmpty()) {
       mResultList.setAdapter(null);
       return;
@@ -320,13 +366,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
         Book.class,
-        R.layout.book_item,
+        R.layout.book_card,
         BookViewHolder.class,
         firebaseSearchQuery
     ) {
       @Override
       protected void populateViewHolder(BookViewHolder viewHolder, Book model, int position) {
-        viewHolder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().get(0), model.getISBN());
+        viewHolder.setDetails(getApplicationContext(), model.getCover(),model.getISBN());
       }
       
       @Override
@@ -367,13 +413,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       mClickListener = clickListener;
     }
     
-    public void setDetails(Context ctx, String bookTitle, String bookAuthor, String ISBN) {
-      TextView book_title = (TextView) mView.findViewById(R.id.book_card_title);
-      TextView book_author = (TextView) mView.findViewById(R.id.book_card_author);
+    public void setDetails(Context ctx, String coverURL, String ISBN) {
+//      TextView book_title = (TextView) mView.findViewById(R.id.book_card_title);
+//      TextView book_author = (TextView) mView.findViewById(R.id.book_card_author);
+      ImageView book_cover = (ImageView) mView.findViewById(R.id.book_card_cover);
       
-      book_title.setText(bookTitle);
-      book_author.setText(bookAuthor);
-      
+//      book_title.setText(bookTitle);
+//      book_author.setText(bookAuthor);
+  
+      Glide.with(ctx)
+          .load(coverURL)
+          .into(book_cover);
+  
       itemView.setOnClickListener(v -> {
         mClickListener.onItemClick(v, ISBN);
       });
@@ -383,11 +434,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   private void bookExpand(String ISBN) {
     mResultList.setLayoutManager(new GridLayoutManager(this, 2));
     mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(2, dpToPx(10), true));
+  
+    tw_searchMain.setText("These are the books near you");
     
     Query firebaseSearchQuery = mSharedBookDb.orderByChild("isbn").equalTo(ISBN);
     FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder>(
         SharedBook.class,
-        R.layout.book_card,
+        R.layout.sharedbook_card,
         SharedBookViewHolder.class,
         firebaseSearchQuery
     ) {
