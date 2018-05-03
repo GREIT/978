@@ -32,7 +32,7 @@
   <string name="publisher">Casa editrice</string>
   <string name="published">Anno</string>
   <string name="conditions">Condizioni</string>
-  <string name="additional_info">Ulteriori informazioni</string>
+  <string name="tag">Tag</string>
 
   // Share new book
   <string name="activity_share_book">Condividi un nuovo libro</string>

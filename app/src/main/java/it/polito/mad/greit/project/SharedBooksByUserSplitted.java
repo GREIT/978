@@ -207,7 +207,7 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
 
                     try {
                         temp = "";
-                        for(String tag : current.getTAGs().values()){
+                        for(String tag : current.getTags().values()){
                             temp = tag + "," + temp;
                         }
                         intent.putExtra("tags",temp);

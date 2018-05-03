@@ -34,9 +34,11 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CompleteBookRegistration extends AppCompatActivity {
   Book book;
@@ -49,7 +51,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
   private TextView tw_title;
   private TextView tw_publisher;
   private RatingBar rb_conditions;
-  private EditText et_additionalInfo;
+  private TagEditText tags;
   Toolbar t;
   
   @Override
@@ -82,7 +84,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
     
     rb_conditions = (RatingBar) findViewById(R.id.complete_book_conditions);
     
-    et_additionalInfo = (EditText) findViewById(R.id.complete_book_additionalInfo);
+    tags = (TagEditText) findViewById(R.id.complete_book_tags);
     
     bb = (Button) findViewById(R.id.complete_book_snap_pic);
     bb.setOnClickListener(v -> camera());
@@ -132,9 +134,9 @@ public class CompleteBookRegistration extends AppCompatActivity {
       SharedBook sb = new SharedBook(book);
       
       sb.setConditions(String.valueOf(rb_conditions.getRating()));
-      
-      sb.setAdditionalInformations(et_additionalInfo.getText().toString());
-      
+
+      String[] tagString = tags.getText().toString().toLowerCase().replaceAll("[///.#$/[/]]", "").split(" ");
+
       sb.setAddedOn(Calendar.getInstance().getTime().toString());
       
       sb.setOwner(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -142,15 +144,21 @@ public class CompleteBookRegistration extends AppCompatActivity {
       sb.setShared(false);
             
       sb.setKey(key);
-      
+
+      DatabaseReference dbref = db.getReference("SHARED_BOOKS").child(key);
+      dbref.setValue(sb);
+
+      dbref = db.getReference("BOOKS/" + book.getISBN());
+
+      dbref.child("sharedInstances").push().setValue(sb.getKey());
+
+      for(String x : tagString){
+        dbref.child("tags").child(x).setValue("true");
+      }
+
+
       if (photo == null) {
-        DatabaseReference dbref = db.getReference("SHARED_BOOKS").child(key);
-        dbref.setValue(sb);
-        
-        dbref = db.getReference("BOOKS/" + book.getISBN());
-  
-        dbref.child("sharedInstances").push().setValue(sb.getKey());
-        
+
         Intent intent = new Intent(CompleteBookRegistration.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -163,12 +171,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
               // Get a URL to the uploaded content
               //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-              DatabaseReference dbref = db.getReference("SHARED_BOOKS").child(key);
-              dbref.setValue(sb);
-  
-              dbref = db.getReference("BOOKS/" + book.getISBN() + "/list");
-              dbref.push().setValue(sb.getKey());
-              
+
               Log.d("UP", "onSuccess: url " + taskSnapshot.getDownloadUrl().toString());
               dialog.dismiss();
               Intent intent = new Intent(CompleteBookRegistration.this, MainActivity.class);

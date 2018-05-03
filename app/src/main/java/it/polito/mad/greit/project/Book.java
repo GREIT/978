@@ -14,9 +14,11 @@ public class Book implements Serializable {
   private String year;
   private String cover;
   private Map<String, String> list;
+  private Map<String, String> tags;
 
   public Book() {
     this.list = new HashMap<>();
+    this.tags = new HashMap<>();
   }
   
   public String getISBN() {
@@ -73,5 +75,13 @@ public class Book implements Serializable {
   
   public void setList(Map<String, String> list) {
     this.list = list;
+  }
+
+  public Map<String, String> getTags() {
+    return tags;
+  }
+
+  public void setTags(Map<String, String> tags) {
+    this.tags = tags;
   }
 }

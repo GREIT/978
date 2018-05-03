@@ -52,6 +52,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ShareNewBook extends AppCompatActivity {
   private static final String TAG = "Barcode Scanner API";
@@ -163,8 +164,23 @@ public class ShareNewBook extends AppCompatActivity {
               if (numberOfPossibleBooks > 0) {
                 
                 Book B = parseJSONintoBook(response);
-                
+                Map<String,String> tags = B.getTags();
+
+                List<String> title = cleanTitle(B.getTitle());
+
+                for(String s : title) {
+                  tags.put(s, "true");
+                }
+
+                for(String s : B.getAuthors()) {
+                  tags.put(cleanAuthor(s), "true");
+                }
+                tags.put(B.getISBN(), "true");
+                if(!B.getPublisher().equals(""))
+                  tags.put(B.getPublisher().toLowerCase(), "true");
+
                 FirebaseDatabase db = FirebaseDatabase.getInstance();
+
                 DatabaseReference dbref = db.getReference("BOOKS").child(B.getISBN());
                 dbref.setValue(B);
                 
@@ -368,5 +384,25 @@ public class ShareNewBook extends AppCompatActivity {
     
     return BitmapFactory.decodeStream(ctx.getContentResolver()
         .openInputStream(uri), null, bmOptions);
+  }
+
+  private static String cleanAuthor( String s ){
+    String[] lasts = s.split(" ");
+    String last = lasts[lasts.length-1];
+    last = last.replaceAll("[///.#$/[/]]", "");
+    last = last.toLowerCase();
+    return last;
+  }
+
+  private static List<String> cleanTitle( String s ) {
+    String[] lasts = s.split(" ");
+    List<String> ret = new ArrayList<>();
+    String tmp;
+    for (String last : lasts){
+      tmp = last.replaceAll("[///.#$/[/]]", "");
+      tmp = last.toLowerCase();
+      ret.add(new String(tmp));
+    }
+    return ret;
   }
 }
