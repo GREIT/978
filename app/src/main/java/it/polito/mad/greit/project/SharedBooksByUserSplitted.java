@@ -172,55 +172,10 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
                     Intent intent = new Intent(getActivity(),ShowBookActivity.class);
 
                     try {
-                        intent.putExtra("title", current.getTitle());
+                        intent.putExtra("book", current);
                     }catch (Exception e){
-                        intent.putExtra("title","");
+                        intent.putExtra("book","");
                     }
-
-                    String temp = "";
-                    try {
-                        for(String author : current.getAuthors().keySet()){
-                            temp = author + "," + temp;
-                        }
-                        intent.putExtra("authors",temp);
-                    }catch (Exception e){
-                        intent.putExtra("authors","");
-                    }
-
-                    try {
-                        intent.putExtra("ISBN",current.getISBN());
-                    }catch (Exception e){
-                        intent.putExtra("ISBN","");
-                    }
-
-                    try {
-                        intent.putExtra("pub",current.getPublisher());
-                    }catch (Exception e){
-                        intent.putExtra("pub","");
-                    }
-
-                    try {
-                        intent.putExtra("year",current.getYear());
-                    }catch (Exception e){
-                        intent.putExtra("year","");
-                    }
-
-                    try {
-                        temp = "";
-                        for(String tag : current.getTags().values()){
-                            temp = tag + "," + temp;
-                        }
-                        intent.putExtra("tags",temp);
-                    }catch (Exception e){
-                        intent.putExtra("tags","");
-                    }
-
-                    try{
-                        intent.putExtra("key",current.getKey());
-                    }catch (Exception e){
-                        intent.putExtra("key","");
-                    }
-
                     try{
                         ImageView iv = v.findViewById(R.id.book_card_thumbnail);
                         Bitmap bitmap = ((BitmapDrawable)iv.getDrawable()).getBitmap();

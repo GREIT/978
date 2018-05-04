@@ -49,6 +49,12 @@
   // Complete book's informations
   <string name="actvity_complete_book_info">Completa le informazioni sul libro</string>
 
+  //Show Book
+  <string name="edit">Modifica</string>
+  <string name="delete">Elimina</string>
+  <string name="add_to_star">Star it</string>
+  <string name="ask_borrow">Ask to borrow</string>
+
   // Miscellaneous
   <string name="AUTH_ID" translatable="false">1059761957663-g0pf2f234revm5upjo64u3s6v2br3t38.apps.googleusercontent.com</string>
   <string name="ok"> OK </string>
@@ -58,7 +64,6 @@
   <string name="fill_fields">Completa tutti i campi obbligatori!</string>
   <string name="dialog_clicked">Dialog clicked</string>
   <string name="denied">Permesso negato</string>
-
 
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
