@@ -65,534 +65,536 @@ import java.util.Set;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private static String TAG = "Main Activity";
-    private Profile profile;
-    private ImageView iw_user;
-    private TextView tw_username;
-    private TextView tw_name;
-    private TextView tw_searchText;
-    private TextView tw_searchMain;
-
-    // Search variables
-    private RecyclerView mResultList;
-    private DatabaseReference mBookDb, mSharedBookDb;
-    private Button mSearchButton;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_add_book);
-        fab.setOnClickListener(v -> {
-            Intent I = new Intent(MainActivity.this, ShareNewBook.class);
-            startActivity(I);
-        });
-
-        profile = new Profile();
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference dbref = db.getReference("USERS").child(user.getUid());
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        tw_searchMain = (TextView) findViewById(R.id.main_title_search);
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        View headerView = navigationView.getHeaderView(0);
-
-        tw_username = headerView.findViewById(R.id.drawer_username);
-        tw_name = headerView.findViewById(R.id.drawer_name);
-        iw_user = headerView.findViewById(R.id.drawer_image);
-
-
-        iw_user.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ShowProfile.class);
-            startActivity(intent);
-        });
-
-        dbref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                profile = dataSnapshot.getValue(Profile.class);
-                if (profile == null) {
-                    Intent intent = new Intent(MainActivity.this, SignInActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                } else {
-                    tw_username.setText("@" + profile.getUsername());
-                    tw_name.setText(profile.getName());
-                    File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(), "pic.jpg");
-                    if (pic.exists()) {
-                        iw_user.setImageURI(Uri.fromFile(pic));
-                    } else {
-                        StorageReference sr = FirebaseStorage.getInstance().getReference()
-                                .child("profile_pictures/" + user.getUid() + ".jpg");
-                        sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                            @Override
-                            public void onSuccess(byte[] bytes) {
-                                try {
-                                    File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(), "pic.jpg");
-                                    Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                    OutputStream outs = new FileOutputStream(pic);
-                                    bm.compress(Bitmap.CompressFormat.JPEG, 85, outs);
-                                    iw_user.setImageBitmap(bm);
-                                    outs.close();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    pic.delete();
-                                    iw_user.setImageResource(R.mipmap.ic_launcher_round);
-                                }
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                // Handle any errors
-                                exception.printStackTrace();
-                                iw_user.setImageResource(R.mipmap.ic_launcher_round);
-                            }
-                        });
-                    }
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError e) {
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(MainActivity.this, SignInActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        mBookDb = FirebaseDatabase.getInstance().getReference("BOOKS");
-        mSharedBookDb = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS");
-        mResultList = (RecyclerView) findViewById(R.id.result_list);
-        mResultList.setItemAnimator(new DefaultItemAnimator());
-
-        setupSearchBox("title");
-        startupRecycleView();
-    }
-
-
-    private void setupSearchBox(String field) {
-        mSearchButton = (Button) findViewById(R.id.search_button);
-        mSearchButton.setText(field.toUpperCase());
-        mSearchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                chooseSearchField();
-            }
-        });
-
-        //Create a new ArrayAdapter with your context and the simple layout for the dropdown menu provided by Android
-        final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-        List<String> tmpAutoComplete = new LinkedList<>();
-
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        database.child("BOOKS").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                autoComplete.clear();
-
-                for (DataSnapshot suggestionSnapshot : dataSnapshot.getChildren()) {
-                    if (field.equals("authors") || field.equals("tags")) {
-                        for (DataSnapshot A : suggestionSnapshot.child(field).getChildren()) {
-                            if (!tmpAutoComplete.contains(A.getKey())) {
-                                tmpAutoComplete.add(A.getKey());
-                            }
-                        }
-                    } else {
-                        String suggestion = suggestionSnapshot.child(field).getValue(String.class);
-                        if (!tmpAutoComplete.contains(suggestion)) {
-                            tmpAutoComplete.add(suggestion);
-                        }
-                    }
-                }
-                autoComplete.addAll(tmpAutoComplete);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) { }
-        });
-
-        AutoCompleteTextView ACTV = (AutoCompleteTextView) findViewById(R.id.search_field);
-        ACTV.setAdapter(autoComplete);
-        ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                hideKeyboard(MainActivity.this);
-                mResultList.requestFocus();
-                bookSearch(field, autoComplete.getItem(position));
-            }
-        });
-    }
-
-    public void chooseSearchField() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Choose search field:");
-
-        //list of items
-        String[] items = {"Title", "Author", "ISBN", "Year", "Tag"};
-        final int[] choice = new int[1];
-
-        builder.setSingleChoiceItems(items, 0,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        choice[0] = which;
-                    }
-                });
-
-        String positiveText = getString(android.R.string.ok);
-        builder.setPositiveButton(positiveText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String finalField = "title";
-                        switch (choice[0]) {
-                            case 0:
-                                finalField = "title";
-                                break;
-
-                            case 1:
-                                finalField = "authors";
-                                break;
-
-                            case 2:
-                                finalField = "isbn";
-                                break;
-
-                            case 3:
-                                finalField = "year";
-                                break;
-
-                            case 4:
-                                finalField = "tags";
-                                break;
-                        }
-
-                        AutoCompleteTextView ACTV = (AutoCompleteTextView) findViewById(R.id.search_field);
-                        ACTV.setText("");
-                        setupSearchBox(finalField);
-                    }
-                });
-
-        String negativeText = getString(android.R.string.cancel);
-        builder.setNegativeButton(negativeText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) { }
-                });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-
-    private void startupRecycleView() {
-        mResultList.setLayoutManager(new GridLayoutManager(this, 3));
-        mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
-        mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(20), true));
-
-        tw_searchMain.setText("Popular this period");
-
-        Query firebaseSearchQuery = mBookDb.orderByChild("title");
-        FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
-                Book.class,
-                R.layout.book_card,
-                BookViewHolder.class,
-                firebaseSearchQuery
-        ) {
-            @Override
-            protected void populateViewHolder(BookViewHolder viewHolder, Book model, int position) {
-                viewHolder.setDetails(getApplicationContext(), model.getCover(), model.getISBN());
-            }
-
-            @Override
-            public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                BookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
-                viewHolder.setOnClickListener(new BookViewHolder.ClickListener() {
-                    @Override
-                    public void onItemClick(View view, String ISBN) {
-                        hideKeyboard(MainActivity.this);
-                        bookExpand(ISBN);
-                    }
-                });
-                return viewHolder;
-            }
-        };
-
-        mResultList.setAdapter(firebaseRecyclerAdapter);
-    }
-
-    private void bookSearch(String field, String value) {
-        mResultList.setLayoutManager(new GridLayoutManager(this, 3));
-        mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
-        mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(20), true));
-
-        tw_searchMain.setText("Choose the book that you're searching");
-
-        if (value.isEmpty()) {
-            mResultList.setAdapter(null);
-            return;
-        }
-
-        Query firebaseSearchQuery;
-        if (field.equals("authors") || field.equals("tags"))
-            firebaseSearchQuery = mBookDb.orderByChild(field + "/" + value).equalTo(value);
-        else
-            firebaseSearchQuery = mBookDb.orderByChild(field).equalTo(value);
-
-        FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
-                Book.class,
-                R.layout.book_card,
-                BookViewHolder.class,
-                firebaseSearchQuery
-        ) {
-            @Override
-            protected void populateViewHolder(BookViewHolder viewHolder, Book model, int position) {
-                viewHolder.setDetails(getApplicationContext(), model.getCover(),model.getISBN());
-            }
-
-            @Override
-            public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                BookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
-                viewHolder.setOnClickListener(new BookViewHolder.ClickListener() {
-                    @Override
-                    public void onItemClick(View view, String ISBN) {
-                        hideKeyboard(MainActivity.this);
-                        bookExpand(ISBN);
-                    }
-                });
-                return viewHolder;
-            }
-        };
-
-        mResultList.setAdapter(firebaseRecyclerAdapter);
-    }
-
-    public static class BookViewHolder extends RecyclerView.ViewHolder {
-        View mView;
-        private BookViewHolder.ClickListener mClickListener;
-
-        public BookViewHolder(View itemView) {
-            super(itemView);
-            mView = itemView;
-        }
-
-        public interface ClickListener {
-            void onItemClick(View view, String ISBN);
-        }
-
-        public void setOnClickListener(BookViewHolder.ClickListener clickListener) {
-            mClickListener = clickListener;
-        }
-
-        public void setDetails(Context ctx, String coverURL, String ISBN) {
-            ImageView book_cover = (ImageView) mView.findViewById(R.id.book_card_cover);
-
-            Glide.with(ctx)
-                    .load(coverURL)
-                    .into(book_cover);
-
-            itemView.setOnClickListener(v -> {
-                mClickListener.onItemClick(v, ISBN);
-            });
-        }
-    }
-
-    private void bookExpand(String ISBN) {
-        mResultList.setLayoutManager(new GridLayoutManager(this, 2));
-        mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
-        mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(2, dpToPx(20), true));
-
-        tw_searchMain.setText("These are the books near you");
-
-        Query firebaseSearchQuery = mSharedBookDb.orderByChild("isbn").equalTo(ISBN);
-        FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder>(
-                SharedBook.class,
-                R.layout.sharedbook_card,
-                SharedBookViewHolder.class,
-                firebaseSearchQuery
-        ) {
-            @Override
-            protected void populateViewHolder(SharedBookViewHolder viewHolder, SharedBook model, int position) {
-                viewHolder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().keySet().iterator().next(), model.getKey());
-            }
-
-            @Override
-            public SharedBookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                SharedBookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
-                viewHolder.setOnClickListener(new SharedBookViewHolder.ClickListener() {
-                    @Override
-                    public void onItemClick(View view, String ISBN) {
-                        Toast.makeText(MainActivity.this, "Item: " + ISBN, Toast.LENGTH_SHORT).show();
-                    }
-                });
-                return viewHolder;
-            }
-        };
-
-        mResultList.setAdapter(firebaseRecyclerAdapter);
-    }
-
-    public static class SharedBookViewHolder extends RecyclerView.ViewHolder {
-        View mView;
-        private SharedBookViewHolder.ClickListener mClickListener;
-
-        public SharedBookViewHolder(View itemView) {
-            super(itemView);
-            mView = itemView;
-        }
-
-        public interface ClickListener {
-            void onItemClick(View view, String title);
-        }
-
-        public void setOnClickListener(SharedBookViewHolder.ClickListener clickListener) {
-            mClickListener = clickListener;
-        }
-
-        public void setDetails(Context ctx, String bookTitle, String bookAuthor, String bookKey) {
-            TextView book_title = (TextView) mView.findViewById(R.id.book_card_title);
-            TextView book_author = (TextView) mView.findViewById(R.id.book_card_author);
-            ImageView book_image = (ImageView) mView.findViewById(R.id.book_card_thumbnail);
-
-            book_title.setText(bookTitle);
-            book_author.setText(bookAuthor);
-
-            StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + bookKey + ".jpg");
-            sr.getBytes(5 * Constants.SIZE).addOnSuccessListener(bytes -> {
-                Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-                Glide.with(ctx)
-                        .asBitmap()
-                        .load(stream.toByteArray())
-                        .into(book_image);
-            }).addOnFailureListener(e ->
-                    Glide.with(ctx)
-                            .asBitmap()
-                            .load(R.drawable.ic_book_blue_grey_900_48dp)
-                            .into(book_image)
-            );
-
-            itemView.setOnClickListener(v -> {
-                mClickListener.onItemClick(v, "0000");
-            });
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+  private static String TAG = "Main Activity";
+  private Profile profile;
+  private ImageView iw_user;
+  private TextView tw_username;
+  private TextView tw_name;
+  private TextView tw_searchText;
+  private TextView tw_searchMain;
+  
+  // Search variables
+  private RecyclerView mResultList;
+  private DatabaseReference mBookDb, mSharedBookDb;
+  private Button mSearchButton;
+  
+  
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    setSupportActionBar(toolbar);
+    
+    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_add_book);
+    fab.setOnClickListener(v -> {
+      Intent I = new Intent(MainActivity.this, ShareNewBook.class);
+      startActivity(I);
+    });
+    
+    profile = new Profile();
+    
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    
+    FirebaseDatabase db = FirebaseDatabase.getInstance();
+    DatabaseReference dbref = db.getReference("USERS").child(user.getUid());
+    
+    DrawerLayout drawer = findViewById(R.id.drawer_layout);
+    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+    drawer.addDrawerListener(toggle);
+    toggle.syncState();
+    
+    tw_searchMain = (TextView) findViewById(R.id.main_title_search);
+    
+    NavigationView navigationView = findViewById(R.id.nav_view);
+    navigationView.setNavigationItemSelectedListener(this);
+    View headerView = navigationView.getHeaderView(0);
+    
+    tw_username = headerView.findViewById(R.id.drawer_username);
+    tw_name = headerView.findViewById(R.id.drawer_name);
+    iw_user = headerView.findViewById(R.id.drawer_image);
+    
+    
+    iw_user.setOnClickListener(v -> {
+      Intent intent = new Intent(MainActivity.this, ShowProfile.class);
+      startActivity(intent);
+    });
+    
+    dbref.addValueEventListener(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        profile = dataSnapshot.getValue(Profile.class);
+        if (profile == null) {
+          Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+          startActivity(intent);
         } else {
-            Log.d(TAG, "Back button pressed");
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_shared_books) {
-            Intent intent = new Intent(MainActivity.this, SharedBooksByUserSplitted.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_sign_out) {
-            FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(MainActivity.this, SignInActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
-    public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
-
-        private int spanCount;
-        private int spacing;
-        private boolean includeEdge;
-
-        public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
-            this.spanCount = spanCount;
-            this.spacing = spacing;
-            this.includeEdge = includeEdge;
-        }
-
-        @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            int position = parent.getChildAdapterPosition(view); // item position
-            int column = position % spanCount; // item column
-
-            if (includeEdge) {
-                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
-                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
-
-                if (position < spanCount) { // top edge
-                    outRect.top = spacing;
+          tw_username.setText("@" + profile.getUsername());
+          tw_name.setText(profile.getName());
+          File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(), "pic.jpg");
+          if (pic.exists()) {
+            iw_user.setImageURI(Uri.fromFile(pic));
+          } else {
+            StorageReference sr = FirebaseStorage.getInstance().getReference()
+                .child("profile_pictures/" + user.getUid() + ".jpg");
+            sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+              @Override
+              public void onSuccess(byte[] bytes) {
+                try {
+                  File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(), "pic.jpg");
+                  Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                  OutputStream outs = new FileOutputStream(pic);
+                  bm.compress(Bitmap.CompressFormat.JPEG, 85, outs);
+                  iw_user.setImageBitmap(bm);
+                  outs.close();
+                } catch (Exception e) {
+                  e.printStackTrace();
+                  pic.delete();
+                  iw_user.setImageResource(R.mipmap.ic_launcher_round);
                 }
-                outRect.bottom = spacing; // item bottom
-            } else {
-                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
-                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
-                if (position >= spanCount) {
-                    outRect.top = spacing; // item top
-                }
+              }
+            }).addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+                exception.printStackTrace();
+                iw_user.setImageResource(R.mipmap.ic_launcher_round);
+              }
+            });
+          }
+          
+        }
+      }
+      
+      @Override
+      public void onCancelled(DatabaseError e) {
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+      }
+    });
+    
+    mBookDb = FirebaseDatabase.getInstance().getReference("BOOKS");
+    mSharedBookDb = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS");
+    mResultList = (RecyclerView) findViewById(R.id.result_list);
+    mResultList.setItemAnimator(new DefaultItemAnimator());
+    
+    setupSearchBox("title");
+    startupRecycleView();
+  }
+  
+  
+  private void setupSearchBox(String field) {
+    mSearchButton = (Button) findViewById(R.id.search_button);
+    mSearchButton.setText(field.toUpperCase());
+    mSearchButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        chooseSearchField();
+      }
+    });
+    
+    //Create a new ArrayAdapter with your context and the simple layout for the dropdown menu provided by Android
+    final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+    List<String> tmpAutoComplete = new LinkedList<>();
+    
+    DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    database.child("BOOKS").addValueEventListener(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        autoComplete.clear();
+        
+        for (DataSnapshot suggestionSnapshot : dataSnapshot.getChildren()) {
+          if (field.equals("authors") || field.equals("tags")) {
+            for (DataSnapshot A : suggestionSnapshot.child(field).getChildren()) {
+              if (!tmpAutoComplete.contains(A.getKey())) {
+                tmpAutoComplete.add(A.getKey());
+              }
             }
+          } else {
+            String suggestion = suggestionSnapshot.child(field).getValue(String.class);
+            if (!tmpAutoComplete.contains(suggestion)) {
+              tmpAutoComplete.add(suggestion);
+            }
+          }
         }
+        autoComplete.addAll(tmpAutoComplete);
+      }
+      
+      @Override
+      public void onCancelled(DatabaseError databaseError) {
+      }
+    });
+    
+    AutoCompleteTextView ACTV = (AutoCompleteTextView) findViewById(R.id.search_field);
+    ACTV.setAdapter(autoComplete);
+    ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        hideKeyboard(MainActivity.this);
+        mResultList.requestFocus();
+        bookSearch(field, autoComplete.getItem(position));
+      }
+    });
+  }
+  
+  public void chooseSearchField() {
+    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+    builder.setTitle("Choose search field:");
+    
+    //list of items
+    String[] items = {"Title", "Author", "ISBN", "Year", "Tag"};
+    final int[] choice = new int[1];
+    
+    builder.setSingleChoiceItems(items, 0,
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            choice[0] = which;
+          }
+        });
+    
+    String positiveText = getString(android.R.string.ok);
+    builder.setPositiveButton(positiveText,
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            String finalField = "title";
+            switch (choice[0]) {
+              case 0:
+                finalField = "title";
+                break;
+              
+              case 1:
+                finalField = "authors";
+                break;
+              
+              case 2:
+                finalField = "isbn";
+                break;
+              
+              case 3:
+                finalField = "year";
+                break;
+              
+              case 4:
+                finalField = "tags";
+                break;
+            }
+            
+            AutoCompleteTextView ACTV = (AutoCompleteTextView) findViewById(R.id.search_field);
+            ACTV.setText("");
+            setupSearchBox(finalField);
+          }
+        });
+    
+    String negativeText = getString(android.R.string.cancel);
+    builder.setNegativeButton(negativeText,
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+          }
+        });
+    
+    AlertDialog dialog = builder.create();
+    dialog.show();
+  }
+  
+  
+  private void startupRecycleView() {
+    mResultList.setLayoutManager(new GridLayoutManager(this, 3));
+    mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
+    mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(20), true));
+    
+    tw_searchMain.setText("Popular this period");
+    
+    Query firebaseSearchQuery = mBookDb.orderByChild("title");
+    FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
+        Book.class,
+        R.layout.book_card,
+        BookViewHolder.class,
+        firebaseSearchQuery
+    ) {
+      @Override
+      protected void populateViewHolder(BookViewHolder viewHolder, Book model, int position) {
+        viewHolder.setDetails(getApplicationContext(), model.getCover(), model.getISBN());
+      }
+      
+      @Override
+      public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        BookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
+        viewHolder.setOnClickListener(new BookViewHolder.ClickListener() {
+          @Override
+          public void onItemClick(View view, String ISBN) {
+            hideKeyboard(MainActivity.this);
+            bookExpand(ISBN);
+          }
+        });
+        return viewHolder;
+      }
+    };
+    
+    mResultList.setAdapter(firebaseRecyclerAdapter);
+  }
+  
+  private void bookSearch(String field, String value) {
+    mResultList.setLayoutManager(new GridLayoutManager(this, 3));
+    mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
+    mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(20), true));
+    
+    tw_searchMain.setText("Choose the book that you're searching");
+    
+    if (value.isEmpty()) {
+      mResultList.setAdapter(null);
+      return;
     }
-
-    private int dpToPx(int dp) {
-        Resources r = getResources();
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+    
+    Query firebaseSearchQuery;
+    if (field.equals("authors") || field.equals("tags"))
+      firebaseSearchQuery = mBookDb.orderByChild(field + "/" + value).equalTo(value);
+    else
+      firebaseSearchQuery = mBookDb.orderByChild(field).equalTo(value);
+    
+    FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
+        Book.class,
+        R.layout.book_card,
+        BookViewHolder.class,
+        firebaseSearchQuery
+    ) {
+      @Override
+      protected void populateViewHolder(BookViewHolder viewHolder, Book model, int position) {
+        viewHolder.setDetails(getApplicationContext(), model.getCover(), model.getISBN());
+      }
+      
+      @Override
+      public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        BookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
+        viewHolder.setOnClickListener(new BookViewHolder.ClickListener() {
+          @Override
+          public void onItemClick(View view, String ISBN) {
+            hideKeyboard(MainActivity.this);
+            bookExpand(ISBN);
+          }
+        });
+        return viewHolder;
+      }
+    };
+    
+    mResultList.setAdapter(firebaseRecyclerAdapter);
+  }
+  
+  public static class BookViewHolder extends RecyclerView.ViewHolder {
+    View mView;
+    private BookViewHolder.ClickListener mClickListener;
+    
+    public BookViewHolder(View itemView) {
+      super(itemView);
+      mView = itemView;
     }
+    
+    public interface ClickListener {
+      void onItemClick(View view, String ISBN);
+    }
+    
+    public void setOnClickListener(BookViewHolder.ClickListener clickListener) {
+      mClickListener = clickListener;
+    }
+    
+    public void setDetails(Context ctx, String coverURL, String ISBN) {
+      ImageView book_cover = (ImageView) mView.findViewById(R.id.book_card_cover);
+      
+      Glide.with(ctx)
+          .load(coverURL)
+          .into(book_cover);
+      
+      itemView.setOnClickListener(v -> {
+        mClickListener.onItemClick(v, ISBN);
+      });
+    }
+  }
+  
+  private void bookExpand(String ISBN) {
+    mResultList.setLayoutManager(new GridLayoutManager(this, 2));
+    mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
+    mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(2, dpToPx(20), true));
+    
+    tw_searchMain.setText("These are the books near you");
+    
+    Query firebaseSearchQuery = mSharedBookDb.orderByChild("isbn").equalTo(ISBN);
+    FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder>(
+        SharedBook.class,
+        R.layout.sharedbook_card,
+        SharedBookViewHolder.class,
+        firebaseSearchQuery
+    ) {
+      @Override
+      protected void populateViewHolder(SharedBookViewHolder viewHolder, SharedBook model, int position) {
+        viewHolder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().keySet().iterator().next(), model.getKey());
+      }
+      
+      @Override
+      public SharedBookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        SharedBookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
+        viewHolder.setOnClickListener(new SharedBookViewHolder.ClickListener() {
+          @Override
+          public void onItemClick(View view, String ISBN) {
+            Toast.makeText(MainActivity.this, "Item: " + ISBN, Toast.LENGTH_SHORT).show();
+          }
+        });
+        return viewHolder;
+      }
+    };
+    
+    mResultList.setAdapter(firebaseRecyclerAdapter);
+  }
+  
+  public static class SharedBookViewHolder extends RecyclerView.ViewHolder {
+    View mView;
+    private SharedBookViewHolder.ClickListener mClickListener;
+    
+    public SharedBookViewHolder(View itemView) {
+      super(itemView);
+      mView = itemView;
+    }
+    
+    public interface ClickListener {
+      void onItemClick(View view, String title);
+    }
+    
+    public void setOnClickListener(SharedBookViewHolder.ClickListener clickListener) {
+      mClickListener = clickListener;
+    }
+    
+    public void setDetails(Context ctx, String bookTitle, String bookAuthor, String bookKey) {
+      TextView book_title = (TextView) mView.findViewById(R.id.book_card_title);
+      TextView book_author = (TextView) mView.findViewById(R.id.book_card_author);
+      ImageView book_image = (ImageView) mView.findViewById(R.id.book_card_thumbnail);
+      
+      book_title.setText(bookTitle);
+      book_author.setText(bookAuthor);
+      
+      StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + bookKey + ".jpg");
+      sr.getBytes(5 * Constants.SIZE).addOnSuccessListener(bytes -> {
+        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
+        Glide.with(ctx)
+            .asBitmap()
+            .load(stream.toByteArray())
+            .into(book_image);
+      }).addOnFailureListener(e ->
+          Glide.with(ctx)
+              .asBitmap()
+              .load(R.drawable.ic_book_blue_grey_900_48dp)
+              .into(book_image)
+      );
+      
+      itemView.setOnClickListener(v -> {
+        mClickListener.onItemClick(v, "0000");
+      });
+    }
+  }
+  
+  @Override
+  public void onBackPressed() {
+    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+    if (drawer.isDrawerOpen(GravityCompat.START)) {
+      drawer.closeDrawer(GravityCompat.START);
+    } else {
+      Log.d(TAG, "Back button pressed");
+    }
+  }
+  
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    // Inflate the menu; this adds items to the action bar if it is present.
+    getMenuInflater().inflate(R.menu.main, menu);
+    return true;
+  }
+  
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    // Handle action bar item clicks here. The action bar will
+    // automatically handle clicks on the Home/Up button, so long
+    // as you specify a parent activity in AndroidManifest.xml.
+    int id = item.getItemId();
+    
+    return super.onOptionsItemSelected(item);
+  }
+  
+  @SuppressWarnings("StatementWithEmptyBody")
+  @Override
+  public boolean onNavigationItemSelected(MenuItem item) {
+    // Handle navigation view item clicks here.
+    int id = item.getItemId();
+    
+    if (id == R.id.nav_shared_books) {
+      Intent intent = new Intent(MainActivity.this, SharedBooksByUserSplitted.class);
+      startActivity(intent);
+    } else if (id == R.id.nav_sign_out) {
+      FirebaseAuth.getInstance().signOut();
+      Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+      startActivity(intent);
+      finish();
+    }
+    
+    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+    drawer.closeDrawer(GravityCompat.START);
+    return true;
+  }
+  
+  public static void hideKeyboard(Activity activity) {
+    InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    //Find the currently focused view, so we can grab the correct window token from it.
+    View view = activity.getCurrentFocus();
+    //If no view currently has focus, create a new one, just so we can grab a window token from it
+    if (view == null) {
+      view = new View(activity);
+    }
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+  }
+  
+  public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+    
+    private int spanCount;
+    private int spacing;
+    private boolean includeEdge;
+    
+    public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+      this.spanCount = spanCount;
+      this.spacing = spacing;
+      this.includeEdge = includeEdge;
+    }
+    
+    @Override
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+      int position = parent.getChildAdapterPosition(view); // item position
+      int column = position % spanCount; // item column
+      
+      if (includeEdge) {
+        outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+        outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+        
+        if (position < spanCount) { // top edge
+          outRect.top = spacing;
+        }
+        outRect.bottom = spacing; // item bottom
+      } else {
+        outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+        outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+        if (position >= spanCount) {
+          outRect.top = spacing; // item top
+        }
+      }
+    }
+  }
+  
+  private int dpToPx(int dp) {
+    Resources r = getResources();
+    return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+  }
 }
