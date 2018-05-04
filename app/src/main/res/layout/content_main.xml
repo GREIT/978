@@ -10,7 +10,6 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-
     <LinearLayout
         android:id="@+id/search_box_main"
         android:layout_width="match_parent"
@@ -32,7 +31,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="10dp"
-                android:text="Search books by"
+                android:text="@string/search_text_main"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
@@ -62,7 +61,7 @@
             android:background="@drawable/search_layout"
             android:ems="10"
             android:fontFamily="@font/nunito_semibold"
-            android:hint="Search Here"
+            android:hint="@string/search_field"
             android:inputType="text"
             android:paddingBottom="10dp"
             android:paddingLeft="20dp"
@@ -81,7 +80,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="5dp"
-        android:text="Books near you"
+        android:text="@string/main_title_search_3"
         android:textColor="#000"
         android:textSize="20sp"
         android:textStyle="bold" />

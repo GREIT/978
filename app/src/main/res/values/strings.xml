@@ -2,6 +2,18 @@
     <string name="app_name">Project</string>
     <string name="title_activity_main">Home</string>
 
+    // Main activity
+    <string name="search_text_main">Search books by</string>
+    <string name="search_field">Search here</string>
+    <string name="main_title_search_1">Popular this period</string>
+    <string name="main_title_search_2">Choose the book that you\'re searching</string>
+    <string name="main_title_search_3">These are the books near you</string>
+    <string name="item_title">Title</string>
+    <string name="item_author">Author</string>
+    <string name="item_isbn">ISBN</string>
+    <string name="item_year">Year</string>
+    <string name="item_tag">Tag</string>
+
     // Authentication
     <string name="signout">Sign out</string>
 
@@ -50,6 +62,7 @@
 
 
     //Show Book
+    <string name="show_book_title">Book</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="add_to_star">Star</string>

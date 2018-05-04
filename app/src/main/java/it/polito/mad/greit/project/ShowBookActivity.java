@@ -38,7 +38,7 @@ public class ShowBookActivity extends AppCompatActivity {
         Intent intent = getIntent();
         sb = (SharedBook) intent.getSerializableExtra("book");
         t = findViewById(R.id.show_book_toolbar);
-        t.setTitle("Book");
+        t.setTitle(R.string.show_book_title);
         setSupportActionBar(t);
         t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
         t.setNavigationOnClickListener(v -> onBackPressed());
