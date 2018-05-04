@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView tw_searchMain;
 
     // Search variables
-    //private EditText mSearchField;
     private RecyclerView mResultList;
     private DatabaseReference mBookDb, mSharedBookDb;
     private Button mSearchButton;
@@ -184,15 +183,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mResultList.setItemAnimator(new DefaultItemAnimator());
 
         setupSearchBox("title");
-
         startupRecycleView();
-
     }
 
 
-
     private void setupSearchBox(String field) {
-
         mSearchButton = (Button) findViewById(R.id.search_button);
         mSearchButton.setText(field.toUpperCase());
         mSearchButton.setOnClickListener(new View.OnClickListener() {
@@ -231,14 +226,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void onCancelled(DatabaseError databaseError) { }
-
         });
+
         AutoCompleteTextView ACTV = (AutoCompleteTextView) findViewById(R.id.search_field);
         ACTV.setAdapter(autoComplete);
         ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 hideKeyboard(MainActivity.this);
+                mResultList.requestFocus();
                 bookSearch(field, autoComplete.getItem(position));
             }
         });
@@ -305,8 +301,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialog.show();
     }
 
+
     private void startupRecycleView() {
         mResultList.setLayoutManager(new GridLayoutManager(this, 3));
+        mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
         mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(20), true));
 
         tw_searchMain.setText("Popular this period");
@@ -342,7 +340,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void bookSearch(String field, String value) {
         mResultList.setLayoutManager(new GridLayoutManager(this, 3));
-        mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(10), true));
+        mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
+        mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(20), true));
 
         tw_searchMain.setText("Choose the book that you're searching");
 
@@ -417,7 +416,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void bookExpand(String ISBN) {
         mResultList.setLayoutManager(new GridLayoutManager(this, 2));
-        mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(2, dpToPx(10), true));
+        mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
+        mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(2, dpToPx(20), true));
 
         tw_searchMain.setText("These are the books near you");
 
