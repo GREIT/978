@@ -14,7 +14,7 @@
     android:layout_width="75dp"
     android:layout_height="75dp"
     android:layout_gravity="start"
-    android:layout_marginTop="15dp"
+    android:layout_marginTop="20dp"
     android:layout_weight="4"
     android:clickable="true"
     android:contentDescription="@string/nav_header_desc"
@@ -31,7 +31,7 @@
     android:paddingTop="@dimen/nav_header_vertical_spacing"
     android:text=""
     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-    android:textSize="14sp"
+    android:textSize="20sp"
     android:textStyle="bold" />
 
   <TextView
@@ -39,7 +39,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_weight="1"
-    android:paddingTop="@dimen/nav_header_vertical_spacing"
+    android:paddingTop="3dp"
     android:text=""
     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
     android:textColor="@color/colorSecondaryTitle"
