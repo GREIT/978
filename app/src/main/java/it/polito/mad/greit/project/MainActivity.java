@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -432,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ) {
       @Override
       protected void populateViewHolder(SharedBookViewHolder viewHolder, SharedBook model, int position) {
-        viewHolder.setDetails(getApplicationContext(), model.getTitle(), model.getAuthors().keySet().iterator().next(), model.getKey());
+        viewHolder.setDetails(getApplicationContext(), model);
       }
       
       @Override
@@ -440,8 +441,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         SharedBookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
         viewHolder.setOnClickListener(new SharedBookViewHolder.ClickListener() {
           @Override
-          public void onItemClick(View view, String ISBN) {
-            Toast.makeText(MainActivity.this, "Item: " + ISBN, Toast.LENGTH_SHORT).show();
+          public void onItemClick(View view, SharedBook model) {
+            Intent intent = new Intent(MainActivity.this,ShowBookActivity.class);
+  
+            try {
+              intent.putExtra("book", model);
+            }catch (Exception e){
+              intent.putExtra("book","");
+            }
+  
+            startActivity(intent);
           }
         });
         return viewHolder;
@@ -461,22 +470,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     
     public interface ClickListener {
-      void onItemClick(View view, String title);
+      void onItemClick(View view, SharedBook model);
     }
     
     public void setOnClickListener(SharedBookViewHolder.ClickListener clickListener) {
       mClickListener = clickListener;
     }
     
-    public void setDetails(Context ctx, String bookTitle, String bookAuthor, String bookKey) {
+    public void setDetails(Context ctx, SharedBook model) {
       TextView book_title = (TextView) mView.findViewById(R.id.book_card_title);
       TextView book_author = (TextView) mView.findViewById(R.id.book_card_author);
       ImageView book_image = (ImageView) mView.findViewById(R.id.book_card_thumbnail);
       
-      book_title.setText(bookTitle);
-      book_author.setText(bookAuthor);
+      book_title.setText(model.getTitle());
+      book_author.setText(model.getAuthors().keySet().iterator().next());
       
-      StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + bookKey + ".jpg");
+      StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
       sr.getBytes(5 * Constants.SIZE).addOnSuccessListener(bytes -> {
         Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -493,7 +502,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       );
       
       itemView.setOnClickListener(v -> {
-        mClickListener.onItemClick(v, "0000");
+        mClickListener.onItemClick(v, model);
       });
     }
   }
