@@ -1,6 +1,7 @@
 package it.polito.mad.greit.project;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -23,22 +24,35 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
+import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceDetectionClient;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
@@ -46,6 +60,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -95,39 +110,74 @@ public class EditProfile extends AppCompatActivity {
     ciw = findViewById(R.id.edit_pic);
     ciw.setOnClickListener(v -> pic_action());
 
-    PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-            getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+    setuplocation();
 
-    autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+  }
+
+  public static void hideKeyboard(Activity activity) {
+    InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    //Find the currently focused view, so we can grab the correct window token from it.
+    View view = activity.getCurrentFocus();
+    //If no view currently has focus, create a new one, just so we can grab a window token from it
+    if (view == null) {
+      view = new View(activity);
+    }
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+  }
+
+  public  void setuplocation(){
+    LatLng southwest = new LatLng(180,-180);
+    LatLng northeast = new LatLng(180,-180);
+    LatLngBounds bounds = new LatLngBounds(southwest,northeast);
+    final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+    AutoCompleteTextView ACTV = findViewById(R.id.edit_location);
+    ACTV.setAdapter(autoComplete);
+    ACTV.addTextChangedListener(new TextWatcher() {
       @Override
-      public void onPlaceSelected(Place place) {
-        // TODO: Get info about the selected place.
-        try {
-          TextView tv = findViewById(R.id.edit_location);
-          tv.setText(place.getAddress().toString());
-        }catch (Exception e){
-          e.printStackTrace();
-        }
+      public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
       }
 
       @Override
-      public void onError(Status status) {
-        // TODO: Handle the error.
+      public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        Task<AutocompletePredictionBufferResponse> results =
+                Places.getGeoDataClient(EditProfile.this).getAutocompletePredictions(charSequence.toString(), bounds,null);
+        results.addOnSuccessListener(new OnSuccessListener<AutocompletePredictionBufferResponse>() {
+          @Override
+          public void onSuccess(AutocompletePredictionBufferResponse autocompletePredictions) {
+            try {
+              autoComplete.clear();
+
+              for (int i = 0; i < results.getResult().getCount() && i < 10; i++) {
+                autoComplete.add(results.getResult().get(i).getFullText(null).toString());
+              }
+              results.getResult().release();
+            }catch (Exception e){
+              results.getResult().release();
+              autoComplete.clear();
+            }
+          }
+        }).addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception e) {
+            results.getResult().release();
+            autoComplete.clear();
+          }
+        });
+      }
+      @Override
+      public void afterTextChanged(Editable editable) {
       }
     });
 
-    ImageView icon = findViewById(R.id.place_picker_button);
-    icon.setOnClickListener(view -> placepicker());
-  }
+    ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        hideKeyboard(EditProfile.this);
+        autoComplete.getItem(position);
+      }
+    });
 
-  public  void placepicker(){
-    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
 
-    try {
-      startActivityForResult(builder.build(this), Constants.PLACE_PICKER_REQUEST);
-    }catch (Exception e){
-      e.printStackTrace();
-    }
   }
 
   private void pic_action() {

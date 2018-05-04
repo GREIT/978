@@ -1,77 +1,237 @@
 package it.polito.mad.greit.project;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CompleteRegistration extends AppCompatActivity {
   Button bb;
   FirebaseUser U;
   private static final String TAG = "CompleteRegistration";
-  
-  
+
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_complete_registration);
-    
+
     U = FirebaseAuth.getInstance().getCurrentUser();
-    
+
     bb = findViewById(R.id.complete_registration);
     bb.setOnClickListener(v -> registrationCompleted());
+
+    setuplocation();
   }
-  
+
+
+  public void setuplocation() {
+    LatLng southwest = new LatLng(180, -180);
+    LatLng northeast = new LatLng(180, -180);
+    LatLngBounds bounds = new LatLngBounds(southwest, northeast);
+    final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+    AutoCompleteTextView ACTV = findViewById(R.id.complete_location);
+    ACTV.setAdapter(autoComplete);
+    ACTV.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+      }
+
+      @Override
+      public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        Task<AutocompletePredictionBufferResponse> results =
+                Places.getGeoDataClient(CompleteRegistration.this).getAutocompletePredictions(charSequence.toString(), bounds, null);
+        results.addOnSuccessListener(new OnSuccessListener<AutocompletePredictionBufferResponse>() {
+          @Override
+          public void onSuccess(AutocompletePredictionBufferResponse autocompletePredictions) {
+            try {
+              autoComplete.clear();
+
+              for (int i = 0; i < results.getResult().getCount() && i < 10; i++) {
+                autoComplete.add(results.getResult().get(i).getFullText(null).toString());
+              }
+              results.getResult().release();
+            } catch (Exception e) {
+              results.getResult().release();
+              autoComplete.clear();
+            }
+          }
+        }).addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception e) {
+            results.getResult().release();
+            autoComplete.clear();
+          }
+        });
+      }
+
+      @Override
+      public void afterTextChanged(Editable editable) {
+      }
+    });
+
+    ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        hideKeyboard(CompleteRegistration.this);
+        autoComplete.getItem(position);
+      }
+    });
+  }
+
+  public static void hideKeyboard(Activity activity) {
+    InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    //Find the currently focused view, so we can grab the correct window token from it.
+    View view = activity.getCurrentFocus();
+    //If no view currently has focus, create a new one, just so we can grab a window token from it
+    if (view == null) {
+      view = new View(activity);
+    }
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+  }
+
   private void registrationCompleted() {
     EditText edit_nickname = findViewById(R.id.complete_nickname);
-    EditText edit_location = findViewById(R.id.complete_location);
-    EditText edit_bio = findViewById(R.id.complete_biography);
+    AutoCompleteTextView edit_location = findViewById(R.id.complete_location);
 
-//    if (TextUtils.isEmpty(edit_nickname.getText()) || TextUtils.isEmpty(edit_location.getText())
-//        || TextUtils.isEmpty(edit_bio.getText())) {
-    if (TextUtils.isEmpty(edit_nickname.getText())) {
+    if (TextUtils.isEmpty(edit_nickname.getText().toString().replaceAll(" ", ""))
+            || TextUtils.isEmpty(edit_location.getText().toString().replaceAll(" ", ""))) {
       AlertDialog.Builder builder = new AlertDialog.Builder(this);
       builder.setMessage(R.string.fill_fields)
-          .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-              Log.d(TAG, "Dialog clicked");
-            }
-          });
+              .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  dialog.dismiss();
+                }
+              });
       AlertDialog alert = builder.create();
       alert.show();
     } else {
-      Profile P = new Profile();
-      P.setName(U.getDisplayName());
-      P.setEmail(U.getEmail());
-      P.setBio(edit_bio.getText().toString());
-      P.setUsername(edit_nickname.getText().toString());
-      P.setLocation(edit_location.getText().toString());
-      
       FirebaseDatabase db = FirebaseDatabase.getInstance();
-      DatabaseReference dbref = db.getReference("USERS").child(U.getUid());
-      dbref.setValue(P);
-      
-      Intent intent = new Intent(this, MainActivity.class);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-      startActivity(intent);
+      db.getReference("USERS").addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+          boolean flag = false;
+          try {
+            Profile p;
+            for (DataSnapshot users : dataSnapshot.getChildren()) {
+              p = users.getValue(Profile.class);
+              if (p.getUsername().equals(edit_nickname.getText().toString())) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(CompleteRegistration.this);
+                builder.setMessage("Username already taken")
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                          @Override
+                          public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                          }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+                flag = true;
+              }
+            }
+
+            if (!flag) {
+              allowregistration();
+            }
+
+          } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(CompleteRegistration.this, "Registration failed", Toast.LENGTH_SHORT).show();
+          }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+      });
     }
   }
-  
+
+  public void allowregistration() {
+
+    EditText edit_nickname = findViewById(R.id.complete_nickname);
+    AutoCompleteTextView edit_location = findViewById(R.id.complete_location);
+    EditText edit_bio = findViewById(R.id.complete_biography);
+
+    Profile P = new Profile();
+    P.setName(U.getDisplayName());
+    P.setEmail(U.getEmail());
+    P.setBio(edit_bio.getText().toString());
+    P.setUsername(edit_nickname.getText().toString());
+    P.setLocation(edit_location.getText().toString());
+
+    FirebaseDatabase db = FirebaseDatabase.getInstance();
+    DatabaseReference dbref = db.getReference("USERS").child(U.getUid());
+    dbref.setValue(P).addOnSuccessListener(new OnSuccessListener<Void>() {
+      @Override
+      public void onSuccess(Void aVoid) {
+        Intent intent = new Intent(CompleteRegistration.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+      }
+    });
+
+  }
+
   @Override
   public void onBackPressed() {
     U.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -84,4 +244,5 @@ public class CompleteRegistration extends AppCompatActivity {
     });
     super.onBackPressed();
   }
+
 }
