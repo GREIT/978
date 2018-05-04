@@ -58,6 +58,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -200,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     //Create a new ArrayAdapter with your context and the simple layout for the dropdown menu provided by Android
     final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+    List<String> tmpAutoComplete = new LinkedList<>();
     
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     database.child("BOOKS").addValueEventListener(new ValueEventListener() {
@@ -211,13 +216,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
           //Get the suggestion by childing the key of the string you want to get.
           if (field.equals("authors") || field.equals("tags")) {
             for (DataSnapshot A : suggestionSnapshot.child(field).getChildren()) {
-              autoComplete.add(A.getKey());
+//              autoComplete.add(A.getKey());
+              if (!tmpAutoComplete.contains(A.getKey())) {
+                tmpAutoComplete.add(A.getKey());
+              }
             }
           } else {
             String suggestion = suggestionSnapshot.child(field).getValue(String.class);
-            autoComplete.add(suggestion);
+//            autoComplete.add(suggestion);
+            if (!tmpAutoComplete.contains(suggestion)) {
+              tmpAutoComplete.add(suggestion);
+            }
           }
         }
+        autoComplete.addAll(tmpAutoComplete);
       }
       
       @Override
@@ -303,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   
   private void startupRecycleView() {
     mResultList.setLayoutManager(new GridLayoutManager(this, 3));
-    mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(10), true));
+    mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(20), true));
     
     tw_searchMain.setText("Popular this period");
   
