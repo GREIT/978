@@ -13,6 +13,8 @@ public class Book implements Serializable {
   private String publisher;
   private String year;
   private String cover;
+  private int booksOnLoan;
+  private int lentBooks;
   private Map<String, String> tags;
 
   public Book() {
@@ -66,6 +68,22 @@ public class Book implements Serializable {
   
   public void setCover(String cover) {
     this.cover = cover;
+  }
+  
+  public int getBooksOnLoan() {
+    return booksOnLoan;
+  }
+  
+  public void setBooksOnLoan(int booksOnLoan) {
+    this.booksOnLoan = booksOnLoan;
+  }
+  
+  public int getLentBooks() {
+    return lentBooks;
+  }
+  
+  public void setLentBooks(int lentBooks) {
+    this.lentBooks = lentBooks;
   }
   
   public Map<String, String> getTags() {

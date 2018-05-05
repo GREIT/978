@@ -166,6 +166,9 @@ public class ShareNewBook extends AppCompatActivity {
               if (numberOfPossibleBooks > 0) {
                 
                 Book B = parseJSONintoBook(response);
+                B.setLentBooks(0);
+                B.setBooksOnLoan(0);
+                
                 Map<String, String> tags = B.getTags();
                 
                 List<String> title = cleanTitle(B.getTitle());

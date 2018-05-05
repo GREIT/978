@@ -154,6 +154,8 @@ public class CompleteBookRegistration extends AppCompatActivity {
       
       dbref = db.getReference("BOOKS/" + book.getISBN());
       
+      dbref.child("booksOnLoan").setValue(Integer.valueOf(book.getBooksOnLoan()) + 1);
+      
       for (String x : tagString) {
         if(!x.isEmpty())
           dbref.child("tags").child(x).setValue(x);

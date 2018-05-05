@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -306,13 +307,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   
   
   private void startupRecycleView() {
-    mResultList.setLayoutManager(new GridLayoutManager(this, 1));
+    LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+    layoutManager.setReverseLayout(true);
+    layoutManager.setStackFromEnd(true);
+    mResultList.setLayoutManager(layoutManager);
     mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
     mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(1, dpToPx(10), true));
     
     tw_searchMain.setText(R.string.main_title_search_1);
     
-    Query firebaseSearchQuery = mBookDb.orderByChild("title").limitToFirst(10);
+    Query firebaseSearchQuery = mBookDb.orderByChild("booksOnLoan").limitToFirst(10);
     FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
         Book.class,
         R.layout.book_card,
