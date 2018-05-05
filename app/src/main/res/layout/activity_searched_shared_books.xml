@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  android:background="#f5f5f5"
+  tools:context=".SearchedSharedBooks">
+
+  <include
+    android:id="@+id/searched_sharedBooks_toolbar"
+    layout="@layout/toolbar" />
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:orientation="horizontal"
+    android:padding="15dp">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_margin="10dp"
+      android:layout_weight="1"
+      android:orientation="vertical"
+      android:paddingHorizontal="10dp"
+      android:paddingVertical="5dp">
+
+      <TextView
+        android:id="@+id/bookCardTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:textColor="#000"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+      <TextView
+        android:id="@+id/bookCardAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold" />
+
+      <TextView
+        android:id="@+id/bookCardISBN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold" />
+
+      <TextView
+        android:id="@+id/bookCardYear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <ImageView
+      android:id="@+id/bookCardCover"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_weight="2"
+      android:background="?attr/selectableItemBackgroundBorderless"
+      android:scaleType="fitXY" />
+
+  </LinearLayout>
+
+  <android.support.v7.widget.RecyclerView
+    android:id="@+id/shared_books_result_list"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+</LinearLayout>

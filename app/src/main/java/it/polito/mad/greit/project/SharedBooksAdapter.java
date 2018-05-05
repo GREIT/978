@@ -32,9 +32,9 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
     
     public MyViewHolder(View view) {
       super(view);
-      title = (TextView) view.findViewById(R.id.book_card_title);
-      author = (TextView) view.findViewById(R.id.book_card_author);
-      thumbnail = (ImageView) view.findViewById(R.id.book_card_thumbnail);
+      //title = (TextView) view.findViewById(R.id.shared_book_card_owner);
+      //author = (TextView) view.findViewById(R.id.book_card_author);
+      thumbnail = (ImageView) view.findViewById(R.id.shared_book_card_thumbnail);
     }
   }
   

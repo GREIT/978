@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CompleteBookRegistration extends AppCompatActivity {
-  Book book;
+  private Book book;
   
   private Button bb;
   private Uri photo;

@@ -67,7 +67,7 @@ public class Book implements Serializable {
   public void setCover(String cover) {
     this.cover = cover;
   }
-
+  
   public Map<String, String> getTags() {
     return tags;
   }

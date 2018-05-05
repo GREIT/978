@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   
   private void setupSearchBox(String field) {
     mSearchButton = (Button) findViewById(R.id.search_button);
-    mSearchButton.setText(field.toUpperCase());
+    mSearchButton.setText(field.toUpperCase() + "▼");
     mSearchButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -331,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
           @Override
           public void onItemClick(View view, String ISBN) {
             hideKeyboard(MainActivity.this);
-            bookExpand(ISBN);
+            //bookExpand(ISBN);
           }
         });
         return viewHolder;
@@ -377,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
           @Override
           public void onItemClick(View view, String ISBN) {
             hideKeyboard(MainActivity.this);
-            bookExpand(ISBN);
+            //bookExpand(ISBN);
           }
         });
         return viewHolder;
@@ -423,97 +423,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       btSearch.setText("COPIES NEAR YOU");
       
       btSearch.setOnClickListener(v -> {
-        mClickListener.onItemClick(v, model.getISBN());
-      });
-    }
-  }
-  
-  private void bookExpand(String ISBN) {
-    mResultList.setLayoutManager(new GridLayoutManager(this, 2));
-    mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
-    mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(2, dpToPx(20), true));
-    
-    tw_searchMain.setText(R.string.main_title_search_3);
-    
-    Query firebaseSearchQuery = mSharedBookDb.orderByChild("isbn").equalTo(ISBN);
-    FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder>(
-        SharedBook.class,
-        R.layout.sharedbook_card,
-        SharedBookViewHolder.class,
-        firebaseSearchQuery
-    ) {
-      @Override
-      protected void populateViewHolder(SharedBookViewHolder viewHolder, SharedBook model, int position) {
-        viewHolder.setDetails(getApplicationContext(), model);
-      }
-      
-      @Override
-      public SharedBookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        SharedBookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
-        viewHolder.setOnClickListener(new SharedBookViewHolder.ClickListener() {
-          @Override
-          public void onItemClick(View view, SharedBook model) {
-            Intent intent = new Intent(MainActivity.this, ShowBookActivity.class);
-            
-            try {
-              intent.putExtra("book", model);
-            } catch (Exception e) {
-              intent.putExtra("book", "");
-            }
-            
-            startActivity(intent);
-          }
-        });
-        return viewHolder;
-      }
-    };
-    
-    mResultList.setAdapter(firebaseRecyclerAdapter);
-  }
-  
-  public static class SharedBookViewHolder extends RecyclerView.ViewHolder {
-    View mView;
-    private SharedBookViewHolder.ClickListener mClickListener;
-    
-    public SharedBookViewHolder(View itemView) {
-      super(itemView);
-      mView = itemView;
-    }
-    
-    public interface ClickListener {
-      void onItemClick(View view, SharedBook model);
-    }
-    
-    public void setOnClickListener(SharedBookViewHolder.ClickListener clickListener) {
-      mClickListener = clickListener;
-    }
-    
-    public void setDetails(Context ctx, SharedBook model) {
-      TextView book_title = (TextView) mView.findViewById(R.id.book_card_title);
-      TextView book_author = (TextView) mView.findViewById(R.id.book_card_author);
-      ImageView book_image = (ImageView) mView.findViewById(R.id.book_card_thumbnail);
-      
-      book_title.setText(model.getTitle());
-      book_author.setText(model.getAuthors().keySet().iterator().next());
-      
-      StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
-      sr.getBytes(5 * Constants.SIZE).addOnSuccessListener(bytes -> {
-        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-        Glide.with(ctx)
-            .asBitmap()
-            .load(stream.toByteArray())
-            .into(book_image);
-      }).addOnFailureListener(e ->
-          Glide.with(ctx)
-              .asBitmap()
-              .load(R.drawable.ic_book_blue_grey_900_48dp)
-              .into(book_image)
-      );
-      
-      itemView.setOnClickListener(v -> {
-        mClickListener.onItemClick(v, model);
+        Intent I = new Intent(ctx,
+            SearchedSharedBooks.class);
+        I.putExtra("book", model);
+        ctx.startActivity(I);
       });
     }
   }
