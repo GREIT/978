@@ -60,6 +60,7 @@
       android:layout_marginRight="20dp"
       android:layout_marginTop="10dp"
       android:background="@drawable/search_layout"
+      android:elevation="3dp"
       android:ems="10"
       android:fontFamily="@font/nunito_semibold"
       android:hint="@string/search_field"
@@ -90,6 +91,6 @@
   <android.support.v7.widget.RecyclerView
     android:id="@+id/result_list"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
+    android:layout_height="wrap_content" />
 
 </LinearLayout>
