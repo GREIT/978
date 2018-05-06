@@ -6,7 +6,7 @@
     <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="android:colorPrimary">@color/colorPrimary</item>
     <item name="android:colorAccent">@color/colorAccent</item>
-    <item name="android:windowBackground">@android:color/white</item>
+    <item name="android:windowBackground">@color/backgroundColor</item>
     // your status bar color
   </style>
 </resources>

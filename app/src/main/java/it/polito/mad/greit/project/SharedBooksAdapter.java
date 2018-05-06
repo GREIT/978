@@ -32,9 +32,9 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
     
     public MyViewHolder(View view) {
       super(view);
-      title = (TextView) view.findViewById(R.id.book_card_title);
-      author = (TextView) view.findViewById(R.id.book_card_author);
-      thumbnail = (ImageView) view.findViewById(R.id.book_card_thumbnail);
+      //title = (TextView) view.findViewById(R.id.shared_book_card_owner);
+      //author = (TextView) view.findViewById(R.id.book_card_author);
+      thumbnail = (ImageView) view.findViewById(R.id.shared_book_card_thumbnail);
     }
   }
   
@@ -54,8 +54,8 @@ public class SharedBooksAdapter extends RecyclerView.Adapter<SharedBooksAdapter.
   @Override
   public void onBindViewHolder(MyViewHolder holder, int position) {
     SharedBook book = bookList.get(position);
-    holder.title.setText(book.getTitle());
-    holder.author.setText(book.getAuthors().keySet().iterator().next());
+    //holder.title.setText(book.getTitle());
+    //holder.author.setText(book.getAuthors().keySet().iterator().next());
 
     if (book.getKey() != null) {
       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
