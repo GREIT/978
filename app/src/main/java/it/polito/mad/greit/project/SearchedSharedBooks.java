@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.GlideException;
@@ -144,10 +146,22 @@ public class SearchedSharedBooks extends AppCompatActivity {
       //TextView book_owner = (TextView) mView.findViewById(R.id.shared_book_card_owner);
       RatingBar book_ratings = (RatingBar) mView.findViewById(R.id.shared_book_card_conditions);
       ImageView book_image = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
+      ImageView showMoreInfo = (ImageView) mView.findViewById(R.id.shared_book_card_moreInfo);
+      ImageView contactForLoan = (ImageView) mView.findViewById(R.id.shared_book_card_contactForLoan);
       
       //book_owner.setText(model.getOwner());
       book_ratings.setRating(Float.valueOf(model.getConditions()));
       //book_author.setText(model.getAuthors().keySet().iterator().next());
+      
+      showMoreInfo.setImageResource(R.drawable.ic_zoom_in_white_48dp);
+      showMoreInfo.setOnClickListener(v -> {
+        Intent I = new Intent(ctx, ShowBookActivity.class);
+        I.putExtra("book", model);
+        ctx.startActivity(I);
+      });
+      
+      contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
+      contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, "Start chat", Toast.LENGTH_SHORT).show());
       
       
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");

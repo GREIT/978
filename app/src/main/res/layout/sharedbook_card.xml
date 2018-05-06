@@ -63,31 +63,31 @@
         android:orientation="vertical">
 
         <ImageView
+          android:id="@+id/shared_book_card_contactForLoan"
           android:layout_width="50dp"
           android:layout_height="40dp"
           android:layout_weight="1"
           android:elevation="3dp"
           android:padding="10dp"
-          android:scaleType="fitXY"
-          android:src="@drawable/ic_textsms_white_48dp" />
+          android:scaleType="fitXY" />
 
         <ImageView
+          android:id="@+id/shared_book_card_moreInfo"
           android:layout_width="match_parent"
           android:layout_height="40dp"
           android:layout_weight="1"
           android:elevation="3dp"
           android:padding="10dp"
-          android:scaleType="fitXY"
-          android:src="@drawable/ic_zoom_in_white_48dp" />
+          android:scaleType="fitXY" />
 
         <ImageView
+          android:id="@+id/shared_book_card_distance"
           android:layout_width="match_parent"
           android:layout_height="40dp"
           android:layout_weight="1"
           android:elevation="3dp"
           android:padding="10dp"
-          android:scaleType="fitXY"
-          android:src="@drawable/ic_location_on_white_48dp" />
+          android:scaleType="fitXY" />
 
       </LinearLayout>
 
