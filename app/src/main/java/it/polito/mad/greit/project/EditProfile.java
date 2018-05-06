@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,6 +19,9 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -92,6 +96,7 @@ public class EditProfile extends AppCompatActivity {
   private Profile profile;
   private CircleImageView ciw;
   private byte[] photo = null;
+  boolean def = false;
 
 
   @Override
@@ -125,58 +130,98 @@ public class EditProfile extends AppCompatActivity {
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
   }
 
-  public  void setuplocation(){
-    LatLng southwest = new LatLng(180,-180);
-    LatLng northeast = new LatLng(180,-180);
-    LatLngBounds bounds = new LatLngBounds(southwest,northeast);
-    final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-    AutoCompleteTextView ACTV = findViewById(R.id.edit_location);
-    ACTV.setAdapter(autoComplete);
-    ACTV.addTextChangedListener(new TextWatcher() {
-      @Override
-      public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-      }
+  public  void setuplocation() {
 
-      @Override
-      public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        Task<AutocompletePredictionBufferResponse> results =
-                Places.getGeoDataClient(EditProfile.this).getAutocompletePredictions(charSequence.toString(), bounds,null);
-        results.addOnSuccessListener(new OnSuccessListener<AutocompletePredictionBufferResponse>() {
-          @Override
-          public void onSuccess(AutocompletePredictionBufferResponse autocompletePredictions) {
-            try {
-              autoComplete.clear();
+    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && !def) {
+      ActivityCompat.requestPermissions(EditProfile.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.FINE_LOCATION_PERMISSION);
+      ActivityCompat.requestPermissions(EditProfile.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Constants.COARSE_LOCATION_PERMISSION);
+    } else {
 
-              for (int i = 0; i < results.getResult().getCount() && i < 10; i++) {
-                autoComplete.add(results.getResult().get(i).getFullText(null).toString());
-              }
-              results.getResult().release();
-            }catch (Exception e){
-              results.getResult().release();
-              autoComplete.clear();
+      try {
+        double radiusDegrees = 5;
+        LatLng northEast,southWest;
+        if(def){
+          northEast = new LatLng(41.5 + radiusDegrees, 12.3 + radiusDegrees);
+          southWest = new LatLng(41.5 - radiusDegrees, 12.3 - radiusDegrees);
+          Log.d("POSPOSPOS", "setuplocation: DEFAULT");
+        }else{
+          LocationManager mLocationManager;
+          Location myLocation;
+
+          mLocationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+          List<String> providers = mLocationManager.getProviders(true);
+          Location bestLocation = null;
+          for (String provider : providers) {
+            Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+              continue;
+            }
+            if (bestLocation == null || l.getAccuracy() > bestLocation.getAccuracy()) {
+              bestLocation = l;
             }
           }
-        }).addOnFailureListener(new OnFailureListener() {
+
+          northEast = new LatLng(bestLocation.getLatitude() + radiusDegrees, bestLocation.getLongitude() + radiusDegrees);
+          southWest = new LatLng(bestLocation.getLatitude() - radiusDegrees, bestLocation.getLongitude() - radiusDegrees);
+          Log.d("POSPOSPOS", "setuplocation: " + bestLocation.getLatitude() + "-" + bestLocation.getLongitude());
+        }
+
+        LatLngBounds bounds = LatLngBounds.builder().include(northEast).include(southWest).build();
+        final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        AutoCompleteTextView ACTV = findViewById(R.id.edit_location);
+        ACTV.setAdapter(autoComplete);
+        ACTV.addTextChangedListener(new TextWatcher() {
           @Override
-          public void onFailure(@NonNull Exception e) {
-            results.getResult().release();
-            autoComplete.clear();
+          public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+          }
+
+          @Override
+          public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            Task<AutocompletePredictionBufferResponse> results =
+                    Places.getGeoDataClient(EditProfile.this).getAutocompletePredictions(charSequence.toString(), bounds, null);
+            results.addOnSuccessListener(new OnSuccessListener<AutocompletePredictionBufferResponse>() {
+              @Override
+              public void onSuccess(AutocompletePredictionBufferResponse autocompletePredictions) {
+                try {
+                  autoComplete.clear();
+
+                  for (int i = 0; i < results.getResult().getCount() && i < 10; i++) {
+                    autoComplete.add(results.getResult().get(i).getFullText(null).toString());
+                  }
+                  results.getResult().release();
+                } catch (Exception e) {
+                  results.getResult().release();
+                  autoComplete.clear();
+                }
+              }
+            }).addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception e) {
+                results.getResult().release();
+                autoComplete.clear();
+              }
+            });
+          }
+
+          @Override
+          public void afterTextChanged(Editable editable) {
           }
         });
-      }
-      @Override
-      public void afterTextChanged(Editable editable) {
-      }
-    });
 
-    ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-      @Override
-      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        hideKeyboard(EditProfile.this);
-        autoComplete.getItem(position);
-      }
-    });
+        ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+          @Override
+          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            hideKeyboard(EditProfile.this);
+            autoComplete.getItem(position);
+          }
+        });
 
+      }catch (Exception e){
+        e.printStackTrace();
+      }
+    }
 
   }
 
@@ -448,6 +493,20 @@ public class EditProfile extends AppCompatActivity {
   public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
     if (requestCode == Constants.CAMERA_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
       Camera();
+    }
+    else if(requestCode == Constants.FINE_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+     setuplocation();
+    }
+    else if(requestCode == Constants.COARSE_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+      setuplocation();
+    }
+    else if(requestCode == Constants.COARSE_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
+      def=true;
+      setuplocation();
+    }
+    else if(requestCode == Constants.FINE_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
+      def=true;
+      setuplocation();
     }
   }
 
