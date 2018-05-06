@@ -153,7 +153,7 @@ public class ShareNewBook extends AppCompatActivity {
     RequestQueue queue = Volley.newRequestQueue(this);
     
     String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + ISBN;
-
+    
     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
         (Request.Method.GET, url, (String) null, new Response.Listener<JSONObject>() {
           @Override
@@ -166,28 +166,30 @@ public class ShareNewBook extends AppCompatActivity {
               if (numberOfPossibleBooks > 0) {
                 
                 Book B = parseJSONintoBook(response);
-                Map<String,String> tags = B.getTags();
-
+                B.setLentBooks(0);
+                B.setBooksOnLoan(0);
+                
+                Map<String, String> tags = B.getTags();
+                
                 List<String> title = cleanTitle(B.getTitle());
-
-                for(String s : title) {
+                
+                for (String s : title) {
                   tags.put(s, "true");
                 }
-
-                for(String s : B.getAuthors().keySet()) {
+                
+                for (String s : B.getAuthors().keySet()) {
                   tags.put(cleanAuthor(s), "true");
                 }
                 tags.put(B.getISBN(), "true");
-                if(!B.getPublisher().equals("")){
+                if (!B.getPublisher().equals("")) {
                   List<String> pubs = cleanTitle(B.getPublisher());
-                  for(String s : pubs) {
+                  for (String s : pubs) {
                     tags.put(s, "true");
                   }
                 }
-
-
+                
                 FirebaseDatabase db = FirebaseDatabase.getInstance();
-
+                
                 DatabaseReference dbref = db.getReference("BOOKS").child(B.getISBN());
                 dbref.setValue(B);
                 
@@ -294,7 +296,7 @@ public class ShareNewBook extends AppCompatActivity {
     } catch (Exception E) {
       toBeReturned.setISBN(this.ISBN);
     }
-  
+    
     try {
       JSONObject images = bookInfo.getJSONObject("imageLinks");
       toBeReturned.setCover(images.getString("thumbnail"));
@@ -392,20 +394,20 @@ public class ShareNewBook extends AppCompatActivity {
     return BitmapFactory.decodeStream(ctx.getContentResolver()
         .openInputStream(uri), null, bmOptions);
   }
-
-  private static String cleanAuthor( String s ){
+  
+  private static String cleanAuthor(String s) {
     String[] lasts = s.split(" ");
-    String last = lasts[lasts.length-1];
+    String last = lasts[lasts.length - 1];
     last = last.replaceAll("[\\/\\#\\.\\/\\$\\[]", "");
     last = last.toLowerCase();
     return last;
   }
-
-  private static List<String> cleanTitle( String s ) {
+  
+  private static List<String> cleanTitle(String s) {
     String[] lasts = s.split(" ");
     List<String> ret = new ArrayList<>();
     String tmp;
-    for (String last : lasts){
+    for (String last : lasts) {
       tmp = last.replaceAll("[\\/\\#\\.\\/\\$\\[]", "");
       tmp = tmp.toLowerCase();
       ret.add(new String(tmp));

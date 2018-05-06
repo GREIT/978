@@ -177,7 +177,7 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
                         intent.putExtra("book","");
                     }
                     try{
-                        ImageView iv = v.findViewById(R.id.book_card_thumbnail);
+                        ImageView iv = v.findViewById(R.id.shared_book_card_thumbnail);
                         Bitmap bitmap = ((BitmapDrawable)iv.getDrawable()).getBitmap();
                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);

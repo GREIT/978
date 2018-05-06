@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CompleteBookRegistration extends AppCompatActivity {
-  Book book;
+  private Book book;
   
   private Button bb;
   private Uri photo;
@@ -153,6 +153,8 @@ public class CompleteBookRegistration extends AppCompatActivity {
       dbref.setValue(sb);
       
       dbref = db.getReference("BOOKS/" + book.getISBN());
+      
+      dbref.child("booksOnLoan").setValue(Integer.valueOf(book.getBooksOnLoan()) + 1);
       
       for (String x : tagString) {
         if(!x.isEmpty())
