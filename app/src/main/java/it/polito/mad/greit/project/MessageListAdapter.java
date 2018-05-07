@@ -3,6 +3,7 @@ package it.polito.mad.greit.project;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,8 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
+
+        Log.d("TYPEVIEW", "onCreateViewHolder: " + viewType);
 
         if (viewType == VIEW_TYPE_MESSAGE_SENT) {
             view = LayoutInflater.from(parent.getContext())
@@ -117,7 +120,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
 
     private static String formatDateTime(long time){
-        Date date = new Date(time);
+        Date date = new Date(time*1000L);
         return date.toString();
     }
 }

@@ -3,6 +3,11 @@ package it.polito.mad.greit.project;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,13 +38,17 @@ public class ChatActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USERS_MESSAGES").child("tempID");
         ArrayList<Message> messages = new ArrayList<>();
+        RecyclerView rv = findViewById(R.id.chat_message_list);
         MessageListAdapter mla = new MessageListAdapter(ChatActivity.this,messages);
+        rv.setLayoutManager(new LinearLayoutManager(this));
+        rv.setAdapter(mla);
 
         fbd.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     messages.add(ds.getValue(Message.class));
+                    Log.d("TAGTAGTAG", "onDataChange: " + ds.getValue().toString());
                     mla.notifyDataSetChanged();
                 }
             }
@@ -69,7 +78,8 @@ public class ChatActivity extends AppCompatActivity {
                 FirebaseAuth.getInstance().getCurrentUser().getDisplayName(),msg);
 
         DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USERS_MESSAGES").child("tempID");
-        fbd.setValue(tosend);
+        String key = fbd.push().getKey();
+        fbd.child(key).setValue(tosend);
 
 
     }
