@@ -82,5 +82,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_desc">Navigation header</string>
 
+    //chat
+    <string name="inbox">Messaggi</string>
+
 
 </resources>

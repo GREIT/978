@@ -1,6 +1,8 @@
 package it.polito.mad.greit.project;
 
-public class Chat {
+import java.io.Serializable;
+
+public class Chat implements Serializable{
     private String chatID;
     private String userID;
     private String username;
