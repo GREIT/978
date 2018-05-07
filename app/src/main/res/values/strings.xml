@@ -93,5 +93,7 @@
 
   //Chat
   <string name="inbox">Inbox</string>
+  <string name="input">Insert here...</string>
+
 
 </resources>

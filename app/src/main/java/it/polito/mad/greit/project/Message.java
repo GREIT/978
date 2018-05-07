@@ -4,18 +4,18 @@ import java.io.Serializable;
 
 public class Message  implements Serializable {
     private long timestamp;
-    private String userID;
-    private String userName;
+    private String senderID;
+    private String sender;
     private String message;
 
     public Message(){
 
     }
 
-    public Message(long timestamp, String userID, String userName, String message) {
+    public Message(long timestamp, String senderID, String sender, String message) {
         this.timestamp = timestamp;
-        this.userID = userID;
-        this.userName = userName;
+        this.senderID = senderID;
+        this.sender = sender;
         this.message = message;
     }
 
@@ -27,20 +27,20 @@ public class Message  implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public String getUserID() {
-        return userID;
+    public String getSenderID() {
+        return senderID;
     }
 
-    public void setUserID(String userID) {
-        this.userID = userID;
+    public void setSenderID(String senderID) {
+        this.senderID = senderID;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getSender() {
+        return sender;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
     public String getMessage() {

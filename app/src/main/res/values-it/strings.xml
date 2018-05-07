@@ -84,6 +84,7 @@
 
     //chat
     <string name="inbox">Messaggi</string>
+    <string name="input">Inserisci qui...</string>
 
 
 </resources>
