@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     tw_searchMain.setText(R.string.main_title_search_1);
     
-    Query firebaseSearchQuery = mBookDb.orderByChild("booksOnLoan").limitToFirst(10);
+    Query firebaseSearchQuery = mBookDb.orderByChild("booksOnLoan").limitToFirst(8);
     FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
         Book.class,
         R.layout.book_card,
@@ -468,7 +468,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Handle navigation view item clicks here.
     int id = item.getItemId();
     
-    if (id == R.id.nav_shared_books) {
+    if (id == R.id.nav_my_books) {
       Intent intent = new Intent(MainActivity.this, SharedBooksByUserSplitted.class);
       startActivity(intent);
     } else if (id == R.id.nav_sign_out) {
