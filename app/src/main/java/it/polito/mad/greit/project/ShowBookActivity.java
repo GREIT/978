@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.*;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +22,12 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -71,12 +78,13 @@ public class ShowBookActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (R.id.book_show_action_borrow == item.getItemId()) {
-            Context context = getApplicationContext();
+            /*Context context = getApplicationContext();
             CharSequence text = "Borrow Asked!";
             int duration = Toast.LENGTH_SHORT;
 
             Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
+            toast.show();*/
+            openchat();
             return true;
         } else if (R.id.book_show_action_star == item.getItemId()) {
             Context context = getApplicationContext();
@@ -178,5 +186,62 @@ public class ShowBookActivity extends AppCompatActivity {
             iv.setImageResource(R.drawable.ic_book_blue_grey_900_48dp);
         }
 
+    }
+
+    public void openchat(){
+        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference dbref = db.getReference("USER_CHATS").child(fbu.getUid());
+        dbref.addListenerForSingleValueEvent(new ValueEventListener() {
+            Boolean chat_exists = false;
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        Chat c = ds.getValue(Chat.class);
+                        if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwner())){
+                            //chat already present
+                            Intent intent = new Intent(ShowBookActivity.this,ChatActivity.class);
+                            intent.putExtra("chatid",c.getChatID());
+                            intent.putExtra("ownerid",sb.getOwner());
+                            startActivity(intent);
+                            chat_exists = true;
+                        }
+                    }
+
+                    if(!chat_exists){
+                        Chat c = new Chat();
+                        c.setBookID(sb.getKey());
+                        c.setUserID(sb.getOwner());
+                        c.setUsername("user");
+                        c.setLastMsg("");
+                        c.setUnreadCount(0);
+                        c.setBookTitle(sb.getTitle());
+                        DatabaseReference user_mess = db.getReference("USERS_MESSAGES");
+                        String chatid = user_mess.push().getKey();
+                        c.setChatID(chatid);
+                        dbref.child(chatid).setValue(c);
+
+                        DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwner());
+                        c.setUserID(fbu.getUid());
+                        c.setUsername(fbu.getDisplayName());
+                        ref_second_user.child(chatid).setValue(c);
+
+                        Intent intent = new Intent(ShowBookActivity.this,ChatActivity.class);
+                        intent.putExtra("chatid",chatid);
+                        intent.putExtra("ownerid",sb.getOwner());
+                        startActivity(intent);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

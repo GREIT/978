@@ -25,9 +25,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -161,7 +166,8 @@ public class SearchedSharedBooks extends AppCompatActivity {
       });
       
       contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
-      contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, "Start chat", Toast.LENGTH_SHORT).show());
+      //contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, "Start chat", Toast.LENGTH_SHORT).show());
+      contactForLoan.setOnClickListener(v -> openchat(ctx,model));
       
       
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
@@ -188,6 +194,64 @@ public class SearchedSharedBooks extends AppCompatActivity {
       
       itemView.setOnClickListener(v -> {
         mClickListener.onItemClick(v, model);
+      });
+    }
+
+    private void openchat(Context ctx,SharedBook sb){
+      FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
+      FirebaseDatabase db = FirebaseDatabase.getInstance();
+      DatabaseReference dbref = db.getReference("USER_CHATS").child(fbu.getUid());
+      dbref.addListenerForSingleValueEvent(new ValueEventListener() {
+        Boolean chat_exists = false;
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+          try {
+            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+              Chat c = ds.getValue(Chat.class);
+              if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwner())){
+                //chat already present
+                Intent intent = new Intent(ctx,ChatActivity.class);
+                intent.putExtra("chatid",c.getChatID());
+                intent.putExtra("ownerid",sb.getOwner());
+                ctx.startActivity(intent);
+                chat_exists = true;
+              }
+            }
+
+            if(!chat_exists){
+              Chat c = new Chat();
+              c.setBookID(sb.getKey());
+              c.setUserID(sb.getOwner());
+              c.setUsername("user");
+              c.setLastMsg("");
+              c.setUnreadCount(0);
+              c.setBookTitle(sb.getTitle());
+              DatabaseReference user_mess = db.getReference("USERS_MESSAGES");
+              String chatid = user_mess.push().getKey();
+              c.setChatID(chatid);
+              dbref.child(chatid).setValue(c);
+
+              DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwner());
+              c.setUserID(fbu.getUid());
+              c.setUsername(fbu.getDisplayName());
+              ref_second_user.child(chatid).setValue(c);
+
+              Intent intent = new Intent(ctx,ChatActivity.class);
+              intent.putExtra("chatid",chatid);
+              intent.putExtra("ownerid",sb.getOwner());
+              ctx.startActivity(intent);
+
+            }
+          }catch (Exception e){
+            e.printStackTrace();
+          }
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
       });
     }
   }
@@ -231,4 +295,5 @@ public class SearchedSharedBooks extends AppCompatActivity {
     Resources r = getResources();
     return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
   }
+
 }

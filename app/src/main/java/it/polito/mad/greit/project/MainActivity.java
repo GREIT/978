@@ -472,7 +472,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       Intent intent = new Intent(MainActivity.this, SharedBooksByUserSplitted.class);
       startActivity(intent);
     } else if(id == R.id.nav_chat){
-      Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+      Intent intent = new Intent(MainActivity.this, InboxActivity.class);
       startActivity(intent);
     } else if (id == R.id.nav_sign_out) {
       FirebaseAuth.getInstance().signOut();
