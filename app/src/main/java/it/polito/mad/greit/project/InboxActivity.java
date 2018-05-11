@@ -107,8 +107,7 @@ public class InboxActivity extends AppCompatActivity {
 
     public void openChat(Chat chat){
         Intent intent = new Intent(InboxActivity.this,ChatActivity.class);
-        intent.putExtra("chatid",chat.getChatID());
-        intent.putExtra("ownerid",chat.getUserID());
+        intent.putExtra("chat",chat);
         startActivity(intent);
     }
 }

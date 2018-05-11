@@ -8,6 +8,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -34,8 +35,16 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        final String chatID = getIntent().getStringExtra("chatid");
-        final String ownerID = getIntent().getStringExtra("ownerid");
+        final Chat chat = (Chat) getIntent().getSerializableExtra("chat");
+        final String chatID = chat.getChatID();
+        final String ownerID = chat.getUserID();
+
+        Toolbar t;
+        t = findViewById(R.id.chat_toolbar);
+        t.setTitle(chat.getUsername());
+        setSupportActionBar(t);
+        t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        t.setNavigationOnClickListener(view -> onBackPressed());
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USER_MESSAGES").child(chatID);
@@ -43,7 +52,10 @@ public class ChatActivity extends AppCompatActivity {
         ArrayList<Message> messages = new ArrayList<>();
         RecyclerView rv = findViewById(R.id.chat_message_list);
         MessageListAdapter mla = new MessageListAdapter(ChatActivity.this,messages);
-        rv.setLayoutManager(new LinearLayoutManager(this));
+
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+        rv.setLayoutManager(linearLayoutManager);
         rv.setAdapter(mla);
 
         fbd.addValueEventListener(new ValueEventListener() {
@@ -53,6 +65,7 @@ public class ChatActivity extends AppCompatActivity {
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     messages.add(ds.getValue(Message.class));
                     mla.notifyDataSetChanged();
+                    rv.smoothScrollToPosition(mla.getItemCount() - 1);
                 }
             }
 
@@ -68,6 +81,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String msg = et.getText().toString();
+                et.setText("");
                 Message tosend = new Message(System.currentTimeMillis()/1000L,
                         FirebaseAuth.getInstance().getCurrentUser().getUid(),
                         FirebaseAuth.getInstance().getCurrentUser().getDisplayName(),msg);
@@ -131,63 +145,3 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 }
-
-
-
-/*
-@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
-
-        //String chatID = getIntent().getStringExtra("chatID");
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USERS_MESSAGES").child("tempID");
-        ArrayList<Message> messages = new ArrayList<>();
-        RecyclerView rv = findViewById(R.id.chat_message_list);
-        MessageListAdapter mla = new MessageListAdapter(ChatActivity.this,messages);
-        rv.setLayoutManager(new LinearLayoutManager(this));
-        rv.setAdapter(mla);
-
-        fbd.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    messages.add(ds.getValue(Message.class));
-                    Log.d("TAGTAGTAG", "onDataChange: " + ds.getValue().toString());
-                    mla.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        ImageButton ib = findViewById(R.id.chat_send_button);
-        EditText et = findViewById(R.id.chat_input);
-        ib.setOnClickListener(view -> send(et.getText().toString()));
-
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(ChatActivity.this,MainActivity.class);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-    }
-
-    public void send(String msg){
-        Message tosend = new Message(System.currentTimeMillis()/1000L,
-                FirebaseAuth.getInstance().getCurrentUser().getUid(),
-                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(),msg);
-
-        DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USERS_MESSAGES").child("tempID");
-        String key = fbd.push().getKey();
-        fbd.child(key).setValue(tosend);
-
-
-    }
- */

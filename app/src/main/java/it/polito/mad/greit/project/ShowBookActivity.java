@@ -202,8 +202,7 @@ public class ShowBookActivity extends AppCompatActivity {
                         if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwner())){
                             //chat already present
                             Intent intent = new Intent(ShowBookActivity.this,ChatActivity.class);
-                            intent.putExtra("chatid",c.getChatID());
-                            intent.putExtra("ownerid",sb.getOwner());
+                            intent.putExtra("chat",c);
                             startActivity(intent);
                             chat_exists = true;
                         }
@@ -228,8 +227,7 @@ public class ShowBookActivity extends AppCompatActivity {
                         ref_second_user.child(chatid).setValue(c);
 
                         Intent intent = new Intent(ShowBookActivity.this,ChatActivity.class);
-                        intent.putExtra("chatid",chatid);
-                        intent.putExtra("ownerid",sb.getOwner());
+                        intent.putExtra("chat",c);
                         startActivity(intent);
                     }
                 }catch (Exception e){

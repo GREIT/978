@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -51,7 +52,10 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     // Passes the message object to a ViewHolder so that the contents can be bound to UI.
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Message message = (Message) mMessageList.get(position);
+        //to invert order of showning
+        int iPos = position;
+
+        Message message = (Message) mMessageList.get(iPos);
 
         switch (holder.getItemViewType()) {
             case VIEW_TYPE_MESSAGE_SENT:
@@ -121,6 +125,9 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
     private static String formatDateTime(long time){
         Date date = new Date(time*1000L);
-        return date.toString();
+        SimpleDateFormat dt1 = new SimpleDateFormat("dd-MM hh:mm");
+
+
+        return dt1.format(date);
     }
 }
