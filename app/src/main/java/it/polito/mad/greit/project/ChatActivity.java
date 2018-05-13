@@ -82,7 +82,8 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String msg = et.getText().toString();
                 et.setText("");
-                Message tosend = new Message(System.currentTimeMillis()/1000L,
+                long time = System.currentTimeMillis()/1000L;
+                Message tosend = new Message(time,
                         FirebaseAuth.getInstance().getCurrentUser().getUid(),
                         FirebaseAuth.getInstance().getCurrentUser().getDisplayName(),msg);
 
@@ -98,6 +99,7 @@ public class ChatActivity extends AppCompatActivity {
                         try {
                             Chat c = dataSnapshot.getValue(Chat.class);
                             c.setLastMsg(msg);
+                            c.setTimestamp(time);
                             sender_chat.setValue(c);
                         }catch (Exception e){
                             e.printStackTrace();
@@ -118,6 +120,7 @@ public class ChatActivity extends AppCompatActivity {
                         try {
                             Chat c = dataSnapshot.getValue(Chat.class);
                             c.setLastMsg(msg);
+                            c.setTimestamp(time);
                             c.setUnreadCount(c.getUnreadCount()+1);
                             receiver_chat.setValue(c);
                         }catch (Exception e){

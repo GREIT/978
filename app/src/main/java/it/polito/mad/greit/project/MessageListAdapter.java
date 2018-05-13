@@ -52,7 +52,6 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     // Passes the message object to a ViewHolder so that the contents can be bound to UI.
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        //to invert order of showning
         int iPos = position;
 
         Message message = (Message) mMessageList.get(iPos);
@@ -94,15 +93,12 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             super(itemView);
             messageText = (TextView) itemView.findViewById(R.id.text_message_body);
             timeText = (TextView) itemView.findViewById(R.id.text_message_time);
-            nameText = (TextView) itemView.findViewById(R.id.text_message_name);
         }
 
         void bind(Message message) {
             messageText.setText(message.getMessage());
-
             // Format the stored timestamp into a readable String using method.
             timeText.setText(MessageListAdapter.formatDateTime(message.getTimestamp()));
-            nameText.setText(message.getSender());
         }
     }
 
