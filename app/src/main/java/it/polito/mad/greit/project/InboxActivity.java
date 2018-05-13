@@ -56,10 +56,13 @@ public class InboxActivity extends AppCompatActivity {
         dbref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                adapter.clear();
+                ArrayList<Chat> chats = new ArrayList<>();
+                chats.clear();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    adapter.add(ds.getValue(Chat.class));
+                    chats.add(ds.getValue(Chat.class));
                 }
+                //adapter.clear();
+                adapter.addAll(chats);
             }
 
             @Override

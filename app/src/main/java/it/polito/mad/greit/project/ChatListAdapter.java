@@ -16,15 +16,20 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+
+import static android.support.v7.util.SortedList.INVALID_POSITION;
 
 public class ChatListAdapter extends RecyclerView.Adapter {
     private Context mContext;
     private SortedList<Chat> chatList;
+    private HashMap<String, Chat> chatMap;
     private FirebaseUser user;
 
     public ChatListAdapter(Context context) {
         mContext = context;
+        this.chatMap = new HashMap<>();
         this.chatList = new SortedList<>(Chat.class, new SortedList.Callback<Chat>(){
 
             @Override
@@ -54,7 +59,9 @@ public class ChatListAdapter extends RecyclerView.Adapter {
 
             @Override
             public boolean areContentsTheSame(Chat oldItem, Chat newItem) {
-                return oldItem.getChatID().equals(newItem.getChatID());
+                if(oldItem.getChatID()==newItem.getChatID())
+                    return oldItem.getTimestamp() == newItem.getTimestamp();
+                else return false;
             }
 
             @Override
@@ -68,16 +75,20 @@ public class ChatListAdapter extends RecyclerView.Adapter {
     //conversation helpers
     public void addAll(List<Chat> chats) {
         chatList.beginBatchedUpdates();
+        Chat old; int indexOld;
         for (int i = 0; i < chats.size(); i++) {
-            chatList.add(chats.get(i));
+            if(chatMap.containsKey(chats.get(i).getChatID())){
+                old = chatMap.get(chats.get(i).getChatID());
+                indexOld = chatList.indexOf(old);
+                chatList.updateItemAt(indexOld, chats.get(i));
+                chatMap.put(chats.get(i).getChatID(), chats.get(i));
+            }
+            else {
+                chatList.add(chats.get(i));
+                chatMap.put(chats.get(i).getChatID(), chats.get(i));
+            }
         }
         chatList.endBatchedUpdates();
-    }
-
-    //conversation helpers
-    public void add(Chat chat) {
-        chatList.add(chat);
-
     }
 
     public Chat get(int position) {

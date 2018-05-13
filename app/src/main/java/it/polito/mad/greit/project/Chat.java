@@ -80,4 +80,12 @@ public class Chat implements Serializable, Comparable<Chat>{
     public int compareTo(Chat o){
         return (int) (this.timestamp - o.timestamp);
     }
+
+    @Override
+    public boolean equals(Object o){
+        if(o.getClass().equals(Chat.class)){
+            return this.chatID.equals( ((Chat) o).chatID);
+        }
+        return false;
+    }
 }
