@@ -2,7 +2,7 @@ package it.polito.mad.greit.project;
 
 import java.io.Serializable;
 
-public class Chat implements Serializable{
+public class Chat implements Serializable, Comparable<Chat>{
     private String chatID;
     private String userID;
     private String username;
@@ -10,6 +10,7 @@ public class Chat implements Serializable{
     private String bookTitle;
     private String lastMsg;
     private long unreadCount;
+    private long timestamp;
 
     public String getChatID() {
         return chatID;
@@ -65,5 +66,18 @@ public class Chat implements Serializable{
 
     public void setUnreadCount(long unreadCount) {
         this.unreadCount = unreadCount;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    @Override
+    public int compareTo(Chat o){
+        return (int) (this.timestamp - o.timestamp);
     }
 }
