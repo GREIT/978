@@ -415,8 +415,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       TextView twYear = (TextView) mView.findViewById(R.id.bookCardYear);
       ImageView iwCover = (ImageView) mView.findViewById(R.id.bookCardCover);
       Button btSearch = (Button) mView.findViewById(R.id.bookCardSearchButton);
-      
-      twAuthor.setText("By " + model.getAuthors().keySet().iterator().next());
+  
+      String AS = android.text.TextUtils.join(", ", model.getAuthors().keySet());
+      twAuthor.setText("By " + AS);
       twTitle.setText(model.getTitle());
       twISBN.setText(model.getISBN());
       twYear.setText(model.getYear());

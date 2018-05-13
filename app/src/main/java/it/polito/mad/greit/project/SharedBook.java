@@ -16,6 +16,7 @@ public class SharedBook extends Book implements Serializable {
   private String owner;
   private String borrowTo;
   private String addedOn;
+  private String position;
   private Boolean shared;
   //private Map<String, String> tags;
   
@@ -73,6 +74,14 @@ public class SharedBook extends Book implements Serializable {
   
   public void setAddedOn(String addedOn) {
     this.addedOn = addedOn;
+  }
+  
+  public String getPosition() {
+    return position;
+  }
+  
+  public void setPosition(String position) {
+    this.position = position;
   }
   
   public Boolean getShared() {

@@ -72,7 +72,7 @@ public class ShowBookActivity extends AppCompatActivity {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     
-    if (R.id.add_to_watchlist == item.getItemId()) {
+    /*if (R.id.add_to_watchlist == item.getItemId()) {
       AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
       alertDialogBuilder.setMessage("Book added to your watchlist! You will be notified when it will be available again.");
       String positiveText = getString(android.R.string.ok);
@@ -85,7 +85,7 @@ public class ShowBookActivity extends AppCompatActivity {
       AlertDialog alertDialog = alertDialogBuilder.create();
       alertDialog.show();
       return true;
-    } else
+    } else*/
       return super.onOptionsItemSelected(item);
   }
   

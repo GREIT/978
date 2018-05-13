@@ -4,11 +4,11 @@
   xmlns:tools="http://schemas.android.com/tools"
   tools:context=".ShowBookActivity">
 
-  <item
+<!--  <item
     android:id="@+id/add_to_watchlist"
     android:orderInCategory="100"
     android:icon="@drawable/ic_remove_red_eye_white_48dp"
     android:title="Add to watchlist"
-    app:showAsAction="always" />
+    app:showAsAction="always" />-->
 
 </menu>
