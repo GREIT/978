@@ -316,6 +316,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     tw_searchMain.setText(R.string.main_title_search_1);
     
+    // TODO for now the recycleview takes the first eight from the one with less "booksOnLoan" and then reverse them
+    
     Query firebaseSearchQuery = mBookDb.orderByChild("booksOnLoan").limitToFirst(8);
     FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
         Book.class,

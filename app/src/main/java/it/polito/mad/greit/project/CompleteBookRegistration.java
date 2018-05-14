@@ -80,7 +80,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
     
     tw_author = (TextView) findViewById(R.id.complete_book_author);
     String AS = android.text.TextUtils.join(", ", book.getAuthors().keySet());
-    tw_author.setText("By " + AS);
+    tw_author.setText(AS);
     
     tw_year = (TextView) findViewById(R.id.complete_book_year);
     tw_year.setText(book.getYear());
@@ -169,6 +169,8 @@ public class CompleteBookRegistration extends AppCompatActivity {
             startActivity(intent);
           } else {
             sb.setPosition(profile.getLocation());
+            DatabaseReference dbref = db.getReference("SHARED_BOOKS").child(key);
+            dbref.setValue(sb);
           }
         }
     
@@ -176,13 +178,8 @@ public class CompleteBookRegistration extends AppCompatActivity {
         public void onCancelled(DatabaseError e) {
         }
       });
-      
-      
-      
-      DatabaseReference dbref = db.getReference("SHARED_BOOKS").child(key);
-      dbref.setValue(sb);
-      
-      dbref = db.getReference("BOOKS/" + book.getISBN());
+  
+      DatabaseReference dbref = db.getReference("BOOKS/" + book.getISBN());
       
       dbref.child("booksOnLoan").setValue(Integer.valueOf(book.getBooksOnLoan()) + 1);
       
