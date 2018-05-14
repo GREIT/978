@@ -13,6 +13,7 @@
   <string name="item_isbn">ISBN</string>
   <string name="item_year">Year</string>
   <string name="item_tag">Tag</string>
+  <string name="nav_my_books">My Books</string>
 
   // Authentication
   <string name="signout">Sign out</string>

@@ -316,7 +316,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     tw_searchMain.setText(R.string.main_title_search_1);
     
-    Query firebaseSearchQuery = mBookDb.orderByChild("booksOnLoan").limitToFirst(10);
+    // TODO for now the recycleview takes the first eight from the one with less "booksOnLoan" and then reverse them
+    
+    Query firebaseSearchQuery = mBookDb.orderByChild("booksOnLoan").limitToFirst(8);
     FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
         Book.class,
         R.layout.book_card,
@@ -415,8 +417,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       TextView twYear = (TextView) mView.findViewById(R.id.bookCardYear);
       ImageView iwCover = (ImageView) mView.findViewById(R.id.bookCardCover);
       Button btSearch = (Button) mView.findViewById(R.id.bookCardSearchButton);
-      
-      twAuthor.setText("By " + model.getAuthors().keySet().iterator().next());
+  
+      String AS = android.text.TextUtils.join(", ", model.getAuthors().keySet());
+      twAuthor.setText("By " + AS);
       twTitle.setText(model.getTitle());
       twISBN.setText(model.getISBN());
       twYear.setText(model.getYear());
@@ -468,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Handle navigation view item clicks here.
     int id = item.getItemId();
     
-    if (id == R.id.nav_shared_books) {
+    if (id == R.id.nav_my_books) {
       Intent intent = new Intent(MainActivity.this, SharedBooksByUserSplitted.class);
       startActivity(intent);
     } else if (id == R.id.nav_sign_out) {

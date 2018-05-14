@@ -64,13 +64,14 @@ public class SearchedSharedBooks extends AppCompatActivity {
     twTitle.setText(book.getTitle());
     
     twAuthor = (TextView) findViewById(R.id.bookCardAuthor);
-    twAuthor.setText(book.getAuthors().keySet().iterator().next());
+    String AS = android.text.TextUtils.join(", ", book.getAuthors().keySet());
+    twAuthor.setText("By " + AS);
     
     twISBN = (TextView) findViewById(R.id.bookCardISBN);
-    twISBN.setText(book.getISBN());
+    twISBN.setText("ISBN: " +  book.getISBN());
     
     twYear = (TextView) findViewById(R.id.bookCardYear);
-    twYear.setText(book.getYear());
+    twYear.setText("Year: " + book.getYear());
     
     iwCover = (ImageView) findViewById(R.id.bookCardCover);
     Glide.with(this)

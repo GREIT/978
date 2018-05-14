@@ -22,12 +22,26 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <ImageView
-          android:id="@+id/shared_book_card_thumbnail"
+        <RelativeLayout
           android:layout_width="match_parent"
-          android:layout_height="100dp"
-          android:background="?attr/selectableItemBackgroundBorderless"
-          android:scaleType="fitXY" />
+          android:layout_height="100dp">
+
+          <ImageView
+            android:id="@+id/shared_book_card_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="fitXY" />
+
+          <ImageView
+            android:id="@+id/overlay_shared_book_card_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="fitXY"
+            />
+
+        </RelativeLayout>
 
         <LinearLayout
           android:layout_width="match_parent"
