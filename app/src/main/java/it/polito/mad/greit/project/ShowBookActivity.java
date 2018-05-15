@@ -27,6 +27,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -192,12 +194,12 @@ public class ShowBookActivity extends AppCompatActivity {
         FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference dbref = db.getReference("USER_CHATS").child(fbu.getUid());
-        dbref.addListenerForSingleValueEvent(new ValueEventListener() {
-            Boolean chat_exists = false;
+        dbref.runTransaction(new Transaction.Handler() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Boolean chat_exists = false;
                 try {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    for (MutableData ds : mutableData.getChildren()) {
                         Chat c = ds.getValue(Chat.class);
                         if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwner())){
                             //chat already present
@@ -210,34 +212,58 @@ public class ShowBookActivity extends AppCompatActivity {
 
                     if(!chat_exists){
                         Chat c = new Chat();
-                        c.setBookID(sb.getKey());
-                        c.setUserID(sb.getOwner());
-                        c.setUsername("user");
-                        c.setLastMsg("");
-                        c.setUnreadCount(0);
-                        c.setBookTitle(sb.getTitle());
-                        DatabaseReference user_mess = db.getReference("USERS_MESSAGES");
-                        String chatid = user_mess.push().getKey();
-                        c.setChatID(chatid);
-                        dbref.child(chatid).setValue(c);
+                        //getUsername(db,sb.getOwner(),c);
+                        db.getReference("USERS").child(sb.getOwner()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Profile p = dataSnapshot.getValue(Profile.class);
+                                c.setUsername(p.getUsername());
+                                c.setBookID(sb.getKey());
+                                c.setUserID(sb.getOwner());
+                                c.setLastMsg("");
+                                c.setUnreadCount(0);
+                                c.setBookTitle(sb.getTitle());
+                                DatabaseReference user_mess = db.getReference("USERS_MESSAGES");
+                                String chatid = user_mess.push().getKey();
+                                c.setChatID(chatid);
+                                dbref.child(chatid).setValue(c);
+                                Intent intent = new Intent(ShowBookActivity.this,ChatActivity.class);
+                                intent.putExtra("chat",Chat.copy(c));
+                                //second user
+                                db.getReference("USERS").child(fbu.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        Profile p = dataSnapshot.getValue(Profile.class);
+                                        DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwner());
+                                        c.setUserID(fbu.getUid());
+                                        c.setUsername(p.getUsername());
+                                        //c.setUsername(fbu.getDisplayName());
+                                        //c.setUsername(getUsername(db,fbu.getUid(),c));
+                                        ref_second_user.child(chatid).setValue(c);
+                                        startActivity(intent);
+                                    }
 
-                        DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwner());
-                        c.setUserID(fbu.getUid());
-                        c.setUsername(fbu.getDisplayName());
-                        ref_second_user.child(chatid).setValue(c);
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
 
-                        Intent intent = new Intent(ShowBookActivity.this,ChatActivity.class);
-                        intent.putExtra("chat",c);
-                        startActivity(intent);
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
                     }
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-
+                return Transaction.success(mutableData);
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
 
             }
         });

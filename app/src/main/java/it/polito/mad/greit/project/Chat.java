@@ -88,4 +88,17 @@ public class Chat implements Serializable, Comparable<Chat>{
         }
         return false;
     }
+
+    public static Chat copy(Chat c){
+        Chat res = new Chat();
+        res.setUsername(c.getUsername());
+        res.setUnreadCount(c.getUnreadCount());
+        res.setTimestamp(c.getTimestamp());
+        res.setLastMsg(c.getLastMsg());
+        res.setUserID(c.getUserID());
+        res.setBookTitle(c.getBookTitle());
+        res.setChatID(c.getChatID());
+        res.setBookID(c.getBookID());
+        return res;
+    }
 }

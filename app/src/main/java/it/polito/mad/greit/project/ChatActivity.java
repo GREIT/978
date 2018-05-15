@@ -23,6 +23,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -66,6 +68,7 @@ public class ChatActivity extends AppCompatActivity {
                     messages.add(ds.getValue(Message.class));
                     mla.notifyDataSetChanged();
                     rv.smoothScrollToPosition(mla.getItemCount() - 1);
+                    zerounread(user,chatID);
                 }
             }
 
@@ -93,47 +96,42 @@ public class ChatActivity extends AppCompatActivity {
 
                 DatabaseReference sender_chat = FirebaseDatabase.getInstance()
                         .getReference("USER_CHATS").child(user.getUid()).child(chatID);
-                sender_chat.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                sender_chat.runTransaction(new Transaction.Handler() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        try {
-                            Chat c = dataSnapshot.getValue(Chat.class);
-                            c.setLastMsg(msg);
-                            c.setTimestamp(time);
-                            sender_chat.setValue(c);
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
+                    public Transaction.Result doTransaction(MutableData mutableData) {
+                        Chat c = mutableData.getValue(Chat.class);
+                        c.setLastMsg(msg);
+                        c.setTimestamp(time);
+                        mutableData.setValue(c);
+                        return Transaction.success(mutableData);
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
 
                     }
                 });
 
                 DatabaseReference receiver_chat = FirebaseDatabase.getInstance()
                         .getReference("USER_CHATS").child(ownerID).child(chatID);
-                receiver_chat.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                receiver_chat.runTransaction(new Transaction.Handler() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        try {
-                            Chat c = dataSnapshot.getValue(Chat.class);
-                            c.setLastMsg(msg);
-                            c.setTimestamp(time);
-                            c.setUnreadCount(c.getUnreadCount()+1);
-                            receiver_chat.setValue(c);
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
+                    public Transaction.Result doTransaction(MutableData mutableData) {
+                        Chat c = mutableData.getValue(Chat.class);
+                        c.setLastMsg(msg);
+                        c.setTimestamp(time);
+                        c.setUnreadCount(c.getUnreadCount()+1);
+                        mutableData.setValue(c);
+                        return Transaction.success(mutableData);
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
 
                     }
                 });
-
 
             }
         });
@@ -145,6 +143,27 @@ public class ChatActivity extends AppCompatActivity {
         Intent intent = new Intent(ChatActivity.this,InboxActivity.class);
         //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    public void zerounread(FirebaseUser user,String chatID){
+        //put to 0 unread count
+        DatabaseReference user_chat = FirebaseDatabase.getInstance()
+                .getReference("USER_CHATS").child(user.getUid()).child(chatID);
+
+        user_chat.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Chat c = mutableData.getValue(Chat.class);
+                c.setUnreadCount(0);
+                mutableData.setValue(c);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+            }
+        });
     }
 
 }

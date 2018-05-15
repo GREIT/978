@@ -19,6 +19,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
@@ -92,5 +94,27 @@ public class InboxActivity extends AppCompatActivity {
         Intent intent = new Intent(InboxActivity.this,ChatActivity.class);
         intent.putExtra("chat",chat);
         startActivity(intent);
+    }
+
+    public void deleteChat(Chat c,String user){
+        //user is the current session FireBaseUser
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        db.getReference("USER_CHATS").child(user).child(c.getChatID()).removeValue();
+
+        DatabaseReference dbref = db.getReference("USER_CHATS").child(c.getUserID()).child(c.getChatID());
+        dbref.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                if(mutableData == null){
+                    db.getReference("USER_MESSAGES").child(c.getChatID()).removeValue();
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+            }
+        });
     }
 }
