@@ -2,15 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.polito.mad.greit.project">
 
-<<<<<<< HEAD
-  <!-- <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/> -->
-  <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/> -->
-  <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
-  <uses-permission android:name="android.permission.CAMERA" />
-  <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-=======
+
     <!-- <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/> -->
     <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/> -->
     <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
@@ -18,7 +10,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />-->
     <!--<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
->>>>>>> feature_chat
 
     <meta-data
         android:name="com.google.android.gms.vision.DEPENDENCIES"
@@ -79,14 +70,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD5pdfKZ3x7n8X8TW22kj45qoYP3siKTMU" />
 
-<<<<<<< HEAD
-    <activity android:name=".SearchedSharedBooks" />
-    <activity android:name=".ShowSharedBook"></activity>
-  </application>
-=======
         <activity android:name=".SearchedSharedBooks" />
-        <activity android:name=".InboxActivity"></activity>
-    </application>
->>>>>>> feature_chat
+        <activity android:name=".ShowSharedBook"/>
+        <activity android:name=".InboxActivity"/>
+  </application>
 
 </manifest>

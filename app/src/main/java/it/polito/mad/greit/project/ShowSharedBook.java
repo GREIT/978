@@ -35,7 +35,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class ShowBookActivity extends AppCompatActivity {
+public class ShowSharedBook extends AppCompatActivity {
   
   private Toolbar t;
   private SharedBook sb;
@@ -61,7 +61,6 @@ public class ShowBookActivity extends AppCompatActivity {
       //activate edit and delete
       owned = true;
     }
-<<<<<<< HEAD
     
     //TODO change eye color if book already in watchlist
     
@@ -70,79 +69,57 @@ public class ShowBookActivity extends AppCompatActivity {
   
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    MenuInflater inflater = getMenuInflater();
-    if (owned) {
-      //inflater.inflate(R.menu.show_sharedbook_menu, menu);
-    } else {
-      inflater.inflate(R.menu.show_sharedbook_menu, menu);
-=======
+      MenuInflater inflater = getMenuInflater();
+      if (owned) {
+          //inflater.inflate(R.menu.show_sharedbook_menu, menu);
+      } else {
+          inflater.inflate(R.menu.show_sharedbook_menu, menu);
+      }
+      return true;
+  }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item){
 
-        if (R.id.book_show_action_borrow == item.getItemId()) {
+            if (R.id.book_show_action_borrow == item.getItemId()) {
             /*Context context = getApplicationContext();
             CharSequence text = "Borrow Asked!";
             int duration = Toast.LENGTH_SHORT;
 
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();*/
-            openchat();
-            return true;
-        } else if (R.id.book_show_action_star == item.getItemId()) {
-            Context context = getApplicationContext();
-            CharSequence text = "Starred!";
-            int duration = Toast.LENGTH_SHORT;
+                openchat();
+                return true;
+            } else if (R.id.book_show_action_star == item.getItemId()) {
+                Context context = getApplicationContext();
+                CharSequence text = "Starred!";
+                int duration = Toast.LENGTH_SHORT;
 
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-            return true;
-        } else if (R.id.book_card_action_delete == item.getItemId()) {
-            Context context = getApplicationContext();
-            CharSequence text = "Delete Asked!";
-            int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+                return true;
+            } /*else if (R.id.book_card_action_delete == item.getItemId()) {
+                Context context = getApplicationContext();
+                CharSequence text = "Delete Asked!";
+                int duration = Toast.LENGTH_SHORT;
 
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-            return true;
-        } else if (R.id.book_card_action_edit == item.getItemId()) {
-            /*Intent intent = new Intent(ShowBookActivity.this, CompleteBookRegistration.class);
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+                return true;
+            } else if (R.id.book_card_action_edit == item.getItemId()) {
+            Intent intent = new Intent(ShowBookActivity.this, CompleteBookRegistration.class);
             intent.putExtra("book", sb);
-            startActivity(intent);*/
-            Context context = getApplicationContext();
-            CharSequence text = "Edit Asked!";
-            int duration = Toast.LENGTH_SHORT;
+            startActivity(intent);
+                Context context = getApplicationContext();
+                CharSequence text = "Edit Asked!";
+                int duration = Toast.LENGTH_SHORT;
 
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-            return true;
-        } else
-            return super.onOptionsItemSelected(item);
-
->>>>>>> feature_chat
-    }
-    return true;
-  }
-  
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    
-    /*if (R.id.add_to_watchlist == item.getItemId()) {
-      AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-      alertDialogBuilder.setMessage("Book added to your watchlist! You will be notified when it will be available again.");
-      String positiveText = getString(android.R.string.ok);
-      alertDialogBuilder.setPositiveButton(positiveText,
-          new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-          });
-      AlertDialog alertDialog = alertDialogBuilder.create();
-      alertDialog.show();
-      return true;
-    } else*/
-      return super.onOptionsItemSelected(item);
-  }
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+                return true;
+            } */else
+                return super.onOptionsItemSelected(item);
+        }
   
   public void setup() {
     TextView tv;
@@ -207,12 +184,10 @@ public class ShowBookActivity extends AppCompatActivity {
         }
       });
     } else {
-      iv.setImageResource(R.drawable.ic_book_blue_grey_900_48dp);
+        iv.setImageResource(R.drawable.ic_book_blue_grey_900_48dp);
     }
-<<<<<<< HEAD
     
   }
-=======
 
     public void openchat(){
         FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
@@ -227,7 +202,7 @@ public class ShowBookActivity extends AppCompatActivity {
                         Chat c = ds.getValue(Chat.class);
                         if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwner())){
                             //chat already present
-                            Intent intent = new Intent(ShowBookActivity.this,ChatActivity.class);
+                            Intent intent = new Intent(ShowSharedBook.this,ChatActivity.class);
                             intent.putExtra("chat",c);
                             startActivity(intent);
                             chat_exists = true;
@@ -251,7 +226,7 @@ public class ShowBookActivity extends AppCompatActivity {
                                 String chatid = user_mess.push().getKey();
                                 c.setChatID(chatid);
                                 dbref.child(chatid).setValue(c);
-                                Intent intent = new Intent(ShowBookActivity.this,ChatActivity.class);
+                                Intent intent = new Intent(ShowSharedBook.this,ChatActivity.class);
                                 intent.putExtra("chat",Chat.copy(c));
                                 //second user
                                 db.getReference("USERS").child(fbu.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -292,5 +267,4 @@ public class ShowBookActivity extends AppCompatActivity {
             }
         });
     }
->>>>>>> feature_chat
 }

@@ -338,7 +338,7 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
   
           iw2.setImageResource(R.drawable.ic_zoom_in_white_48dp);
           iw2.setOnClickListener(v -> {
-            Intent I = new Intent(ctx, ShowBookActivity.class);
+            Intent I = new Intent(ctx, ShowSharedBook.class);
             I.putExtra("book", model);
             ctx.startActivity(I);
           });

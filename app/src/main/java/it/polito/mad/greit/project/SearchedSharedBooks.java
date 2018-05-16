@@ -115,7 +115,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
         viewHolder.setOnClickListener(new SharedBookViewHolder.ClickListener() {
           @Override
           public void onItemClick(View view, SharedBook model) {
-            Intent intent = new Intent(SearchedSharedBooks.this, ShowBookActivity.class);
+            Intent intent = new Intent(SearchedSharedBooks.this, ShowSharedBook.class);
             
             try {
               intent.putExtra("book", model);
@@ -163,7 +163,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
       
       showMoreInfo.setImageResource(R.drawable.ic_zoom_in_white_48dp);
       showMoreInfo.setOnClickListener(v -> {
-        Intent I = new Intent(ctx, ShowBookActivity.class);
+        Intent I = new Intent(ctx, ShowSharedBook.class);
         I.putExtra("book", model);
         ctx.startActivity(I);
       });
