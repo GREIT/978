@@ -51,10 +51,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
@@ -84,6 +87,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -96,7 +101,8 @@ public class EditProfile extends AppCompatActivity {
   private Profile profile;
   private CircleImageView ciw;
   private byte[] photo = null;
-  boolean def = false;
+  private String coordinates=null;
+ // boolean def = false;
 
 
   @Override
@@ -132,17 +138,16 @@ public class EditProfile extends AppCompatActivity {
 
   public  void setuplocation() {
 
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+    /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && !def) {
       ActivityCompat.requestPermissions(EditProfile.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.FINE_LOCATION_PERMISSION);
       ActivityCompat.requestPermissions(EditProfile.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Constants.COARSE_LOCATION_PERMISSION);
     } else {
 
-      try {
-        double radiusDegrees = 5;
-        LatLng northEast,southWest;
-        if(def){
+      try {*/
+
+       /* if(def){
           northEast = new LatLng(41.5 + radiusDegrees, 12.3 + radiusDegrees);
           southWest = new LatLng(41.5 - radiusDegrees, 12.3 - radiusDegrees);
           Log.d("POSPOSPOS", "setuplocation: DEFAULT");
@@ -161,67 +166,76 @@ public class EditProfile extends AppCompatActivity {
             if (bestLocation == null || l.getAccuracy() > bestLocation.getAccuracy()) {
               bestLocation = l;
             }
-          }
+          }*/
 
-          northEast = new LatLng(bestLocation.getLatitude() + radiusDegrees, bestLocation.getLongitude() + radiusDegrees);
-          southWest = new LatLng(bestLocation.getLatitude() - radiusDegrees, bestLocation.getLongitude() - radiusDegrees);
-          Log.d("POSPOSPOS", "setuplocation: " + bestLocation.getLatitude() + "-" + bestLocation.getLongitude());
-        }
+    double radiusDegrees = 30;
+    LatLng northEast,southWest;
+    northEast = new LatLng(41.5 + radiusDegrees, 12.3 + radiusDegrees);
+    southWest = new LatLng(41.5 - radiusDegrees, 12.3 - radiusDegrees);
+    LatLngBounds bounds = LatLngBounds.builder().include(northEast).include(southWest).build();
+    final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+    AutoCompleteTextView ACTV = findViewById(R.id.edit_location);
+    ACTV.setAdapter(autoComplete);
+    HashMap<String,String> place_ids = new HashMap<>();
+    ACTV.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+      }
 
-        LatLngBounds bounds = LatLngBounds.builder().include(northEast).include(southWest).build();
-        final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-        AutoCompleteTextView ACTV = findViewById(R.id.edit_location);
-        ACTV.setAdapter(autoComplete);
-        ACTV.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        Task<AutocompletePredictionBufferResponse> results =
+                Places.getGeoDataClient(EditProfile.this)
+                        .getAutocompletePredictions(charSequence.toString(), bounds, null);
+        results.addOnSuccessListener(new OnSuccessListener<AutocompletePredictionBufferResponse>() {
           @Override
-          public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-          }
-
-          @Override
-          public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            Task<AutocompletePredictionBufferResponse> results =
-                    Places.getGeoDataClient(EditProfile.this).getAutocompletePredictions(charSequence.toString(), bounds, null);
-            results.addOnSuccessListener(new OnSuccessListener<AutocompletePredictionBufferResponse>() {
-              @Override
-              public void onSuccess(AutocompletePredictionBufferResponse autocompletePredictions) {
-                try {
-                  autoComplete.clear();
-
-                  for (int i = 0; i < results.getResult().getCount() && i < 10; i++) {
-                    autoComplete.add(results.getResult().get(i).getFullText(null).toString());
-                  }
-                  results.getResult().release();
-                } catch (Exception e) {
-                  results.getResult().release();
-                  autoComplete.clear();
-                }
+          public void onSuccess(AutocompletePredictionBufferResponse autocompletePredictions) {
+            try {
+              autoComplete.clear();
+              for (int i = 0; i < results.getResult().getCount() && i < 10; i++) {
+                autoComplete.add(results.getResult().get(i).getFullText(null).toString());
+                place_ids.put(results.getResult().get(i).getFullText(null).toString()
+                        ,results.getResult().get(i).getPlaceId());
               }
-            }).addOnFailureListener(new OnFailureListener() {
-              @Override
-              public void onFailure(@NonNull Exception e) {
+                results.getResult().release();
+              Log.d("DEBUGDEBUGDEBUG", "onSuccess: ENTERED,autocomplete has " + autoComplete.getCount() + "elements");
+            } catch (Exception e) {
                 results.getResult().release();
                 autoComplete.clear();
-              }
-            });
-          }
+            }
 
+          }
+            }).addOnFailureListener(new OnFailureListener() {
           @Override
-          public void afterTextChanged(Editable editable) {
+          public void onFailure(@NonNull Exception e) {
+            results.getResult().release();
+            autoComplete.clear();
+            place_ids.clear();
           }
         });
+      }
+
+      @Override
+      public void afterTextChanged(Editable editable) {
+      }
+
+    });
 
         ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
           @Override
           public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             hideKeyboard(EditProfile.this);
-            autoComplete.getItem(position);
+            String place_id = place_ids.get(autoComplete.getItem(position));
+            Log.d("DEBUGDEBUGDEBUG", "onItemClick: " + place_ids.get(autoComplete.getItem(position)));
+            Places.getGeoDataClient(EditProfile.this).getPlaceById(place_id).addOnSuccessListener(new OnSuccessListener<PlaceBufferResponse>() {
+              @Override
+              public void onSuccess(PlaceBufferResponse places) {
+                LatLng coords = places.get(0).getLatLng();
+                coordinates = coords.latitude + "-" + coords.longitude;
+              }
+            });
           }
         });
-
-      }catch (Exception e){
-        e.printStackTrace();
-      }
-    }
 
   }
 
@@ -285,6 +299,7 @@ public class EditProfile extends AppCompatActivity {
   }
 
   void Fill(Bundle b) {
+    coordinates = profile.getCoordinates();
     TextView tv = findViewById(R.id.edit_name);
     tv.setText(profile.getName());
     tv = findViewById(R.id.edit_nickname);
@@ -343,6 +358,7 @@ public class EditProfile extends AppCompatActivity {
   }
 
   void SaveInfo() {
+    profile.setCoordinates(coordinates);
     TextView tv = findViewById(R.id.edit_name);
     profile.setName(tv.getText().toString());
     tv = findViewById(R.id.edit_nickname);
@@ -494,7 +510,7 @@ public class EditProfile extends AppCompatActivity {
     if (requestCode == Constants.CAMERA_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
       Camera();
     }
-    else if(requestCode == Constants.FINE_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+    /*else if(requestCode == Constants.FINE_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
      setuplocation();
     }
     else if(requestCode == Constants.COARSE_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
@@ -507,7 +523,7 @@ public class EditProfile extends AppCompatActivity {
     else if(requestCode == Constants.FINE_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
       def=true;
       setuplocation();
-    }
+    }*/
   }
 
   @Override
