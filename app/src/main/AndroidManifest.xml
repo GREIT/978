@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="it.polito.mad.greit.project">
+    package="it.polito.mad.greit.project">
 
+<<<<<<< HEAD
   <!-- <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/> -->
   <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/> -->
   <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
@@ -9,67 +10,83 @@
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-  <meta-data
-    android:name="com.google.android.gms.vision.DEPENDENCIES"
-    android:value="barcode" />
-
-  <uses-feature
-    android:name="android.hardware.camera"
-    android:required="false" />
-
-  <application
-    android:allowBackup="true"
-    android:icon="@mipmap/ic_launcher"
-    android:label="@string/app_name"
-    android:roundIcon="@mipmap/ic_launcher_round"
-    android:supportsRtl="true"
-    android:theme="@style/MaterialTheme">
-    <provider
-      android:name="android.support.v4.content.FileProvider"
-      android:authorities="it.polito.mad.greit.project"
-      android:exported="false"
-      android:grantUriPermissions="true">
-      <meta-data
-        android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/file_paths" />
-    </provider>
-
-    <activity
-      android:name=".MainEmptyActivity"
-      android:theme="@android:style/Theme.NoDisplay">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-
-        <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter>
-    </activity>
-    <activity android:name=".SignInActivity" />
-    <activity android:name=".CompleteRegistration" />
-    <activity
-      android:name=".MainActivity"
-      android:label="@string/title_activity_main"
-      android:screenOrientation="portrait" />
-    <activity android:name=".ShowProfile" />
-    <activity android:name=".EditProfile" />
-    <activity android:name=".ShareNewBook" />
-    <activity android:name=".CompleteBookRegistration" />
-    <activity android:name=".SharedBooksByUser" />
-    <activity
-      android:name=".SharedBooksByUserSplitted"
-      android:label="@string/title_activity_shared_books_by_user_splitted"
-      android:theme="@style/MaterialTheme" />
-    <activity android:name=".ShowBookActivity" />
+=======
+    <!-- <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/> -->
+    <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/> -->
+    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />-->
+    <!--<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
+>>>>>>> feature_chat
 
     <meta-data
-      android:name="preloaded_fonts"
-      android:resource="@array/preloaded_fonts" />
-    <meta-data
-      android:name="com.google.android.geo.API_KEY"
-      android:value="AIzaSyD5pdfKZ3x7n8X8TW22kj45qoYP3siKTMU" />
+        android:name="com.google.android.gms.vision.DEPENDENCIES"
+        android:value="barcode" />
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/MaterialTheme">
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="it.polito.mad.greit.project"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".MainEmptyActivity"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".SignInActivity" />
+        <activity android:name=".CompleteRegistration" />
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ShowProfile" />
+        <activity android:name=".EditProfile" />
+        <activity android:name=".ShareNewBook" />
+        <activity android:name=".CompleteBookRegistration" />
+        <activity android:name=".SharedBooksByUser" />
+        <activity
+            android:name=".SharedBooksByUserSplitted"
+            android:label="@string/title_activity_shared_books_by_user_splitted"
+            android:theme="@style/MaterialTheme" />
+        <activity android:name=".ShowBookActivity" />
+        <activity android:name=".ChatActivity" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD5pdfKZ3x7n8X8TW22kj45qoYP3siKTMU" />
+
+<<<<<<< HEAD
     <activity android:name=".SearchedSharedBooks" />
     <activity android:name=".ShowSharedBook"></activity>
   </application>
+=======
+        <activity android:name=".SearchedSharedBooks" />
+        <activity android:name=".InboxActivity"></activity>
+    </application>
+>>>>>>> feature_chat
 
 </manifest>

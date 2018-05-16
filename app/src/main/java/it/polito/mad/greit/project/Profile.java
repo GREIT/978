@@ -10,6 +10,7 @@ public class Profile implements Serializable{
   private String name;
   private String email;
   private String location;
+  private String coordinates;
   private String bio;
   //private String photoUri;
   
@@ -54,6 +55,10 @@ public class Profile implements Serializable{
   public void setBio(String bio) {
     this.bio = bio;
   }
+
+  public void setCoordinates(String coords){ this.coordinates = coords; }
+
+  public String getCoordinates(){ return this.coordinates; }
   
  // public String getPhotoUri(){return photoUri; }
   

@@ -92,4 +92,9 @@
   <string name="action_settings">Settings</string>
   <string name="section_format">Hello World from section: %1$d</string>
 
+  //Chat
+  <string name="inbox">Inbox</string>
+  <string name="input">Insert here...</string>
+
+
 </resources>
