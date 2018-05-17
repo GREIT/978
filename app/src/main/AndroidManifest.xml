@@ -71,6 +71,9 @@
 
         <activity android:name=".SearchedSharedBooks" />
         <activity android:name=".InboxActivity"></activity>
+        <service android:enabled="true"
+            android:name=".FireBaseService">
+        </service>
     </application>
 
 </manifest>
