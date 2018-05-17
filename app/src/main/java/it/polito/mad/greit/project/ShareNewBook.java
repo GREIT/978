@@ -289,13 +289,7 @@ public class ShareNewBook extends AppCompatActivity {
       toBeReturned.setAuthors(as);
     }
     
-    try {
-      JSONArray industryIdentifiers = bookInfo.getJSONArray("industryIdentifiers");
-      JSONObject ISBN13 = (JSONObject) industryIdentifiers.get(1);
-      toBeReturned.setISBN(ISBN13.getString("identifier"));
-    } catch (Exception E) {
-      toBeReturned.setISBN(this.ISBN);
-    }
+    toBeReturned.setISBN(this.ISBN);
     
     try {
       JSONObject images = bookInfo.getJSONObject("imageLinks");

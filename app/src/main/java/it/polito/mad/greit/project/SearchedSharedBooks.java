@@ -71,13 +71,14 @@ public class SearchedSharedBooks extends AppCompatActivity {
     twTitle.setText(book.getTitle());
     
     twAuthor = (TextView) findViewById(R.id.bookCardAuthor);
-    twAuthor.setText(book.getAuthors().keySet().iterator().next());
+    String AS = android.text.TextUtils.join(", ", book.getAuthors().keySet());
+    twAuthor.setText("By " + AS);
     
     twISBN = (TextView) findViewById(R.id.bookCardISBN);
-    twISBN.setText(book.getISBN());
+    twISBN.setText("ISBN: " +  book.getISBN());
     
     twYear = (TextView) findViewById(R.id.bookCardYear);
-    twYear.setText(book.getYear());
+    twYear.setText("Year: " + book.getYear());
     
     iwCover = (ImageView) findViewById(R.id.bookCardCover);
     Glide.with(this)
@@ -114,7 +115,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
         viewHolder.setOnClickListener(new SharedBookViewHolder.ClickListener() {
           @Override
           public void onItemClick(View view, SharedBook model) {
-            Intent intent = new Intent(SearchedSharedBooks.this, ShowBookActivity.class);
+            Intent intent = new Intent(SearchedSharedBooks.this, ShowSharedBook.class);
             
             try {
               intent.putExtra("book", model);
@@ -162,7 +163,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
       
       showMoreInfo.setImageResource(R.drawable.ic_zoom_in_white_48dp);
       showMoreInfo.setOnClickListener(v -> {
-        Intent I = new Intent(ctx, ShowBookActivity.class);
+        Intent I = new Intent(ctx, ShowSharedBook.class);
         I.putExtra("book", model);
         ctx.startActivity(I);
       });

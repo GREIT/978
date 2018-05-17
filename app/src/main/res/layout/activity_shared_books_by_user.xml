@@ -11,8 +11,9 @@
     android:id="@+id/shared_books_by_user_toolbar"
     layout="@layout/toolbar" />
 
-  <include layout="@layout/shared_books_content_main" />
-
-
+  <android.support.v7.widget.RecyclerView
+    android:id="@+id/shared_books_by_user_result_list"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
 
 </LinearLayout>

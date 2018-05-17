@@ -70,10 +70,12 @@
             android:value="AIzaSyD5pdfKZ3x7n8X8TW22kj45qoYP3siKTMU" />
 
         <activity android:name=".SearchedSharedBooks" />
-        <activity android:name=".InboxActivity"></activity>
-        <service android:enabled="true"
+        <activity android:name=".InboxActivity"/>
+      <activity android:name=".ShowSharedBook"/>
+      <service android:enabled="true"
             android:name=".FireBaseService">
         </service>
+
     </application>
 
 </manifest>

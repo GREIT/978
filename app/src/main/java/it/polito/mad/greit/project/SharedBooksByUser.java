@@ -2,11 +2,10 @@ package it.polito.mad.greit.project;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,29 +13,30 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
-import android.widget.TextView;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.ByteArrayOutputStream;
 
 public class SharedBooksByUser extends AppCompatActivity {
-  private RecyclerView recyclerView;
-  private SharedBooksAdapter adapter;
-  private List<SharedBook> bookList;
-  private FloatingActionButton fab;
+  
+  private RecyclerView mResultList;
+  private DatabaseReference mSharedBookDb;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -50,102 +50,94 @@ public class SharedBooksByUser extends AppCompatActivity {
     toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
 //    initCollapsingToolbar();
-    
-    fab = (FloatingActionButton) findViewById(R.id.fab_add_book_from_shared_books);
-    fab.setOnClickListener(v -> {
-      Intent intent = new Intent(this, ShareNewBook.class);
-      startActivity(intent);
-    });
-    
-    recyclerView = (RecyclerView) findViewById(R.id.shared_books_by_user_recycler_view);
-    
-    bookList = new ArrayList<>();
-    adapter = new SharedBooksAdapter(this, bookList);
-    
-    RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
-    recyclerView.setLayoutManager(mLayoutManager);
-    recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
-    recyclerView.setItemAnimator(new DefaultItemAnimator());
-    recyclerView.setAdapter(adapter);
-    
-    prepareBooks();
-  }
 
-//  private void initCollapsingToolbar() {
-//    final CollapsingToolbarLayout collapsingToolbar =
-//        (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-//
-//    collapsingToolbar.setTitle(" ");
-//    AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.shared_books_by_user_appbar);
-//    appBarLayout.setExpanded(true);
-//
-//    // hiding & showing the title when toolbar expanded & collapsed
-//    appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-//      boolean isShow = false;
-//      int scrollRange = -1;
-//
-//      @Override
-//      public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-//        if (scrollRange == -1) {
-//          scrollRange = appBarLayout.getTotalScrollRange();
-//        }
-//        if (scrollRange + verticalOffset == 0) {
-//          collapsingToolbar.setTitle(getString(R.string.app_name));
-//          isShow = true;
-//        } else if (isShow) {
-//          collapsingToolbar.setTitle(" ");
-//          isShow = false;
-//        }
-//      }
-//    });
-//  }
   
-  public void onBackPressed() {
-    Intent intent = new Intent(SharedBooksByUser.this, MainActivity.class);
-    //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    startActivity(intent);
+    mSharedBookDb = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS");
+    mResultList = (RecyclerView) findViewById(R.id.shared_books_by_user_result_list);
+    mResultList.setItemAnimator(new DefaultItemAnimator());
+    
+    sharedBookShow();
   }
   
-  private void prepareBooks() {
+  private void sharedBookShow() {
+    mResultList.setLayoutManager(new GridLayoutManager(this, 2));
+    mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
+    mResultList.addItemDecoration(new SharedBooksByUser.GridSpacingItemDecoration(2, dpToPx(20), true));
+  
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     
-    FirebaseDatabase db = FirebaseDatabase.getInstance();
-    DatabaseReference dbref = db.getReference("SHARED_BOOKS");
+    Query firebaseSearchQuery = mSharedBookDb.orderByChild("owner").equalTo(user.getUid());
+    FirebaseRecyclerAdapter<SharedBook, SharedBooksByUser.SharedBookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SharedBook, SharedBooksByUser.SharedBookViewHolder>(
+        SharedBook.class,
+        R.layout.sharedbook_card,
+        SharedBooksByUser.SharedBookViewHolder.class,
+        firebaseSearchQuery
+    ) {
+      @Override
+      protected void populateViewHolder(SharedBooksByUser.SharedBookViewHolder viewHolder, SharedBook model, int position) {
+        viewHolder.setDetails(getApplicationContext(), model);
+      }
+      
+      @Override
+      public SharedBooksByUser.SharedBookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        SharedBooksByUser.SharedBookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
+        
+        return viewHolder;
+      }
+    };
     
-    dbref.orderByChild("owner").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
-      @Override
-      public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-        SharedBook tmp = new SharedBook();
-        tmp = dataSnapshot.getValue(SharedBook.class);
-        bookList.add(tmp);
-        adapter.notifyDataSetChanged();
-      }
-      
-      @Override
-      public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-        SharedBook tmp = new SharedBook();
-        tmp = dataSnapshot.getValue(SharedBook.class);
-        bookList.add(tmp);
-        adapter.notifyDataSetChanged();
-      }
-      
-      @Override
-      public void onChildRemoved(DataSnapshot dataSnapshot) {
-      
-      }
-      
-      @Override
-      public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-      
-      }
-      
-      @Override
-      public void onCancelled(DatabaseError databaseError) {
-      
-      }
-    });
+    mResultList.setAdapter(firebaseRecyclerAdapter);
+  }
+  
+  public static class SharedBookViewHolder extends RecyclerView.ViewHolder {
+    View mView;
     
+    public SharedBookViewHolder(View itemView) {
+      super(itemView);
+      mView = itemView;
+    }
+ 
     
+    public void setDetails(Context ctx, SharedBook model) {
+      //TextView book_owner = (TextView) mView.findViewById(R.id.shared_book_card_owner);
+      RatingBar book_ratings = (RatingBar) mView.findViewById(R.id.shared_book_card_conditions);
+      ImageView book_image = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
+      ImageView editSharedBook = (ImageView) mView.findViewById(R.id.shared_book_card_contactForLoan);
+      ImageView deleteSharedBook = (ImageView) mView.findViewById(R.id.shared_book_card_moreInfo);
+      
+      //book_owner.setText(model.getOwner());
+      book_ratings.setRating(Float.valueOf(model.getConditions()));
+      //book_author.setText(model.getAuthors().keySet().iterator().next());
+      
+      editSharedBook.setImageResource(R.drawable.ic_mode_edit_white_48dp);
+      editSharedBook.setOnClickListener(v -> Toast.makeText(ctx, "Edit book", Toast.LENGTH_SHORT).show());
+      
+      deleteSharedBook.setImageResource(R.drawable.ic_delete_white_48dp);
+      deleteSharedBook.setOnClickListener(v -> Toast.makeText(ctx, "Delete book", Toast.LENGTH_SHORT).show());
+      
+      
+      StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
+      
+      sr.getBytes(5 * Constants.SIZE).addOnSuccessListener(bytes -> {
+        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
+        Glide.with(ctx)
+            .asBitmap()
+            .load(stream.toByteArray())
+            .apply(new RequestOptions()
+                .placeholder(R.drawable.ic_book_blue_grey_900_48dp)
+                .fitCenter())
+            .into(book_image);
+      }).addOnFailureListener(e ->
+          Glide.with(ctx)
+              .load("")
+              .apply(new RequestOptions()
+                  .error(R.drawable.ic_book_blue_grey_900_48dp)
+                  .fitCenter())
+              .into(book_image)
+      );
+    }
   }
   
   public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {

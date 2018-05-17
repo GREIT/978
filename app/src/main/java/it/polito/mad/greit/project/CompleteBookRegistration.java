@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -27,13 +29,18 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -43,6 +50,7 @@ import java.util.stream.Collectors;
 public class CompleteBookRegistration extends AppCompatActivity {
   private Book book;
   
+  private Profile profile;
   private Button bb;
   private Uri photo;
   private TextView tw_ISBN;
@@ -71,11 +79,8 @@ public class CompleteBookRegistration extends AppCompatActivity {
     tw_ISBN.setText(book.getISBN());
     
     tw_author = (TextView) findViewById(R.id.complete_book_author);
-    String as = new String();
-    for (String S : book.getAuthors().keySet()) {
-      as += S + " ";
-    }
-    tw_author.setText(as);
+    String AS = android.text.TextUtils.join(", ", book.getAuthors().keySet());
+    tw_author.setText(AS);
     
     tw_year = (TextView) findViewById(R.id.complete_book_year);
     tw_year.setText(book.getYear());
@@ -148,11 +153,33 @@ public class CompleteBookRegistration extends AppCompatActivity {
       sb.setShared(false);
       
       sb.setKey(key);
-      
-      DatabaseReference dbref = db.getReference("SHARED_BOOKS").child(key);
-      dbref.setValue(sb);
-      
-      dbref = db.getReference("BOOKS/" + book.getISBN());
+  
+      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+  
+      FirebaseDatabase dbU = FirebaseDatabase.getInstance();
+      DatabaseReference dbrefU = db.getReference("USERS").child(user.getUid());
+  
+      dbrefU.addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+          profile = dataSnapshot.getValue(Profile.class);
+          if (profile == null) {
+            Intent intent = new Intent(CompleteBookRegistration.this, SignInActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+          } else {
+            sb.setPosition(profile.getLocation());
+            DatabaseReference dbref = db.getReference("SHARED_BOOKS").child(key);
+            dbref.setValue(sb);
+          }
+        }
+    
+        @Override
+        public void onCancelled(DatabaseError e) {
+        }
+      });
+  
+      DatabaseReference dbref = db.getReference("BOOKS/" + book.getISBN());
       
       dbref.child("booksOnLoan").setValue(Integer.valueOf(book.getBooksOnLoan()) + 1);
       

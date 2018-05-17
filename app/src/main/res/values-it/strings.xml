@@ -1,86 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Project</string>
-    <string name="title_activity_main">Home</string>
+  <string name="app_name">Project</string>
+  <string name="title_activity_main">Home</string>
 
-    // Main activity
-    <string name="search_text_main">Cerca i libri per</string>
-    <string name="search_field">Cerca qui</string>
-    <string name="main_title_search_1">Popolari vicino a te</string>
-    <string name="main_title_search_2">Seleziona il libro che stai cercando</string>
-    <string name="main_title_search_3">Questi sono i libri vicino a te</string>
-    <string name="item_title">Titolo</string>
-    <string name="item_author">Autore</string>
-    <string name="item_isbn">ISBN</string>
-    <string name="item_year">Anno</string>
-    <string name="item_tag">Tag</string>
+  // Main activity
+  <string name="search_text_main">Cerca i libri per</string>
+  <string name="search_field">Cerca qui</string>
+  <string name="main_title_search_1">Popolari vicino a te</string>
+  <string name="main_title_search_2">Seleziona il libro che stai cercando</string>
+  <string name="main_title_search_3">Questi sono i libri vicino a te</string>
+  <string name="item_title">Titolo</string>
+  <string name="item_author">Autore</string>
+  <string name="item_isbn">ISBN</string>
+  <string name="item_year">Anno</string>
+  <string name="item_tag">Tag</string>
+  <string name="nav_my_books">My Books</string>
 
-    // Authentication
-    <string name="signout">Sign out</string>
+  // Authentication
+  <string name="signout">Sign out</string>
 
-    // Complete Profile
-    <string name="activity_complete_profile">Completa il tuo profilo</string>
+  // Complete Profile
+  <string name="activity_complete_profile">Completa il tuo profilo</string>
 
-    // Profile
-    <string name="activity_show_profile">Il tuo profilo</string>
-    <string name="name">Nome</string>
-    <string name="email" translatable="false">Email</string>
-    <string name="username" translatable="false">Username</string>
-    <string name="location">Luogo</string>
-    <string name="bio">Parlaci di te</string>
+  // Profile
+  <string name="activity_show_profile">Il tuo profilo</string>
+  <string name="name">Nome</string>
+  <string name="email" translatable="false">Email</string>
+  <string name="username" translatable="false">Username</string>
+  <string name="location">Luogo</string>
+  <string name="bio">Parlaci di te</string>
 
-    // Edit Profile
-    <string name="activity_edit_profile">Modifica il tuo profilo</string>
-    <string name="error_size">Il file selezionato è troppo grande (dimensione massima 1MB)</string>
-    <string name="location_msg">Selezionata posizione </string>
-    <string name="location_error">Devi selezionare una posizione</string>
+  // Edit Profile
+  <string name="activity_edit_profile">Modifica il tuo profilo</string>
+  <string name="error_size">Il file selezionato è troppo grande (dimensione massima 1MB)</string>
+  <string name="location_msg">Selezionata posizione </string>
+  <string name="location_error">Devi selezionare una posizione</string>
 
-    // Shared Books
-    <string name="shared_books">Libri condivisi</string>
-    <string name="activity_shared_books">I tuoi libri condivisi</string>
-    <string name="title">Titolo</string>
-    <string name="author">Autore</string>
-    <string name="ISBN">ISBN</string>
-    <string name="publisher">Casa editrice</string>
-    <string name="published">Anno</string>
-    <string name="conditions">Condizioni</string>
-    <string name="tag">Tag</string>
+  // Shared Books
+  <string name="shared_books">Libri condivisi</string>
+  <string name="activity_shared_books">I tuoi libri condivisi</string>
+  <string name="title">Titolo</string>
+  <string name="author">Autore</string>
+  <string name="ISBN">ISBN</string>
+  <string name="publisher">Casa editrice</string>
+  <string name="published">Anno</string>
+  <string name="conditions">Condizioni</string>
+  <string name="tag">Tag</string>
 
-    // Share new book
-    <string name="activity_share_book">Condividi un nuovo libro</string>
-    <string name="insert_isbn">Inserisci qui l\'ISBN del libro</string>
-    <string name="or">oppure</string>
-    <string name="scan_qr">Scannerizza il QR code</string>
-    <string name="isbn_not_valid">ISBN non valido 😕</string>
-    <string name="request_error">Errore durante la richiesta 🤯</string>
-    <string name="image_upload_failed">Errore durant eil caricamento dell\'immagine</string>
-    <string name="detector_error">Impossibile impostare il detector!</string>
-    <string name="scan_failed">Non abbiamo trovato nulla da scannerizzare</string>
-    <string name="book_not_found">Libro non trovato!</string>
+  // Share new book
+  <string name="activity_share_book">Condividi un nuovo libro</string>
+  <string name="insert_isbn">Inserisci qui l\'ISBN del libro</string>
+  <string name="or">oppure</string>
+  <string name="scan_qr">Scannerizza il QR code</string>
+  <string name="isbn_not_valid">ISBN non valido 😕</string>
+  <string name="request_error">Errore durante la richiesta 🤯</string>
+  <string name="image_upload_failed">Errore durant eil caricamento dell\'immagine</string>
+  <string name="detector_error">Impossibile impostare il detector!</string>
+  <string name="scan_failed">Non abbiamo trovato nulla da scannerizzare</string>
+  <string name="book_not_found">Libro non trovato!</string>
 
-    // Complete book's informations
-    <string name="actvity_complete_book_info">Completa le informazioni sul libro</string>
+  // Complete book's informations
+  <string name="actvity_complete_book_info">Completa le informazioni sul libro</string>
 
-    //Show Book
-    <string name="show_book_title">Scheda libro</string>
-    <string name="edit">Modifica</string>
-    <string name="delete">Elimina</string>
-    <string name="add_to_star">Preferiti</string>
-    <string name="ask_borrow">Chiedi in prestito</string>
+  //Show Book
+  <string name="show_book_title">Scheda libro</string>
+  <string name="edit">Modifica</string>
+  <string name="delete">Elimina</string>
+  <string name="add_to_star">Preferiti</string>
+  <string name="ask_borrow">Chiedi in prestito</string>
 
-    // Miscellaneous
-    <string name="AUTH_ID" translatable="false">1059761957663-g0pf2f234revm5upjo64u3s6v2br3t38.apps.googleusercontent.com</string>
-    <string name="ok"> OK </string>
-    <string name="upload"> Carica </string>
-    <string name="camera"> 📸 </string>
-    <string name="cancel"> Elimina </string>
-    <string name="fill_fields">Completa tutti i campi obbligatori!</string>
-    <string name="dialog_clicked">Dialog clicked</string>
-    <string name="denied">Permesso negato</string>
+  // Miscellaneous
+  <string name="AUTH_ID" translatable="false">1059761957663-g0pf2f234revm5upjo64u3s6v2br3t38.apps.googleusercontent.com</string>
+  <string name="ok"> OK </string>
+  <string name="upload"> Carica </string>
+  <string name="camera"> 📸 </string>
+  <string name="cancel"> Elimina </string>
+  <string name="fill_fields">Completa tutti i campi obbligatori!</string>
+  <string name="dialog_clicked">Dialog clicked</string>
+  <string name="denied">Permesso negato</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_desc">Navigation header</string>
+  <string name="navigation_drawer_open">Open navigation drawer</string>
+  <string name="navigation_drawer_close">Close navigation drawer</string>
+  <string name="nav_header_desc">Navigation header</string>
+
+    //chat
+    <string name="inbox">Messaggi</string>
+    <string name="input">Inserisci qui...</string>
 
     //chat
     <string name="inbox">Messaggi</string>

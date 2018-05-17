@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  tools:context=".ShowBookActivity">
+
+<!--  <item
+    android:id="@+id/add_to_watchlist"
+    android:orderInCategory="100"
+    android:icon="@drawable/ic_remove_red_eye_white_48dp"
+    android:title="Add to watchlist"
+    app:showAsAction="always" />-->
+
+</menu>
