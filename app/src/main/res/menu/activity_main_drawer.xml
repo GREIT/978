@@ -13,10 +13,6 @@
       android:icon="@drawable/ic_message_black_48dp"
       android:title="@string/inbox"/>
     <item
-      android:id="@+id/nav_chat"
-      android:icon="@drawable/ic_message_black_48dp"
-      android:title="@string/inbox"/>
-    <item
       android:id="@+id/nav_sign_out"
       android:icon="@drawable/ic_exit_to_app_blue_grey_900_48dp"
       android:title="@string/signout" />

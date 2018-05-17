@@ -86,6 +86,9 @@ public class ChatActivity extends AppCompatActivity {
                 String msg = et.getText().toString();
                 et.setText("");
                 long time = System.currentTimeMillis()/1000L;
+                if (msg.trim().isEmpty()) {
+                    return;
+                }
                 Message tosend = new Message(time,
                         FirebaseAuth.getInstance().getCurrentUser().getUid(),
                         FirebaseAuth.getInstance().getCurrentUser().getDisplayName(),msg);
