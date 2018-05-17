@@ -81,6 +81,8 @@ public class InboxActivity extends AppCompatActivity {
             }
         });
 
+        startService(new Intent(this, FireBaseService.class));
+
     }
 
     @Override
