@@ -96,5 +96,7 @@
   <string name="inbox">Inbox</string>
   <string name="input">Insert here...</string>
 
+  <string name="hello">Hello </string>
+  <string name="can_i_have">Can I have </string>
 
 </resources>

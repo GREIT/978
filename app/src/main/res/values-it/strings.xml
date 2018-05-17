@@ -87,6 +87,7 @@
     <string name="inbox">Messaggi</string>
     <string name="input">Inserisci qui...</string>
 
-
+  <string name="hello">Ciao </string>
+  <string name="can_i_have">E\' possibile prendere in prestito </string>
 
 </resources>
