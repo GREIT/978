@@ -1,77 +1,83 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:card_view="http://schemas.android.com/apk/res-auto"
-  android:layout_width="match_parent"
-  android:layout_height="150dp">
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="150dp">
 
   <android.support.v7.widget.CardView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center"
-    android:layout_margin="5dp"
-    android:elevation="5dp"
-    card_view:cardCornerRadius="3dp">
-
-    <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:orientation="horizontal">
+      android:layout_gravity="center"
+      android:layout_margin="5dp"
+      android:elevation="5dp"
+      card_view:cardCornerRadius="3dp">
 
-      <ImageView
-        android:id="@+id/bookCardCover"
-        android:layout_width="95dp"
-        android:layout_height="match_parent"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:scaleType="fitXY" />
-
-      <LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingHorizontal="10dp"
-        android:paddingVertical="5dp">
+        android:orientation="horizontal">
+
+      <ImageView
+          android:id="@+id/bookCardCover"
+          android:layout_width="95dp"
+          android:layout_height="match_parent"
+          android:scaleType="fitXY" />
+
+      <RelativeLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:orientation="vertical"
+          android:paddingHorizontal="10dp"
+          android:paddingVertical="5dp">
 
         <TextView
-          android:id="@+id/bookCardTitle"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:ellipsize="end"
-          android:maxLines="1"
-          android:textColor="@color/colorPrimaryText"
-          android:textSize="20sp"
-          android:textStyle="bold" />
+            android:id="@+id/bookCardTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <TextView
-          android:id="@+id/bookCardAuthor"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:ellipsize="end"
-          android:maxLines="1"
-          android:textStyle="bold" />
+            android:id="@+id/bookCardAuthor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/bookCardTitle"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textStyle="bold" />
 
         <TextView
-          android:id="@+id/bookCardISBN"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textStyle="bold" />
+            android:id="@+id/bookCardPublisher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/bookCardAuthor"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <TextView
-          android:id="@+id/bookCardYear"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textStyle="bold" />
+            android:id="@+id/bookCardYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/bookCardPublisher"
+            android:textStyle="bold" />
 
         <Button
-          android:id="@+id/bookCardSearchButton"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="end"
-          android:background="@drawable/common_google_signin_btn_icon_light_normal_background"
-          android:backgroundTint="@color/colorAccent"
-          android:elevation="3dp"
-          android:minWidth="0dp"
-          android:textColor="@color/white" />
+            android:id="@+id/bookCardSearchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/common_google_signin_btn_icon_light_normal_background"
+            android:backgroundTint="@color/colorAccent"
+            android:elevation="3dp"
+            android:minWidth="0dp"
+            android:textColor="@color/white" />
 
-      </LinearLayout>
+      </RelativeLayout>
 
     </LinearLayout>
 

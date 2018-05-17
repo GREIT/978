@@ -1,85 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:orientation="vertical"
-  tools:context=".SearchedSharedBooks">
-
-  <include
-    android:id="@+id/searched_sharedBooks_toolbar"
-    layout="@layout/toolbar" />
-
-  <LinearLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
-    android:background="@color/colorPrimary"
-    android:orientation="horizontal"
-    android:padding="15dp">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SearchedSharedBooks">
+
+    <include
+        android:id="@+id/searched_sharedBooks_toolbar"
+        layout="@layout/toolbar" />
 
     <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_margin="10dp"
-      android:layout_weight="1"
-      android:orientation="vertical"
-      android:paddingHorizontal="10dp"
-      android:paddingVertical="5dp">
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal"
+        android:padding="15dp">
 
-      <TextView
-        android:id="@+id/bookCardTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="3"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp">
 
-      <TextView
-        android:id="@+id/bookCardAuthor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="3"
-        android:textStyle="bold" />
+            <TextView
+                android:id="@+id/bookCardTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-      <TextView
-        android:id="@+id/bookCardISBN"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold" />
+            <TextView
+                android:id="@+id/bookCardAuthor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/bookCardTitle"
+                android:layout_marginBottom="10dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@color/white" />
 
-      <TextView
-        android:id="@+id/bookCardYear"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold" />
+            <TextView
+                android:id="@+id/bookCardPublisher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/bookCardAuthor"
+                android:textColor="@color/white"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/bookCardYear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/bookCardPublisher"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/bookCardISBN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:textColor="@color/white" />
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
+            android:elevation="5dp"
+            app:cardCornerRadius="3dp">
+
+            <ImageView
+                android:id="@+id/bookCardCover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY" />
+        </android.support.v7.widget.CardView>
 
     </LinearLayout>
 
-    <android.support.v7.widget.CardView
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_gravity="center_vertical"
-      android:layout_weight="2"
-      android:elevation="5dp"
-      app:cardCornerRadius="3dp">
-
-      <ImageView
-        android:id="@+id/bookCardCover"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/shared_books_result_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:scaleType="fitXY" />
-    </android.support.v7.widget.CardView>
-
-  </LinearLayout>
-
-  <android.support.v7.widget.RecyclerView
-    android:id="@+id/shared_books_result_list"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
