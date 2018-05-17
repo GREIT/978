@@ -88,7 +88,8 @@ public class ShowSharedBook extends AppCompatActivity {
 
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();*/
-                openchat();
+                //openchat();
+                Chat.openchat(ShowSharedBook.this,sb);
                 return true;
             } else if (R.id.book_show_action_star == item.getItemId()) {
                 Context context = getApplicationContext();
@@ -222,7 +223,7 @@ public class ShowSharedBook extends AppCompatActivity {
                                 c.setLastMsg("");
                                 c.setUnreadCount(0);
                                 c.setBookTitle(sb.getTitle());
-                                DatabaseReference user_mess = db.getReference("USERS_MESSAGES");
+                                DatabaseReference user_mess = db.getReference("USER_MESSAGES");
                                 String chatid = user_mess.push().getKey();
                                 c.setChatID(chatid);
                                 dbref.child(chatid).setValue(c);

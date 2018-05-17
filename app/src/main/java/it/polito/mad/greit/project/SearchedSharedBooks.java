@@ -233,7 +233,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
                   c.setLastMsg("");
                   c.setUnreadCount(0);
                   c.setBookTitle(sb.getTitle());
-                  DatabaseReference user_mess = db.getReference("USERS_MESSAGES");
+                  DatabaseReference user_mess = db.getReference("USER_MESSAGES");
                   String chatid = user_mess.push().getKey();
                   c.setChatID(chatid);
                   dbref.child(chatid).setValue(c);

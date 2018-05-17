@@ -59,8 +59,9 @@
             android:name=".SharedBooksByUserSplitted"
             android:label="@string/title_activity_shared_books_by_user_splitted"
             android:theme="@style/MaterialTheme" />
-        <activity android:name=".ShowBookActivity" />
         <activity android:name=".ChatActivity" />
+
+        <service android:name=".FireBaseService"/>
 
         <meta-data
             android:name="preloaded_fonts"
@@ -72,10 +73,6 @@
         <activity android:name=".SearchedSharedBooks" />
         <activity android:name=".InboxActivity"/>
       <activity android:name=".ShowSharedBook"/>
-      <service android:enabled="true"
-            android:name=".FireBaseService">
-        </service>
-
     </application>
 
 </manifest>

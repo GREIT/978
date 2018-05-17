@@ -149,7 +149,7 @@ public class Chat implements Serializable, Comparable<Chat>{
                                 c.setUserID(sb.getOwner());
                                 c.setBookTitle(sb.getTitle());
 
-                                DatabaseReference user_mess = db.getReference("USERS_MESSAGES");
+                                DatabaseReference user_mess = db.getReference("USER_MESSAGES");
                                 String chatid = user_mess.push().getKey();
 
                                 //SEND pre formatted message at startup
