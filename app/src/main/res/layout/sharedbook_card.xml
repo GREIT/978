@@ -31,7 +31,8 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="fitXY" />
+            android:scaleType="fitXY"
+            android:transitionName="thumbnailTransition"/>
 
           <ImageView
             android:id="@+id/overlay_shared_book_card_thumbnail"

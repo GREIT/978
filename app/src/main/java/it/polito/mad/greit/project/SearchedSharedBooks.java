@@ -1,5 +1,9 @@
 package it.polito.mad.greit.project;
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -7,6 +11,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.media.Image;
+import android.os.Build;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -23,8 +31,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.engine.executor.GlideExecutor;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.dynamic.SupportFragmentWrapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -58,15 +68,15 @@ public class SearchedSharedBooks extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_searched_shared_books);
-  
+    
     t = findViewById(R.id.searched_sharedBooks_toolbar);
     t.setTitle("Books near you");
     setSupportActionBar(t);
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
     t.setNavigationOnClickListener(view -> onBackPressed());
-  
+    
     book = (Book) getIntent().getSerializableExtra("book");
-  
+    
     twTitle = (TextView) findViewById(R.id.bookCardTitle);
     twTitle.setText(book.getTitle());
     
@@ -75,7 +85,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
     twAuthor.setText("By " + AS);
     
     twISBN = (TextView) findViewById(R.id.bookCardISBN);
-    twISBN.setText("ISBN: " +  book.getISBN());
+    twISBN.setText("ISBN: " + book.getISBN());
     
     twYear = (TextView) findViewById(R.id.bookCardYear);
     twYear.setText("Year: " + book.getYear());
@@ -84,7 +94,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
     Glide.with(this)
         .load(book.getCover())
         .into(iwCover);
-  
+    
     mSharedBookDb = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS");
     mResultList = (RecyclerView) findViewById(R.id.shared_books_result_list);
     mResultList.setItemAnimator(new DefaultItemAnimator());
@@ -106,7 +116,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
     ) {
       @Override
       protected void populateViewHolder(SharedBookViewHolder viewHolder, SharedBook model, int position) {
-        viewHolder.setDetails(getApplicationContext(), model);
+        viewHolder.setDetails(getApplicationContext(), model, getSupportFragmentManager());
       }
       
       @Override
@@ -115,15 +125,38 @@ public class SearchedSharedBooks extends AppCompatActivity {
         viewHolder.setOnClickListener(new SharedBookViewHolder.ClickListener() {
           @Override
           public void onItemClick(View view, SharedBook model) {
-            Intent intent = new Intent(SearchedSharedBooks.this, ShowSharedBook.class);
+//            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//            Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+//            if (prev != null) {
+//              ft.remove(prev);
+//            }
+//            ft.addToBackStack(null);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("book", model);
             
-            try {
-              intent.putExtra("book", model);
-            } catch (Exception e) {
-              intent.putExtra("book", "");
-            }
+            SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
+            dialogFragment.setArguments(bundle);
+            dialogFragment.show(getSupportFragmentManager(), "dialog");
+
+//            ImageView iv = (ImageView) findViewById(R.id.shared_book_detail_thumbnail);
+//            Intent intent = new Intent(SearchedSharedBooks.this, SharedBookDetail.class);
+//
+//            try {
+//              intent.putExtra("book", model);
+//
+//              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                ActivityOptionsCompat options = ActivityOptionsCompat.
+//                    makeSceneTransitionAnimation(SearchedSharedBooks.this, iv, "thumbnailTransition");
+//                startActivity(intent, options.toBundle());
+//              } else {
+//                startActivity(intent);
+//              }
+//            } catch (Exception e) {
+//              intent.putExtra("book", "");
+//              startActivity(intent);
+//            }
+//
             
-            startActivity(intent);
           }
         });
         return viewHolder;
@@ -150,7 +183,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
       mClickListener = clickListener;
     }
     
-    public void setDetails(Context ctx, SharedBook model) {
+    public void setDetails(Context ctx, SharedBook model, android.support.v4.app.FragmentManager fm) {
       //TextView book_owner = (TextView) mView.findViewById(R.id.shared_book_card_owner);
       RatingBar book_ratings = (RatingBar) mView.findViewById(R.id.shared_book_card_conditions);
       ImageView book_image = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
@@ -162,19 +195,23 @@ public class SearchedSharedBooks extends AppCompatActivity {
       //book_author.setText(model.getAuthors().keySet().iterator().next());
       
       showMoreInfo.setImageResource(R.drawable.ic_zoom_in_white_48dp);
+      
       showMoreInfo.setOnClickListener(v -> {
-        Intent I = new Intent(ctx, ShowSharedBook.class);
-        I.putExtra("book", model);
-        ctx.startActivity(I);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("book", model);
+        
+        SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(fm, "dialog");
       });
       
       contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
       //contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, "Start chat", Toast.LENGTH_SHORT).show());
-      contactForLoan.setOnClickListener(v -> openchat(ctx,model));
+      contactForLoan.setOnClickListener(v -> openchat(ctx, model));
       
       
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
-  
+
       sr.getBytes(5 * Constants.SIZE).addOnSuccessListener(bytes -> {
         Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -199,8 +236,8 @@ public class SearchedSharedBooks extends AppCompatActivity {
         mClickListener.onItemClick(v, model);
       });
     }
-
-    private void openchat(Context ctx,SharedBook sb){
+    
+    private void openchat(Context ctx, SharedBook sb) {
       FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
       FirebaseDatabase db = FirebaseDatabase.getInstance();
       DatabaseReference dbref = db.getReference("USER_CHATS").child(fbu.getUid());
@@ -211,16 +248,16 @@ public class SearchedSharedBooks extends AppCompatActivity {
           try {
             for (MutableData ds : mutableData.getChildren()) {
               Chat c = ds.getValue(Chat.class);
-              if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwner())){
+              if (c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwner())) {
                 //chat already present
-                Intent intent = new Intent(ctx,ChatActivity.class);
-                intent.putExtra("chat",c);
+                Intent intent = new Intent(ctx, ChatActivity.class);
+                intent.putExtra("chat", c);
                 ctx.startActivity(intent);
                 chat_exists = true;
               }
             }
-
-            if(!chat_exists){
+            
+            if (!chat_exists) {
               Chat c = new Chat();
               //getUsername(db,sb.getOwner(),c);
               db.getReference("USERS").child(sb.getOwner()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -237,8 +274,8 @@ public class SearchedSharedBooks extends AppCompatActivity {
                   String chatid = user_mess.push().getKey();
                   c.setChatID(chatid);
                   dbref.child(chatid).setValue(c);
-                  Intent intent = new Intent(ctx,ChatActivity.class);
-                  intent.putExtra("chat",Chat.copy(c));
+                  Intent intent = new Intent(ctx, ChatActivity.class);
+                  intent.putExtra("chat", Chat.copy(c));
                   //second user
                   db.getReference("USERS").child(fbu.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -252,29 +289,29 @@ public class SearchedSharedBooks extends AppCompatActivity {
                       ref_second_user.child(chatid).setValue(c);
                       ctx.startActivity(intent);
                     }
-
+                    
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                    
                     }
                   });
                 }
-
+                
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                
                 }
               });
             }
-          }catch (Exception e){
+          } catch (Exception e) {
             e.printStackTrace();
           }
           return Transaction.success(mutableData);
         }
-
+        
         @Override
         public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-
+        
         }
       });
     }
@@ -319,5 +356,5 @@ public class SearchedSharedBooks extends AppCompatActivity {
     Resources r = getResources();
     return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
   }
-
+  
 }
