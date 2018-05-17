@@ -51,6 +51,7 @@ public class FireBaseService extends Service{
                             started = true;
                         }
                         Log.d("DEBUGDEBUG", "handleMessage: HERE");
+                        //What the fuck? Perché?
                         Thread.sleep(30000);
                     } catch (Exception e) { stopSelf(msg.arg1); }
                 }
@@ -113,7 +114,25 @@ public class FireBaseService extends Service{
         dbref.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Chat c = dataSnapshot.getValue(Chat.class);
 
+                if(c.getUnreadCount() != 0){
+                    Intent intent = new Intent(FireBaseService.this, ChatActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.putExtra("chat",c);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(FireBaseService.this, 1, intent, 0);
+
+                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(FireBaseService.this, "project")
+                            .setSmallIcon(R.drawable.ic_book_blue_700_48dp)
+                            .setContentTitle(getResources().getString(R.string.new_request) + " " + c.getUsername())
+                            .setContentText(formatDateTime(c.getTimestamp()) + " -- "+ c.getLastMsg())
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setContentIntent(pendingIntent)
+                            .setAutoCancel(true);
+
+                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(FireBaseService.this);
+                    notificationManager.notify(1, mBuilder.build());
+                }
             }
 
             @Override

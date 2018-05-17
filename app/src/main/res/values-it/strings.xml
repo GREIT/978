@@ -90,4 +90,6 @@
   <string name="hello">Ciao </string>
   <string name="can_i_have">E\' possibile prendere in prestito </string>
 
+  <string name="new_request">Nuova richiesta ricevuta da </string>
+
 </resources>

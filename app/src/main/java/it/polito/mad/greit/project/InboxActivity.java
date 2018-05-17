@@ -9,6 +9,7 @@ import android.support.v7.util.SortedList;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -54,6 +55,20 @@ public class InboxActivity extends AppCompatActivity {
         rv.setLayoutManager(linearLayoutManager);
 
         rv.setAdapter(adapter);
+
+
+        SwipeToDeleteCallback swipeHandler = new SwipeToDeleteCallback(this) {
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder vh, int direction) {
+                Chat c = adapter.get(vh.getAdapterPosition());
+                adapter.removeAt(vh.getAdapterPosition());
+                deleteChat(c, fbu.getUid());
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeHandler);
+        itemTouchHelper.attachToRecyclerView(rv);
+
 
         dbref.addValueEventListener(new ValueEventListener() {
             @Override
