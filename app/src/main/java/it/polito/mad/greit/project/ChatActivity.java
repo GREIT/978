@@ -31,7 +31,6 @@ import java.util.ArrayList;
 
 public class ChatActivity extends AppCompatActivity {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +39,11 @@ public class ChatActivity extends AppCompatActivity {
         final Chat chat = (Chat) getIntent().getSerializableExtra("chat");
         final String chatID = chat.getChatID();
         final String ownerID = chat.getUserID();
+
+        if(getIntent().getBooleanExtra("new", false)){
+            //we must send default message
+            sendFirstMessage((Message)getIntent().getSerializableExtra("msg"), chat);
+        }
 
         Toolbar t;
         t = findViewById(R.id.chat_toolbar);
@@ -86,9 +90,13 @@ public class ChatActivity extends AppCompatActivity {
                 String msg = et.getText().toString();
                 et.setText("");
                 long time = System.currentTimeMillis()/1000L;
+                if (msg.trim().isEmpty()) {
+                    return;
+                }
                 Message tosend = new Message(time,
                         FirebaseAuth.getInstance().getCurrentUser().getUid(),
-                        FirebaseAuth.getInstance().getCurrentUser().getDisplayName(),msg);
+                        FirebaseAuth.getInstance().getCurrentUser().getDisplayName()
+                        ,msg);
 
                 DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USER_MESSAGES").child(chatID);
                 String key = fbd.push().getKey();
@@ -101,6 +109,7 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public Transaction.Result doTransaction(MutableData mutableData) {
                         Chat c = mutableData.getValue(Chat.class);
+                        c.setIsnew(false);
                         c.setLastMsg(msg);
                         c.setTimestamp(time);
                         mutableData.setValue(c);
@@ -166,4 +175,9 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    private void sendFirstMessage(Message msg, Chat chat){
+        DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USER_MESSAGES").child(chat.getChatID());
+        String key = fbd.push().getKey();
+        fbd.child(key).setValue(msg);
+    }
 }

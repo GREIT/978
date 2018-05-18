@@ -1,6 +1,11 @@
 package it.polito.mad.greit.project;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -180,6 +185,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     setupSearchBox("title");
     startupRecycleView();
+
+    //start chat service for background listening
+    startbackgroundlisten();
   }
   
   
@@ -539,5 +547,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   private int dpToPx(int dp) {
     Resources r = getResources();
     return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+  }
+
+  private void startbackgroundlisten(){
+      if(!isRunning(FireBaseService.class)){
+        startService(new Intent(MainActivity.this,FireBaseService.class));
+      }
+  }
+
+  private boolean isRunning(Class<?> serviceClass) {
+    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+    for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+      if (serviceClass.getName().equals(service.service.getClassName())) {
+        return true;
+      }
+    }
+    return false;
   }
 }

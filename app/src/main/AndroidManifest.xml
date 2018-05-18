@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.polito.mad.greit.project">
 
-
     <!-- <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/> -->
     <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/> -->
     <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
@@ -60,8 +59,9 @@
             android:name=".SharedBooksByUserSplitted"
             android:label="@string/title_activity_shared_books_by_user_splitted"
             android:theme="@style/MaterialTheme" />
-        <activity android:name=".ShowBookActivity" />
         <activity android:name=".ChatActivity" />
+
+        <service android:name=".FireBaseService"/>
 
         <meta-data
             android:name="preloaded_fonts"
@@ -71,8 +71,8 @@
             android:value="AIzaSyD5pdfKZ3x7n8X8TW22kj45qoYP3siKTMU" />
 
         <activity android:name=".SearchedSharedBooks" />
-        <activity android:name=".ShowSharedBook"/>
         <activity android:name=".InboxActivity"/>
-  </application>
+      <activity android:name=".ShowSharedBook"/>
+    </application>
 
 </manifest>

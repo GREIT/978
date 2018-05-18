@@ -96,5 +96,10 @@
   <string name="inbox">Inbox</string>
   <string name="input">Insert here...</string>
 
-
+  //firebaseservice
+  <string name="hello">Hello </string>
+  <string name="can_i_have">Can I have </string>
+  <string name="new_request">New Request Received from %1$s for the book %2$s</string>
+  <string name="new_messages">New messages received</string>
+  <string name="incoming">%1$d messages from %2$s for book %3$s</string>
 </resources>

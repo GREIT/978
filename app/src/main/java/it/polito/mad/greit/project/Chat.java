@@ -2,6 +2,8 @@ package it.polito.mad.greit.project;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Debug;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,6 +26,7 @@ public class Chat implements Serializable, Comparable<Chat>{
     private String lastMsg;
     private long unreadCount;
     private long timestamp;
+    private boolean isnew;
 
     public String getChatID() {
         return chatID;
@@ -89,6 +92,14 @@ public class Chat implements Serializable, Comparable<Chat>{
         this.timestamp = timestamp;
     }
 
+    public void setIsnew(Boolean b){
+        this.isnew = b;
+    }
+
+    public Boolean getIsnew(){
+        return this.isnew;
+    }
+
     @Override
     public int compareTo(Chat o){
         return (int) (this.timestamp - o.timestamp);
@@ -112,6 +123,7 @@ public class Chat implements Serializable, Comparable<Chat>{
         res.setBookTitle(c.getBookTitle());
         res.setChatID(c.getChatID());
         res.setBookID(c.getBookID());
+        res.setIsnew(c.getIsnew());
         return res;
     }
 
@@ -142,18 +154,39 @@ public class Chat implements Serializable, Comparable<Chat>{
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Profile p = dataSnapshot.getValue(Profile.class);
+                                c.setIsnew(true);
                                 c.setUsername(p.getUsername());
                                 c.setBookID(sb.getKey());
                                 c.setUserID(sb.getOwner());
-                                c.setLastMsg("");
-                                c.setUnreadCount(0);
                                 c.setBookTitle(sb.getTitle());
-                                DatabaseReference user_mess = db.getReference("USERS_MESSAGES");
+
+                                DatabaseReference user_mess = db.getReference("USER_MESSAGES");
                                 String chatid = user_mess.push().getKey();
+
+                                //SEND pre formatted message at startup
+                                //get msg parameters
+                                long time = System.currentTimeMillis()/1000L;
+                                String msg = context.getResources().getString(R.string.hello) + " " + p.getUsername()
+                                        +"!. " + context.getResources().getString(R.string.can_i_have) + " " + sb.getTitle() + "?";
+                                //send message parameters and put it into the chat newly created
+                                Message tosend = new Message(time,
+                                        FirebaseAuth.getInstance().getCurrentUser().getUid(),
+                                        FirebaseAuth.getInstance().getCurrentUser().getDisplayName(),msg);
+
+                                c.setTimestamp(time);
+                                c.setUnreadCount(1);
+                                c.setLastMsg(msg);
+
+                                //save the chatID and deploy the user_chat entry
                                 c.setChatID(chatid);
+                                //set the chat for the owner
                                 dbref.child(chatid).setValue(c);
+
+                                //prepare for making the other UserChat and create it
                                 Intent intent = new Intent(context,ChatActivity.class);
                                 intent.putExtra("chat",Chat.copy(c));
+                                intent.putExtra("new", true);
+                                intent.putExtra("msg", tosend);
                                 //second user
                                 db.getReference("USERS").child(fbu.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
@@ -193,4 +226,6 @@ public class Chat implements Serializable, Comparable<Chat>{
             }
         });
     }
+
+
 }

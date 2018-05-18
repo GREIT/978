@@ -91,6 +91,10 @@ public class ChatListAdapter extends RecyclerView.Adapter {
         chatList.endBatchedUpdates();
     }
 
+    public void removeAt(int position){
+        chatList.removeItemAt(position);
+    }
+
     public Chat get(int position) {
         return chatList.get(position);
     }

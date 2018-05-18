@@ -170,7 +170,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
       
       contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
       //contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, "Start chat", Toast.LENGTH_SHORT).show());
-      contactForLoan.setOnClickListener(v -> openchat(ctx,model));
+      contactForLoan.setOnClickListener(v -> Chat.openchat(ctx,model));
       
       
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
@@ -233,7 +233,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
                   c.setLastMsg("");
                   c.setUnreadCount(0);
                   c.setBookTitle(sb.getTitle());
-                  DatabaseReference user_mess = db.getReference("USERS_MESSAGES");
+                  DatabaseReference user_mess = db.getReference("USER_MESSAGES");
                   String chatid = user_mess.push().getKey();
                   c.setChatID(chatid);
                   dbref.child(chatid).setValue(c);
