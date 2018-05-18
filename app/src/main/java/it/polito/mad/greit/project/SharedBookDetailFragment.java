@@ -75,7 +75,7 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
     ImageView contactForLoan = (ImageView) v.findViewById(R.id.shared_book_detail_icon1);
     ImageView zoomOut = (ImageView) v.findViewById(R.id.shared_book_detail_icon2);
     ImageView distance = (ImageView) v.findViewById(R.id.shared_book_detail_icon3);
-    String date = sb.getAddedOn();
+    String date = sb.getAddedOn().subSequence(4, 10)+sb.getAddedOn().substring(29, 34);
     
     tv = (TextView) v.findViewById(R.id.shared_book_detail_owner);
     tv.setText("Added on " + date + "\nby @" + sb.getOwner());
