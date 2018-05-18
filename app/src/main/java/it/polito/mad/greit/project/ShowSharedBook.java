@@ -62,8 +62,6 @@ public class ShowSharedBook extends AppCompatActivity {
       owned = true;
     }
     
-    //TODO change eye color if book already in watchlist
-    
     setup();
   }
   

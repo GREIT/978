@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="it.polito.mad.greit.project">
+  package="it.polito.mad.greit.project">
+
 
     <!-- <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/> -->
     <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/> -->
@@ -26,18 +27,18 @@
         android:supportsRtl="true"
         android:theme="@style/MaterialTheme">
         <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="it.polito.mad.greit.project"
-            android:exported="false"
-            android:grantUriPermissions="true">
+          android:name="android.support.v4.content.FileProvider"
+          android:authorities="it.polito.mad.greit.project"
+          android:exported="false"
+          android:grantUriPermissions="true">
             <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
+              android:name="android.support.FILE_PROVIDER_PATHS"
+              android:resource="@xml/file_paths" />
         </provider>
 
         <activity
-            android:name=".MainEmptyActivity"
-            android:theme="@android:style/Theme.NoDisplay">
+          android:name=".MainEmptyActivity"
+          android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,18 +48,18 @@
         <activity android:name=".SignInActivity" />
         <activity android:name=".CompleteRegistration" />
         <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main"
-            android:screenOrientation="portrait" />
+          android:name=".MainActivity"
+          android:label="@string/title_activity_main"
+          android:screenOrientation="portrait" />
         <activity android:name=".ShowProfile" />
         <activity android:name=".EditProfile" />
         <activity android:name=".ShareNewBook" />
         <activity android:name=".CompleteBookRegistration" />
         <activity android:name=".SharedBooksByUser" />
         <activity
-            android:name=".SharedBooksByUserSplitted"
-            android:label="@string/title_activity_shared_books_by_user_splitted"
-            android:theme="@style/MaterialTheme" />
+          android:name=".SharedBooksByUserSplitted"
+          android:label="@string/title_activity_shared_books_by_user_splitted"
+          android:theme="@style/MaterialTheme" />
         <activity android:name=".ChatActivity" />
 
         <service android:name=".FireBaseService"/>
@@ -71,8 +72,8 @@
             android:value="AIzaSyD5pdfKZ3x7n8X8TW22kj45qoYP3siKTMU" />
 
         <activity android:name=".SearchedSharedBooks" />
-        <activity android:name=".InboxActivity"/>
-      <activity android:name=".ShowSharedBook"/>
+        <activity android:name=".ShowSharedBook" />
+        <activity android:name=".InboxActivity" />
     </application>
 
 </manifest>
