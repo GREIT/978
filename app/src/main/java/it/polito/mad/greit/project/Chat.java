@@ -184,6 +184,7 @@ public class Chat implements Serializable, Comparable<Chat>{
 
                                 //prepare for making the other UserChat and create it
                                 Intent intent = new Intent(context,ChatActivity.class);
+
                                 intent.putExtra("chat",Chat.copy(c));
                                 intent.putExtra("new", true);
                                 intent.putExtra("msg", tosend);
@@ -195,6 +196,7 @@ public class Chat implements Serializable, Comparable<Chat>{
                                         DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwner());
                                         c.setUserID(fbu.getUid());
                                         c.setUsername(p.getUsername());
+                                        c.setIsnew(false);
                                         //c.setUsername(fbu.getDisplayName());
                                         //c.setUsername(getUsername(db,fbu.getUid(),c));
                                         ref_second_user.child(chatid).setValue(c);
