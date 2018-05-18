@@ -211,7 +211,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
 
             contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
             contactForLoan.setOnClickListener(v -> openchat(ctx, model));
-
+/*
             showMoreInfo.setImageResource(R.drawable.ic_zoom_in_white_48dp);
             showMoreInfo.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
@@ -221,7 +221,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
                 dialogFragment.setArguments(bundle);
                 dialogFragment.show(fm, "dialog");
             });
-
+*/
             distance.setImageResource(R.mipmap.ic_minore_5);
 
 

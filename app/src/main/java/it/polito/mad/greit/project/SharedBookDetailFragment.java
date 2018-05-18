@@ -88,10 +88,10 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
         contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
         contactForLoan.setOnClickListener(view -> Toast.makeText(getActivity().getApplicationContext(), "Start chat", Toast.LENGTH_SHORT).show());
         contactForLoan.setOnClickListener(view -> openchat(this.getContext(), sb));
-
+/*
         zoomOut.setImageResource(R.drawable.ic_zoom_out_white_48dp);
         zoomOut.setOnClickListener(view -> getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit());
-
+*/
         distance.setImageResource(R.mipmap.ic_minore_5);
 
         StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + sb.getKey() + ".jpg");
