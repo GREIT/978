@@ -46,7 +46,8 @@
                 android:layout_marginBottom="10dp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/bookCardPublisher"

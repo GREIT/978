@@ -192,20 +192,13 @@ public class SearchedSharedBooks extends AppCompatActivity {
         }
 
         public void setDetails(Context ctx, SharedBook model, android.support.v4.app.FragmentManager fm) {
-            //TextView book_owner = (TextView) mView.findViewById(R.id.shared_book_card_owner);
             RatingBar book_ratings = (RatingBar) mView.findViewById(R.id.shared_book_card_conditions);
             ImageView book_image = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
             ImageView showMoreInfo = (ImageView) mView.findViewById(R.id.shared_book_card_moreInfo);
             ImageView contactForLoan = (ImageView) mView.findViewById(R.id.shared_book_card_contactForLoan);
             ImageView distance = (ImageView) mView.findViewById(R.id.shared_book_card_distance);
 
-            //book_owner.setText(model.getOwner());
-            book_ratings.setRating(Float.valueOf(model.getConditions()));
-            //book_author.setText(model.getAuthors().keySet().iterator().next());
-
-            showMoreInfo.setImageResource(R.drawable.ic_zoom_in_white_48dp);
-
-            showMoreInfo.setOnClickListener(v -> {
+            book_image.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("book", model);
 
@@ -214,9 +207,20 @@ public class SearchedSharedBooks extends AppCompatActivity {
                 dialogFragment.show(fm, "dialog");
             });
 
+            book_ratings.setRating(Float.valueOf(model.getConditions()));
+
             contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
-            //contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, "Start chat", Toast.LENGTH_SHORT).show());
             contactForLoan.setOnClickListener(v -> openchat(ctx, model));
+
+            showMoreInfo.setImageResource(R.drawable.ic_zoom_in_white_48dp);
+            showMoreInfo.setOnClickListener(v -> {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("book", model);
+
+                SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
+                dialogFragment.setArguments(bundle);
+                dialogFragment.show(fm, "dialog");
+            });
 
             distance.setImageResource(R.mipmap.ic_minore_5);
 
@@ -242,10 +246,6 @@ public class SearchedSharedBooks extends AppCompatActivity {
                                     .fitCenter())
                             .into(book_image)
             );
-
-            itemView.setOnClickListener(v -> {
-                mClickListener.onItemClick(v, model);
-            });
         }
 
         private void openchat(Context ctx, SharedBook sb) {
