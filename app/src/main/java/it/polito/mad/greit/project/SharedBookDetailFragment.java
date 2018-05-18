@@ -101,14 +101,16 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
       Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
       ByteArrayOutputStream stream = new ByteArrayOutputStream();
       bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-      Glide.with(this)
-          .asBitmap()
-          .load(stream.toByteArray())
-          
-          .apply(new RequestOptions()
-              .placeholder(R.drawable.ic_book_blue_grey_900_48dp)
-              .fitCenter())
-          .into(thumbnail);
+      if (getContext() != null) {
+        Glide.with(this)
+            .asBitmap()
+            .load(stream.toByteArray())
+            
+            .apply(new RequestOptions()
+                .placeholder(R.drawable.ic_book_blue_grey_900_48dp)
+                .fitCenter())
+            .into(thumbnail);
+      }
     }).addOnFailureListener(e -> {
           if (getContext() != null) {
             Glide.with(this)
