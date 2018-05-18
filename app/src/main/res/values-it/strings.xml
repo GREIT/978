@@ -87,9 +87,12 @@
     <string name="inbox">Messaggi</string>
     <string name="input">Inserisci qui...</string>
 
+  //firebaseservice
   <string name="hello">Ciao </string>
   <string name="can_i_have">E\' possibile prendere in prestito </string>
+  <string name="new_request">Nuova richiesta ricevuta da %1$s per il libro %2$s</string>
+  <string name="new_messages">Nuovi messaggi ricevuti</string>
+  <string name="incoming">%1$d messaggi da %2$s per il libro %3$s</string>
 
-  <string name="new_request">Nuova richiesta ricevuta da </string>
 
 </resources>

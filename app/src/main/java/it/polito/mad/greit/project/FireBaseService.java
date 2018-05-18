@@ -31,12 +31,16 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class FireBaseService extends Service{
 
     private Looper mServiceLooper;
     private ServiceHandler mServiceHandler;
+    private NotificationCompat.Builder builder;
+    private ArrayList<String> messages;
+    private NotificationManagerCompat notificationManagerCompat;
 
     private final class ServiceHandler extends Handler {
         boolean started = false;
@@ -50,8 +54,7 @@ public class FireBaseService extends Service{
                             startlistening();
                             started = true;
                         }
-                        Log.d("DEBUGDEBUG", "handleMessage: HERE");
-                        //What the fuck? Perché?
+                        Log.d("FIREBASESERVICE", "Still Alive");
                         Thread.sleep(30000);
                     } catch (Exception e) { stopSelf(msg.arg1); }
                 }
@@ -78,7 +81,19 @@ public class FireBaseService extends Service{
             notificationManager.createNotificationChannel(channel);
         }
 
-        Log.d("DEBUGDEBUG", "onCreate: Created service");
+        messages = new ArrayList<>();
+
+        notificationManagerCompat = NotificationManagerCompat.from(FireBaseService.this);
+
+        builder = new NotificationCompat.Builder(FireBaseService.this, "project")
+                .setSmallIcon(R.drawable.ic_book_blue_700_48dp)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .setContentTitle(getResources().getString(R.string.new_messages))
+                .setContentText("");
+
+        Log.d("FIREBASESERVICE", "onCreate: Created service");
 
         HandlerThread thread = new HandlerThread("ServiceStartArguments",
                 Process.THREAD_PRIORITY_BACKGROUND);
@@ -97,17 +112,16 @@ public class FireBaseService extends Service{
         msg.arg1 = startid;
         mServiceHandler.sendMessage(msg);
 
-        Log.d("DEBUGDEBUG", "onStartCommand: Start Command");
+        Log.d("FIREBASESERVICE", "onStartCommand: Start Command");
 
         return START_STICKY;
     }
 
     public void onDestroy() {
-        Log.d("DEBUGDEBUGDEBUG", "onDestroy: service closed");
+        Log.d("FIREBASESERVICE", "onDestroy: service closed");
     }
 
     public void startlistening(){
-        Log.d("DEBUGDEBUGDEBUG", "handleMessage: entered handle message");
         FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference dbref = db.getReference("USER_CHATS").child(fbu.getUid());
@@ -116,46 +130,77 @@ public class FireBaseService extends Service{
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Chat c = dataSnapshot.getValue(Chat.class);
 
+                String msg = getResources().getString(R.string.new_request,c.getUsername(),c.getBookTitle());
+
                 if(c.getUnreadCount() != 0){
-                    Intent intent = new Intent(FireBaseService.this, ChatActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    intent.putExtra("chat",c);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(FireBaseService.this, 1, intent, 0);
 
-                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(FireBaseService.this, "project")
-                            .setSmallIcon(R.drawable.ic_book_blue_700_48dp)
-                            .setContentTitle(getResources().getString(R.string.new_request) + " " + c.getUsername())
-                            .setContentText(formatDateTime(c.getTimestamp()) + " -- "+ c.getLastMsg())
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    messages.remove(msg);
+                    messages.add(msg);
+
+                    PendingIntent pendingIntent=null;
+                    if(messages.size() == 1){
+                        Intent intent = new Intent(FireBaseService.this, ChatActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.putExtra("chat", c);
+                        pendingIntent = PendingIntent.getActivity(FireBaseService.this, 0, intent, 0);
+                    }
+                    else if(messages.size() >= 2){
+                        Intent intent = new Intent(FireBaseService.this, InboxActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        pendingIntent = PendingIntent.getActivity(FireBaseService.this, 0, intent, 0);
+                    }
+
+                    builder.setContentText(setupString())
                             .setContentIntent(pendingIntent)
-                            .setAutoCancel(true);
-
-                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(FireBaseService.this);
-                    notificationManager.notify(1, mBuilder.build());
+                            .setStyle(new NotificationCompat.BigTextStyle()
+                                    .bigText(setupString()));
+                    notificationManagerCompat.notify(0,builder.build());
                 }
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                // Create an explicit intent for an Activity in your app
                 Chat c = dataSnapshot.getValue(Chat.class);
 
+                //String msg = c.getBookTitle() + "--" + c.getUsername();
+                String msg = getResources().getString(R.string.incoming,c.getUnreadCount(),c.getUsername(),c.getBookTitle());
+
                 if(c.getUnreadCount() != 0){
-                    Intent intent = new Intent(FireBaseService.this, ChatActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    intent.putExtra("chat",c);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(FireBaseService.this, 1, intent, 0);
 
-                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(FireBaseService.this, "project")
-                            .setSmallIcon(R.drawable.ic_book_blue_700_48dp)
-                            .setContentTitle(c.getUsername())
-                            .setContentText(formatDateTime(c.getTimestamp()) + " -- "+ c.getLastMsg())
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    messages.remove(msg);
+                    messages.add(msg);
+
+                    PendingIntent pendingIntent=null;
+                    if(messages.size() == 1){
+                        Intent intent = new Intent(FireBaseService.this, ChatActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.putExtra("chat", c);
+                        pendingIntent = PendingIntent.getActivity(FireBaseService.this, 0, intent, 0);
+                    }
+                    else if(messages.size() >= 2){
+                        Intent intent = new Intent(FireBaseService.this, InboxActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        pendingIntent = PendingIntent.getActivity(FireBaseService.this, 0, intent, 0);
+                    }
+
+                    builder.setContentText(setupString())
                             .setContentIntent(pendingIntent)
-                            .setAutoCancel(true);
+                            .setStyle(new NotificationCompat.BigTextStyle()
+                                    .bigText(setupString()));
+                    notificationManagerCompat.notify(0,builder.build());
 
-                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(FireBaseService.this);
-                    notificationManager.notify(1, mBuilder.build());
+                }
+                else{
+                    messages.remove(msg);
+                    builder.setContentText(setupString())
+                            .setStyle(new NotificationCompat.BigTextStyle()
+                                    .bigText(setupString()));
+                    if(messages.size() == 0){
+                        notificationManagerCompat.cancel(0);
+                    }
+                    else{
+                        notificationManagerCompat.notify(0,builder.build());
+                    }
                 }
             }
 
@@ -180,5 +225,13 @@ public class FireBaseService extends Service{
         Date date = new Date(time*1000L);
         SimpleDateFormat dt1 = new SimpleDateFormat("dd-MM hh:mm");
         return dt1.format(date);
+    }
+
+    private String setupString(){
+        String res="";
+        for(String msg : messages){
+            res = msg + "\n" + res;
+        }
+        return res;
     }
 }
