@@ -33,13 +33,14 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class FireBaseService extends Service{
 
     private Looper mServiceLooper;
     private ServiceHandler mServiceHandler;
     private NotificationCompat.Builder builder;
-    private ArrayList<String> messages;
+    private HashMap<String,String> messages;
     private NotificationManagerCompat notificationManagerCompat;
 
     private final class ServiceHandler extends Handler {
@@ -81,7 +82,7 @@ public class FireBaseService extends Service{
             notificationManager.createNotificationChannel(channel);
         }
 
-        messages = new ArrayList<>();
+        messages = new HashMap<>();
 
         notificationManagerCompat = NotificationManagerCompat.from(FireBaseService.this);
 
@@ -130,12 +131,14 @@ public class FireBaseService extends Service{
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Chat c = dataSnapshot.getValue(Chat.class);
 
+                //String msg = getResources().getString(R.string.new_request,c.getUsername(),c.getBookTitle());
                 String msg = getResources().getString(R.string.new_request,c.getUsername(),c.getBookTitle());
+                String key = c.getUsername() + "-" + c.getBookTitle();
 
-                if(c.getUnreadCount() != 0){
+                if(c.getIsnew()){
 
-                    messages.remove(msg);
-                    messages.add(msg);
+                    messages.remove(key);
+                    messages.put(key,msg);
 
                     PendingIntent pendingIntent=null;
                     if(messages.size() == 1){
@@ -164,11 +167,12 @@ public class FireBaseService extends Service{
 
                 //String msg = c.getBookTitle() + "--" + c.getUsername();
                 String msg = getResources().getString(R.string.incoming,c.getUnreadCount(),c.getUsername(),c.getBookTitle());
+                String key = c.getUsername() + "-" + c.getBookTitle();
 
                 if(c.getUnreadCount() != 0){
 
-                    messages.remove(msg);
-                    messages.add(msg);
+                    messages.remove(key);
+                    messages.put(key,msg);
 
                     PendingIntent pendingIntent=null;
                     if(messages.size() == 1){
@@ -191,7 +195,7 @@ public class FireBaseService extends Service{
 
                 }
                 else{
-                    messages.remove(msg);
+                    messages.remove(key);
                     builder.setContentText(setupString())
                             .setStyle(new NotificationCompat.BigTextStyle()
                                     .bigText(setupString()));
@@ -229,7 +233,7 @@ public class FireBaseService extends Service{
 
     private String setupString(){
         String res="";
-        for(String msg : messages){
+        for(String msg : messages.values()){
             res = msg + "\n" + res;
         }
         return res;

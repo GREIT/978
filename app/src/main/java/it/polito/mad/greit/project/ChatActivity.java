@@ -109,6 +109,7 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public Transaction.Result doTransaction(MutableData mutableData) {
                         Chat c = mutableData.getValue(Chat.class);
+                        c.setIsnew(false);
                         c.setLastMsg(msg);
                         c.setTimestamp(time);
                         mutableData.setValue(c);

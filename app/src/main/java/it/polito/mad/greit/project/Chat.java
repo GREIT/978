@@ -26,6 +26,7 @@ public class Chat implements Serializable, Comparable<Chat>{
     private String lastMsg;
     private long unreadCount;
     private long timestamp;
+    private boolean isnew;
 
     public String getChatID() {
         return chatID;
@@ -91,6 +92,14 @@ public class Chat implements Serializable, Comparable<Chat>{
         this.timestamp = timestamp;
     }
 
+    public void setIsnew(Boolean b){
+        this.isnew = b;
+    }
+
+    public Boolean getIsnew(){
+        return this.isnew;
+    }
+
     @Override
     public int compareTo(Chat o){
         return (int) (this.timestamp - o.timestamp);
@@ -114,6 +123,7 @@ public class Chat implements Serializable, Comparable<Chat>{
         res.setBookTitle(c.getBookTitle());
         res.setChatID(c.getChatID());
         res.setBookID(c.getBookID());
+        res.setIsnew(c.getIsnew());
         return res;
     }
 
@@ -144,6 +154,7 @@ public class Chat implements Serializable, Comparable<Chat>{
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Profile p = dataSnapshot.getValue(Profile.class);
+                                c.setIsnew(true);
                                 c.setUsername(p.getUsername());
                                 c.setBookID(sb.getKey());
                                 c.setUserID(sb.getOwner());
