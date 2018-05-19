@@ -169,6 +169,8 @@ public class CompleteBookRegistration extends AppCompatActivity {
             startActivity(intent);
           } else {
             sb.setPosition(profile.getLocation());
+            sb.setCoordinates(profile.getCoordinates());
+            sb.setUsername(profile.getUsername());
             DatabaseReference dbref = db.getReference("SHARED_BOOKS").child(key);
             dbref.setValue(sb);
           }

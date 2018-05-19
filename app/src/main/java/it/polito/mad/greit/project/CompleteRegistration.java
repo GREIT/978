@@ -36,11 +36,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -54,6 +57,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -71,7 +75,8 @@ public class CompleteRegistration extends AppCompatActivity {
   Button bb;
   FirebaseUser U;
   private static final String TAG = "CompleteRegistration";
-  String coordinates;
+  String coordinates=null;
+  String location = null;
   //Boolean def = false;
 
   @Override
@@ -84,9 +89,23 @@ public class CompleteRegistration extends AppCompatActivity {
     bb = findViewById(R.id.complete_registration);
     bb.setOnClickListener(v -> registrationCompleted());
 
-    setuplocation();
-  }
+    //setuplocation();
+    PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+            getFragmentManager().findFragmentById(R.id.complete_location);
 
+    autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+      @Override
+      public void onPlaceSelected(Place place) {
+        location = place.getAddress().toString();
+        coordinates = place.getLatLng().latitude + "-" + place.getLatLng().longitude;
+      }
+
+      @Override
+      public void onError(Status status) {
+
+      }
+    });
+  }
 
   public void setuplocation() {
     double radiusDegrees = 30;
@@ -173,10 +192,11 @@ public class CompleteRegistration extends AppCompatActivity {
 
   private void registrationCompleted() {
     EditText edit_nickname = findViewById(R.id.complete_nickname);
-    AutoCompleteTextView edit_location = findViewById(R.id.complete_location);
+    //AutoCompleteTextView edit_location = findViewById(R.id.complete_location);
 
     if (TextUtils.isEmpty(edit_nickname.getText().toString().replaceAll(" ", ""))
-            || TextUtils.isEmpty(edit_location.getText().toString().replaceAll(" ", ""))) {
+            //|| TextUtils.isEmpty(edit_location.getText().toString().replaceAll(" ", ""))) {
+            || location == null || coordinates == null) {
       AlertDialog.Builder builder = new AlertDialog.Builder(this);
       builder.setMessage(R.string.fill_fields)
               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -233,7 +253,7 @@ public class CompleteRegistration extends AppCompatActivity {
   public void allowregistration() {
 
     EditText edit_nickname = findViewById(R.id.complete_nickname);
-    AutoCompleteTextView edit_location = findViewById(R.id.complete_location);
+    //AutoCompleteTextView edit_location = findViewById(R.id.complete_location);
     EditText edit_bio = findViewById(R.id.complete_biography);
 
     Profile P = new Profile();
@@ -241,8 +261,9 @@ public class CompleteRegistration extends AppCompatActivity {
     P.setEmail(U.getEmail());
     P.setBio(edit_bio.getText().toString());
     P.setUsername(edit_nickname.getText().toString());
-    P.setLocation(edit_location.getText().toString());
+    P.setLocation(location);
     P.setCoordinates(coordinates);
+    P.setToken(FirebaseInstanceId.getInstance().getToken());
 
     FirebaseDatabase db = FirebaseDatabase.getInstance();
     DatabaseReference dbref = db.getReference("USERS").child(U.getUid());

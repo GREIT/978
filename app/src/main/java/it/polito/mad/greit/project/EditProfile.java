@@ -3,6 +3,7 @@ package it.polito.mad.greit.project;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -102,6 +103,7 @@ public class EditProfile extends AppCompatActivity {
   private CircleImageView ciw;
   private byte[] photo = null;
   private String coordinates=null;
+  private String location=null;
  // boolean def = false;
 
 
@@ -121,7 +123,23 @@ public class EditProfile extends AppCompatActivity {
     ciw = findViewById(R.id.edit_pic);
     ciw.setOnClickListener(v -> pic_action());
 
-    setuplocation();
+    PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+            getFragmentManager().findFragmentById(R.id.edit_location);
+
+    autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+      @Override
+      public void onPlaceSelected(Place place) {
+        location = place.getAddress().toString();
+        coordinates = place.getLatLng().latitude + "-" + place.getLatLng().longitude;
+      }
+
+      @Override
+      public void onError(Status status) {
+
+      }
+    });
+
+    //setuplocation();
 
   }
 
@@ -174,7 +192,7 @@ public class EditProfile extends AppCompatActivity {
     southWest = new LatLng(41.5 - radiusDegrees, 12.3 - radiusDegrees);
     LatLngBounds bounds = LatLngBounds.builder().include(northEast).include(southWest).build();
     final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-    AutoCompleteTextView ACTV = findViewById(R.id.edit_location);
+    AutoCompleteTextView ACTV = null;//findViewById(R.id.edit_location);
     ACTV.setAdapter(autoComplete);
     HashMap<String,String> place_ids = new HashMap<>();
     ACTV.addTextChangedListener(new TextWatcher() {
@@ -299,7 +317,6 @@ public class EditProfile extends AppCompatActivity {
   }
 
   void Fill(Bundle b) {
-    coordinates = profile.getCoordinates();
     TextView tv = findViewById(R.id.edit_name);
     tv.setText(profile.getName());
     tv = findViewById(R.id.edit_nickname);
@@ -307,16 +324,20 @@ public class EditProfile extends AppCompatActivity {
     tv = findViewById(R.id.edit_email);
     tv.setText(profile.getEmail());
     if(b!=null){
-      if(b.containsKey("location")){
-        tv = findViewById(R.id.edit_location);
-        tv.setText(b.getString("location"));
+      if(b.containsKey("bio")){
+        //tv = findViewById(R.id.edit_location);
+        //tv.setText(b.getString("location"));
+        location = b.getString("location");
+        coordinates = b.getString("coords");
         tv = findViewById(R.id.edit_biography);
         tv.setText(b.getString("bio"));
       }
     }
     else{
-      tv = findViewById(R.id.edit_location);
-      tv.setText(profile.getLocation());
+      //tv = findViewById(R.id.edit_location);
+      //tv.setText(profile.getLocation());
+      location = profile.getLocation();
+      coordinates = profile.getCoordinates();
       tv = findViewById(R.id.edit_biography);
       tv.setText(profile.getBio());
     }
@@ -359,15 +380,16 @@ public class EditProfile extends AppCompatActivity {
 
   void SaveInfo() {
     profile.setCoordinates(coordinates);
+    profile.setLocation(location);
     TextView tv = findViewById(R.id.edit_name);
     profile.setName(tv.getText().toString());
     tv = findViewById(R.id.edit_nickname);
     profile.setUsername(tv.getText().toString());
     tv = findViewById(R.id.edit_email);
     profile.setEmail(tv.getText().toString());
-    tv = findViewById(R.id.edit_location);
-    profile.setLocation(tv.getText().toString());
-    if(tv.getText().toString().isEmpty()){
+    //tv = findViewById(R.id.edit_location);
+    //profile.setLocation(tv.getText().toString());
+    /*if(tv.getText().toString().isEmpty()){
       AlertDialog.Builder builder = new AlertDialog.Builder(this);
       builder
               .setMessage(R.string.location_error)
@@ -379,7 +401,7 @@ public class EditProfile extends AppCompatActivity {
       AlertDialog dialog = builder.create();
       dialog.show();
       return;
-    }
+    }*/
     tv = findViewById(R.id.edit_biography);
     profile.setBio(tv.getText().toString());
 
@@ -470,7 +492,7 @@ public class EditProfile extends AppCompatActivity {
         e.printStackTrace();
       }
     }
-    else if (requestCode == Constants.PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
+    /*else if (requestCode == Constants.PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
       try {
         Place place = PlacePicker.getPlace(this, data);
         TextView tv = findViewById(R.id.edit_location);
@@ -479,7 +501,7 @@ public class EditProfile extends AppCompatActivity {
       }catch (Exception e){
         e.printStackTrace();
       }
-    }
+    }*/
 
     if (bm != null) {
       ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -553,8 +575,10 @@ public class EditProfile extends AppCompatActivity {
   protected void onSaveInstanceState(Bundle b) {
     super.onSaveInstanceState(b);
     TextView tv;
-    tv = findViewById(R.id.edit_location);
-    b.putString("location",tv.getText().toString());
+    //tv = findViewById(R.id.edit_location);
+    //b.putString("location",tv.getText().toString());
+    b.putString("coords",coordinates);
+    b.putString("location",location);
     tv = findViewById(R.id.edit_biography);
     b.putString("bio",tv.getText().toString());
 

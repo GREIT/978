@@ -2,6 +2,8 @@ package it.polito.mad.greit.project;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Debug;
 import android.util.Log;
 
@@ -15,7 +17,14 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class Chat implements Serializable, Comparable<Chat>{
     private String chatID;
@@ -26,7 +35,7 @@ public class Chat implements Serializable, Comparable<Chat>{
     private String lastMsg;
     private long unreadCount;
     private long timestamp;
-    private boolean isnew;
+    //private boolean isnew;
 
     public String getChatID() {
         return chatID;
@@ -92,13 +101,13 @@ public class Chat implements Serializable, Comparable<Chat>{
         this.timestamp = timestamp;
     }
 
-    public void setIsnew(Boolean b){
+    /*public void setIsnew(Boolean b){
         this.isnew = b;
     }
 
     public Boolean getIsnew(){
         return this.isnew;
-    }
+    }*/
 
     @Override
     public int compareTo(Chat o){
@@ -123,11 +132,11 @@ public class Chat implements Serializable, Comparable<Chat>{
         res.setBookTitle(c.getBookTitle());
         res.setChatID(c.getChatID());
         res.setBookID(c.getBookID());
-        res.setIsnew(c.getIsnew());
+        //res.setIsnew(c.getIsnew());
         return res;
     }
 
-    public static void openchat(Context context, SharedBook sb){
+    /*public static void openchat(Context context, SharedBook sb){
         FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference dbref = db.getReference("USER_CHATS").child(fbu.getUid());
@@ -154,7 +163,7 @@ public class Chat implements Serializable, Comparable<Chat>{
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Profile p = dataSnapshot.getValue(Profile.class);
-                                c.setIsnew(true);
+                                //c.setIsnew(true);
                                 c.setUsername(p.getUsername());
                                 c.setBookID(sb.getKey());
                                 c.setUserID(sb.getOwner());
@@ -196,7 +205,7 @@ public class Chat implements Serializable, Comparable<Chat>{
                                         DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwner());
                                         c.setUserID(fbu.getUid());
                                         c.setUsername(p.getUsername());
-                                        c.setIsnew(false);
+                                        //c.setIsnew(false);
                                         //c.setUsername(fbu.getDisplayName());
                                         //c.setUsername(getUsername(db,fbu.getUid(),c));
                                         ref_second_user.child(chatid).setValue(c);
@@ -227,7 +236,124 @@ public class Chat implements Serializable, Comparable<Chat>{
 
             }
         });
+    }*/
+
+    public static void openchat(Context context, SharedBook sb){
+        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference dbref = db.getReference("USER_CHATS").child(fbu.getUid());
+        dbref.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Boolean chat_exists = false;
+                try {
+                    for (MutableData ds : mutableData.getChildren()) {
+                        Chat c = ds.getValue(Chat.class);
+                        if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwner())){
+                            //chat already present
+                            Intent intent = new Intent(context,ChatActivity.class);
+                            intent.putExtra("chat",c);
+                            context.startActivity(intent);
+                            chat_exists = true;
+                        }
+                    }
+
+                    if(!chat_exists){
+                        Chat c = new Chat();
+                        c.setUsername(sb.getUsername());
+                        c.setBookID(sb.getKey());
+                        c.setUserID(sb.getOwner());
+                        c.setBookTitle(sb.getTitle());
+
+                        //unique id for chat
+                        DatabaseReference user_mess = db.getReference("USER_MESSAGES");
+                        String chatid = user_mess.push().getKey();
+
+                        long time = System.currentTimeMillis()/1000L;
+                        c.setTimestamp(time);
+                        c.setUnreadCount(0);
+                        c.setLastMsg("");
+                        c.setChatID(chatid);
+
+                        //set the chat for the current user
+                        dbref.child(chatid).setValue(c);
+
+                        //prepare for making the other UserChat and create it
+                        Intent intent = new Intent(context,ChatActivity.class);
+                        intent.putExtra("chat",Chat.copy(c));
+
+                        DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwner());
+                        c.setUserID(fbu.getUid());
+                        c.setUsername(context.getSharedPreferences("sharedpref",Context.MODE_PRIVATE).getString("username",null));
+                        ref_second_user.child(chatid).setValue(c);
+                        context.startActivity(intent);
+                        }
+                    }catch (Exception e){
+                    e.printStackTrace();
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+            }
+        });
     }
 
+    public void sendnotification(String sender_username){
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference dbref = db.getReference("USERS").child(this.getUserID());
+        dbref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Profile p = dataSnapshot.getValue(Profile.class);
+                String token = p.getToken();
+                new PostNotify().execute(token,sender_username,lastMsg,String.valueOf(unreadCount),bookTitle);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public static class PostNotify extends AsyncTask<String,String,Void> {
+
+        @Override
+        public Void doInBackground(String... strings){
+            try {
+                URL url = new URL("https://fcm.googleapis.com/fcm/send");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type","application/json");
+                conn.setRequestProperty("Authorization","key=" + Constants.SERVER_KEY);
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("to",strings[0]);
+                jsonObject.put("username",strings[1]);
+                jsonObject.put("lastMsg",strings[2]);
+                jsonObject.put("unreadCount",strings[3]);
+                jsonObject.put("bookTitle",strings[4]);
+
+                String tosend = jsonObject.toString();
+
+                conn.setFixedLengthStreamingMode(tosend.getBytes().length);
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(tosend);
+                writer.flush();
+                writer.close();
+                os.close();
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
 
 }

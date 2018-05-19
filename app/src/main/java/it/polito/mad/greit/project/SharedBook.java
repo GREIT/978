@@ -17,8 +17,9 @@ public class SharedBook extends Book implements Serializable {
   private String borrowTo;
   private String addedOn;
   private String position;
+  private String coordinates;
   private Boolean shared;
-  //private Map<String, String> tags;
+  private String username;
   
   public SharedBook() {
   }
@@ -91,5 +92,13 @@ public class SharedBook extends Book implements Serializable {
   public void setShared(Boolean shared) {
     this.shared = shared;
   }
+
+  public String getUsername(){ return username;}
+
+  public void setUsername(String user) { this.username = user; }
+
+  public String getCoordinates(){return coordinates;}
+
+  public void setCoordinates(String coordinates) { this.coordinates = coordinates; }
 
 }

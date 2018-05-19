@@ -12,6 +12,7 @@ public class Profile implements Serializable{
   private String location;
   private String coordinates;
   private String bio;
+  private String token;
   //private String photoUri;
   
   public Profile() {}
@@ -59,6 +60,10 @@ public class Profile implements Serializable{
   public void setCoordinates(String coords){ this.coordinates = coords; }
 
   public String getCoordinates(){ return this.coordinates; }
+
+  public String getToken(){ return this.token; }
+
+  public void setToken(String tk) { this.token = tk; }
   
  // public String getPhotoUri(){return photoUri; }
   

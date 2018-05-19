@@ -135,8 +135,8 @@ public class FireBaseService extends Service{
                 String msg = getResources().getString(R.string.new_request,c.getUsername(),c.getBookTitle());
                 String key = c.getUsername() + "-" + c.getBookTitle();
 
-                if(c.getIsnew()){
-
+                //if(c.getIsnew()){
+                if(c.getUnreadCount() != 0){
                     messages.remove(key);
                     messages.put(key,msg);
 

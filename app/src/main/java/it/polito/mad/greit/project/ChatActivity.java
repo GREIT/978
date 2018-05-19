@@ -1,6 +1,8 @@
 package it.polito.mad.greit.project;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +29,13 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class ChatActivity extends AppCompatActivity {
@@ -39,11 +48,6 @@ public class ChatActivity extends AppCompatActivity {
         final Chat chat = (Chat) getIntent().getSerializableExtra("chat");
         final String chatID = chat.getChatID();
         final String ownerID = chat.getUserID();
-
-        if(getIntent().getBooleanExtra("new", false)){
-            //we must send default message
-            sendFirstMessage((Message)getIntent().getSerializableExtra("msg"), chat);
-        }
 
         Toolbar t;
         t = findViewById(R.id.chat_toolbar);
@@ -95,7 +99,7 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 Message tosend = new Message(time,
                         FirebaseAuth.getInstance().getCurrentUser().getUid(),
-                        FirebaseAuth.getInstance().getCurrentUser().getDisplayName()
+                        getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username",null)
                         ,msg);
 
                 DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USER_MESSAGES").child(chatID);
@@ -109,10 +113,11 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public Transaction.Result doTransaction(MutableData mutableData) {
                         Chat c = mutableData.getValue(Chat.class);
-                        c.setIsnew(false);
+                        //c.setIsnew(false);
                         c.setLastMsg(msg);
                         c.setTimestamp(time);
                         mutableData.setValue(c);
+                        c.sendnotification(getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username",null));
                         return Transaction.success(mutableData);
                     }
 
@@ -175,9 +180,9 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void sendFirstMessage(Message msg, Chat chat){
+    /*private void sendFirstMessage(Message msg, Chat chat){
         DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USER_MESSAGES").child(chat.getChatID());
         String key = fbd.push().getKey();
         fbd.child(key).setValue(msg);
-    }
+    }*/
 }

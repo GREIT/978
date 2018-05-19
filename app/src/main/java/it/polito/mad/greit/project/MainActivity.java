@@ -9,12 +9,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -46,6 +48,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -61,10 +71,19 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -96,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     profile = new Profile();
     
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    
     FirebaseDatabase db = FirebaseDatabase.getInstance();
     DatabaseReference dbref = db.getReference("USERS").child(user.getUid());
     
@@ -131,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
           intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
           startActivity(intent);
         } else {
+          saveUsername(profile.getUsername());
           tw_username.setText("@" + profile.getUsername());
           tw_name.setText(profile.getName());
           File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(), "pic.jpg");
@@ -185,9 +204,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     setupSearchBox("title");
     startupRecycleView();
-
-    //start chat service for background listening
-    startbackgroundlisten();
   }
 
 
@@ -552,19 +568,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
   }
 
-  private void startbackgroundlisten(){
-      if(!isRunning(FireBaseService.class)){
-        startService(new Intent(MainActivity.this,FireBaseService.class));
-      }
-  }
-
-  private boolean isRunning(Class<?> serviceClass) {
-    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-    for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-      if (serviceClass.getName().equals(service.service.getClassName())) {
-        return true;
-      }
+  private void saveUsername(String s){
+    SharedPreferences sharedref = getApplicationContext().getSharedPreferences("sharedpref",MODE_PRIVATE);
+    if(sharedref.getString("username",null) == null){
+      SharedPreferences.Editor editor = sharedref.edit();
+      editor.putString("username",s);
+      editor.commit();
     }
-    return false;
   }
 }
