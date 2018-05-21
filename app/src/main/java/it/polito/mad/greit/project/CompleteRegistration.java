@@ -56,6 +56,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
@@ -263,10 +265,13 @@ public class CompleteRegistration extends AppCompatActivity {
     P.setUsername(edit_nickname.getText().toString());
     P.setLocation(location);
     P.setCoordinates(coordinates);
-    P.setToken(FirebaseInstanceId.getInstance().getToken());
+    //P.setToken(FirebaseInstanceId.getInstance().getToken());
 
     FirebaseDatabase db = FirebaseDatabase.getInstance();
-    DatabaseReference dbref = db.getReference("USERS").child(U.getUid());
+    DatabaseReference dbref = db.getReference("TOKENS").child(U.getUid());
+    dbref.setValue(FirebaseInstanceId.getInstance().getToken());
+
+    dbref = db.getReference("USERS").child(U.getUid());
     dbref.setValue(P).addOnSuccessListener(new OnSuccessListener<Void>() {
       @Override
       public void onSuccess(Void aVoid) {

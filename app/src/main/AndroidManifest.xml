@@ -62,8 +62,6 @@
           android:theme="@style/MaterialTheme" />
         <activity android:name=".ChatActivity" />
 
-        <service android:name=".FireBaseService"/>
-
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

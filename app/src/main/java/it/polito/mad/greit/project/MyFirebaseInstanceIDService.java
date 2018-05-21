@@ -49,18 +49,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     private void sendRegistrationToServer(String token) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference dbref = db.getReference("USERS").child(user.getUid());
-        dbref.runTransaction(new Transaction.Handler() {
-            @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                mutableData.getValue(Profile.class).setToken(token);
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-
-            }
-        });
+        DatabaseReference dbref = db.getReference("TOKENS").child(user.getUid());
+        dbref.setValue(token);
     }
 }

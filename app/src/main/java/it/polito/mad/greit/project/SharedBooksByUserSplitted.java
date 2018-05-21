@@ -295,7 +295,7 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
         ImageView iw1 = (ImageView) mView.findViewById(R.id.shared_book_card_contactForLoan);
         ImageView iw2 = (ImageView) mView.findViewById(R.id.shared_book_card_moreInfo);
         
-        //book_owner.setText(model.getOwner());
+        //book_owner.setText(model.getOwnerUid());
         book_ratings.setRating(Float.valueOf(model.getConditions()));
         //book_author.setText(model.getAuthors().keySet().iterator().next());
         

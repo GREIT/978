@@ -2,9 +2,7 @@ package it.polito.mad.greit.project;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Debug;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,6 +15,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedWriter;
@@ -33,7 +32,7 @@ public class Chat implements Serializable, Comparable<Chat>{
     private String bookID;
     private String bookTitle;
     private String lastMsg;
-    private long unreadCount;
+    private int unreadCount;
     private long timestamp;
     //private boolean isnew;
 
@@ -85,11 +84,11 @@ public class Chat implements Serializable, Comparable<Chat>{
         this.lastMsg = lastMsg;
     }
 
-    public long getUnreadCount() {
+    public int getUnreadCount() {
         return unreadCount;
     }
 
-    public void setUnreadCount(long unreadCount) {
+    public void setUnreadCount(int unreadCount) {
         this.unreadCount = unreadCount;
     }
 
@@ -147,7 +146,7 @@ public class Chat implements Serializable, Comparable<Chat>{
                 try {
                     for (MutableData ds : mutableData.getChildren()) {
                         Chat c = ds.getValue(Chat.class);
-                        if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwner())){
+                        if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwnerUid())){
                             //chat already present
                             Intent intent = new Intent(context,ChatActivity.class);
                             intent.putExtra("chat",c);
@@ -158,15 +157,15 @@ public class Chat implements Serializable, Comparable<Chat>{
 
                     if(!chat_exists){
                         Chat c = new Chat();
-                        //getUsername(db,sb.getOwner(),c);
-                        db.getReference("USERS").child(sb.getOwner()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        //getOwnerUsername(db,sb.getOwnerUid(),c);
+                        db.getReference("USERS").child(sb.getOwnerUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Profile p = dataSnapshot.getValue(Profile.class);
                                 //c.setIsnew(true);
-                                c.setUsername(p.getUsername());
+                                c.setOwnerUsername(p.getOwnerUsername());
                                 c.setBookID(sb.getKey());
-                                c.setUserID(sb.getOwner());
+                                c.setUserID(sb.getOwnerUid());
                                 c.setBookTitle(sb.getTitle());
 
                                 DatabaseReference user_mess = db.getReference("USER_MESSAGES");
@@ -175,7 +174,7 @@ public class Chat implements Serializable, Comparable<Chat>{
                                 //SEND pre formatted message at startup
                                 //get msg parameters
                                 long time = System.currentTimeMillis()/1000L;
-                                String msg = context.getResources().getString(R.string.hello) + " " + p.getUsername()
+                                String msg = context.getResources().getString(R.string.hello) + " " + p.getOwnerUsername()
                                         +"!. " + context.getResources().getString(R.string.can_i_have) + " " + sb.getTitle() + "?";
                                 //send message parameters and put it into the chat newly created
                                 Message tosend = new Message(time,
@@ -202,12 +201,12 @@ public class Chat implements Serializable, Comparable<Chat>{
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         Profile p = dataSnapshot.getValue(Profile.class);
-                                        DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwner());
+                                        DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwnerUid());
                                         c.setUserID(fbu.getUid());
-                                        c.setUsername(p.getUsername());
+                                        c.setOwnerUsername(p.getOwnerUsername());
                                         //c.setIsnew(false);
-                                        //c.setUsername(fbu.getDisplayName());
-                                        //c.setUsername(getUsername(db,fbu.getUid(),c));
+                                        //c.setOwnerUsername(fbu.getDisplayName());
+                                        //c.setOwnerUsername(getOwnerUsername(db,fbu.getUid(),c));
                                         ref_second_user.child(chatid).setValue(c);
                                         context.startActivity(intent);
                                     }
@@ -249,10 +248,11 @@ public class Chat implements Serializable, Comparable<Chat>{
                 try {
                     for (MutableData ds : mutableData.getChildren()) {
                         Chat c = ds.getValue(Chat.class);
-                        if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwner())){
+                        if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwnerUid())){
                             //chat already present
                             Intent intent = new Intent(context,ChatActivity.class);
                             intent.putExtra("chat",c);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(intent);
                             chat_exists = true;
                         }
@@ -260,9 +260,9 @@ public class Chat implements Serializable, Comparable<Chat>{
 
                     if(!chat_exists){
                         Chat c = new Chat();
-                        c.setUsername(sb.getUsername());
+                        c.setUsername(sb.getOwnerUsername());
                         c.setBookID(sb.getKey());
-                        c.setUserID(sb.getOwner());
+                        c.setUserID(sb.getOwnerUid());
                         c.setBookTitle(sb.getTitle());
 
                         //unique id for chat
@@ -281,11 +281,13 @@ public class Chat implements Serializable, Comparable<Chat>{
                         //prepare for making the other UserChat and create it
                         Intent intent = new Intent(context,ChatActivity.class);
                         intent.putExtra("chat",Chat.copy(c));
+                        intent.putExtra("new",true);
 
-                        DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwner());
+                        DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwnerUid());
                         c.setUserID(fbu.getUid());
                         c.setUsername(context.getSharedPreferences("sharedpref",Context.MODE_PRIVATE).getString("username",null));
                         ref_second_user.child(chatid).setValue(c);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(intent);
                         }
                     }catch (Exception e){
@@ -301,15 +303,14 @@ public class Chat implements Serializable, Comparable<Chat>{
         });
     }
 
-    public void sendnotification(String sender_username){
+    public static void sendnotification(String sender_username,Chat c,Boolean isNew){
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference dbref = db.getReference("USERS").child(this.getUserID());
+        DatabaseReference dbref = db.getReference("TOKENS").child(c.getUserID());
         dbref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Profile p = dataSnapshot.getValue(Profile.class);
-                String token = p.getToken();
-                new PostNotify().execute(token,sender_username,lastMsg,String.valueOf(unreadCount),bookTitle);
+                String token = dataSnapshot.getValue(String.class);
+                new PostNotify().execute(token,sender_username,c.getChatID(),String.valueOf(isNew));
             }
 
             @Override
@@ -333,12 +334,16 @@ public class Chat implements Serializable, Comparable<Chat>{
 
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("to",strings[0]);
-                jsonObject.put("username",strings[1]);
-                jsonObject.put("lastMsg",strings[2]);
-                jsonObject.put("unreadCount",strings[3]);
-                jsonObject.put("bookTitle",strings[4]);
+
+                JSONObject data = new JSONObject();
+                data.put("username",strings[1]);
+                data.put("chatID",strings[2]);
+                data.put("isNew",strings[3]);
+
+                jsonObject.put("data",data);
 
                 String tosend = jsonObject.toString();
+                Log.d("NOTIFICATION", "doInBackground: " + tosend);
 
                 conn.setFixedLengthStreamingMode(tosend.getBytes().length);
                 OutputStream os = conn.getOutputStream();
@@ -348,6 +353,9 @@ public class Chat implements Serializable, Comparable<Chat>{
                 writer.flush();
                 writer.close();
                 os.close();
+
+                Log.d("NOTIFICATION", "doInBackground: sent " + conn.getResponseCode());
+                conn.disconnect();
 
             }catch (Exception e){
                 e.printStackTrace();

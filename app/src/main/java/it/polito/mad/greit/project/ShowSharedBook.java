@@ -1,22 +1,18 @@
 package it.polito.mad.greit.project;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.*;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,7 +50,7 @@ public class ShowSharedBook extends AppCompatActivity {
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
     t.setNavigationOnClickListener(v -> onBackPressed());
     
-    if (!FirebaseAuth.getInstance().getCurrentUser().getUid().equals(sb.getOwner())) {
+    if (!FirebaseAuth.getInstance().getCurrentUser().getUid().equals(sb.getOwnerUid())) {
       //activate ask to borrow and star
       owned = false;
     } else {
@@ -199,7 +195,7 @@ public class ShowSharedBook extends AppCompatActivity {
                 try {
                     for (MutableData ds : mutableData.getChildren()) {
                         Chat c = ds.getValue(Chat.class);
-                        if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwner())){
+                        if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwnerUid())){
                             //chat already present
                             Intent intent = new Intent(ShowSharedBook.this,ChatActivity.class);
                             intent.putExtra("chat",c);
@@ -210,14 +206,14 @@ public class ShowSharedBook extends AppCompatActivity {
 
                     if(!chat_exists){
                         Chat c = new Chat();
-                        //getUsername(db,sb.getOwner(),c);
-                        db.getReference("USERS").child(sb.getOwner()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        //getOwnerUsername(db,sb.getOwnerUid(),c);
+                        db.getReference("USERS").child(sb.getOwnerUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Profile p = dataSnapshot.getValue(Profile.class);
                                 c.setUsername(p.getUsername());
                                 c.setBookID(sb.getKey());
-                                c.setUserID(sb.getOwner());
+                                c.setUserID(sb.getOwnerUid());
                                 c.setLastMsg("");
                                 c.setUnreadCount(0);
                                 c.setBookTitle(sb.getTitle());
@@ -232,11 +228,11 @@ public class ShowSharedBook extends AppCompatActivity {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         Profile p = dataSnapshot.getValue(Profile.class);
-                                        DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwner());
+                                        DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwnerUid());
                                         c.setUserID(fbu.getUid());
                                         c.setUsername(p.getUsername());
-                                        //c.setUsername(fbu.getDisplayName());
-                                        //c.setUsername(getUsername(db,fbu.getUid(),c));
+                                        //c.setOwnerUsername(fbu.getDisplayName());
+                                        //c.setOwnerUsername(getOwnerUsername(db,fbu.getUid(),c));
                                         ref_second_user.child(chatid).setValue(c);
                                         startActivity(intent);
                                     }

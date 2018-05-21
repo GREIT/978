@@ -4,8 +4,6 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -21,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -39,13 +36,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class CompleteBookRegistration extends AppCompatActivity {
   private Book book;
@@ -148,7 +139,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
       
       sb.setAddedOn(Calendar.getInstance().getTime().toString());
       
-      sb.setOwner(FirebaseAuth.getInstance().getCurrentUser().getUid());
+      sb.setOwnerUid(FirebaseAuth.getInstance().getCurrentUser().getUid());
       
       sb.setShared(false);
       
@@ -170,7 +161,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
           } else {
             sb.setPosition(profile.getLocation());
             sb.setCoordinates(profile.getCoordinates());
-            sb.setUsername(profile.getUsername());
+            sb.setOwnerUsername(profile.getUsername());
             DatabaseReference dbref = db.getReference("SHARED_BOOKS").child(key);
             dbref.setValue(sb);
           }

@@ -13,6 +13,13 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -35,11 +42,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0) {
             Log.d("FirebaseMessagingServic", "Message data payload: " + remoteMessage.getData());
             String from = remoteMessage.getData().get("username");
-            String lastmsg = remoteMessage.getData().get("lastMsg");
-            String unreadCount = remoteMessage.getData().get("unreadCount");
-            String bookTitle = remoteMessage.getData().get("bookTitle");
-            sendNotification("Received " + unreadCount + " new messages from " + from
-             + " for the book " + bookTitle);
+            String chatID = remoteMessage.getData().get("chatID");
+            String isNew = remoteMessage.getData().get("isNew");
+            FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
+            FirebaseDatabase db = FirebaseDatabase.getInstance();
+            DatabaseReference dbref = db.getReference("USER_CHATS").child(fbu.getUid()).child(chatID);
+            dbref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Chat c = dataSnapshot.getValue(Chat.class);
+                    //sendNotification("Received " + c.getUnreadCount() + " new messages from " + from
+                     //       + " for the book " + c.getBookTitle(), );
+                    sendNotification(from,c,Boolean.getBoolean(isNew));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
 
         // Check if message contains a notification payload.
@@ -51,12 +72,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // message, here is where that should be initiated. See sendNotification method below.
     }
 
-    private void sendNotification(String messageBody) {
-        Intent intent = new Intent(this, InboxActivity.class);
+    private void sendNotification(String from,Chat c,Boolean isNew) {
+        Intent intent = new Intent(this, Chat.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("chat",c);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
+        //String messageBody = "Received " + c.getUnreadCount() + " new messages from " + from
+          //     + " for the book " + c.getBookTitle();
+        String messageBody = null;
+        if(isNew){
+            messageBody = getResources().getString(R.string.default_msg,from,c.getBookTitle());
+        }
+        else{
+            messageBody = getResources().getString(R.string.incoming,c.getUsername(),c.getBookTitle());
+        }
         String channelId = "project";
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
@@ -80,5 +111,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        Log.d("FirebaseMessagingServic", "sendNotification: ");
     }
 }

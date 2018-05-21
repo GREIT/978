@@ -66,7 +66,7 @@ public class SharedBooksByUser extends AppCompatActivity {
   
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     
-    Query firebaseSearchQuery = mSharedBookDb.orderByChild("owner").equalTo(user.getUid());
+    Query firebaseSearchQuery = mSharedBookDb.orderByChild("ownerUid").equalTo(user.getUid());
     FirebaseRecyclerAdapter<SharedBook, SharedBooksByUser.SharedBookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SharedBook, SharedBooksByUser.SharedBookViewHolder>(
         SharedBook.class,
         R.layout.sharedbook_card,
@@ -105,7 +105,7 @@ public class SharedBooksByUser extends AppCompatActivity {
       ImageView editSharedBook = (ImageView) mView.findViewById(R.id.shared_book_card_contactForLoan);
       ImageView deleteSharedBook = (ImageView) mView.findViewById(R.id.shared_book_card_moreInfo);
       
-      //book_owner.setText(model.getOwner());
+      //book_owner.setText(model.getOwnerUid());
       book_ratings.setRating(Float.valueOf(model.getConditions()));
       //book_author.setText(model.getAuthors().keySet().iterator().next());
       

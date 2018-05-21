@@ -2,6 +2,7 @@ package it.polito.mad.greit.project;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.DatabaseUtils;
 import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
@@ -36,7 +37,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -46,6 +49,9 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         final Chat chat = (Chat) getIntent().getSerializableExtra("chat");
+        if(getIntent().hasExtra("new") && getIntent().getBooleanExtra("new",false)){
+            sendDefaultMsg(chat);
+        }
         final String chatID = chat.getChatID();
         final String ownerID = chat.getUserID();
 
@@ -117,7 +123,8 @@ public class ChatActivity extends AppCompatActivity {
                         c.setLastMsg(msg);
                         c.setTimestamp(time);
                         mutableData.setValue(c);
-                        c.sendnotification(getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username",null));
+                        Chat.sendnotification(getSharedPreferences("sharedpref",
+                                Context.MODE_PRIVATE).getString("username",null),c,false);
                         return Transaction.success(mutableData);
                     }
 
@@ -180,9 +187,60 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    /*private void sendFirstMessage(Message msg, Chat chat){
+    private void sendDefaultMsg(Chat chat){
+
+        String msg = getResources().getString(R.string.default_msg,chat.getUsername(),chat.getBookTitle());
+
+        Message tosend = new Message(chat.getTimestamp(),
+                FirebaseAuth.getInstance().getCurrentUser().getUid(),
+                getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username",null)
+                ,msg);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USER_MESSAGES").child(chat.getChatID());
         String key = fbd.push().getKey();
-        fbd.child(key).setValue(msg);
-    }*/
+        fbd.child(key).setValue(tosend);
+
+        DatabaseReference sender_chat = FirebaseDatabase.getInstance()
+                .getReference("USER_CHATS").child(user.getUid()).child(chat.getChatID());
+
+        sender_chat.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Chat c = mutableData.getValue(Chat.class);
+                c.setLastMsg(msg);
+                c.setTimestamp(System.currentTimeMillis()/1000L);
+                mutableData.setValue(c);
+                Chat.sendnotification(getSharedPreferences("sharedpref",
+                        Context.MODE_PRIVATE).getString("username",null),c,true);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+            }
+        });
+
+        DatabaseReference receiver_chat = FirebaseDatabase.getInstance()
+                .getReference("USER_CHATS").child(chat.getUserID()).child(chat.getChatID());
+
+        receiver_chat.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Chat c = mutableData.getValue(Chat.class);
+                c.setLastMsg(msg);
+                c.setTimestamp(System.currentTimeMillis()/1000L);
+                c.setUnreadCount(c.getUnreadCount()+1);
+                mutableData.setValue(c);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+            }
+        });
+
+    }
 }

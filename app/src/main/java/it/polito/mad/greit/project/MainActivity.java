@@ -460,6 +460,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent I = new Intent(ctx,
             SearchedSharedBooks.class);
         I.putExtra("book", model);
+        I.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         ctx.startActivity(I);
       });
     }

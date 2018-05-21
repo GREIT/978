@@ -1,25 +1,21 @@
 package it.polito.mad.greit.project;
 
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class SharedBook extends Book implements Serializable {
   private String key;
   private String conditions;
   private String additionalInformations;
-  private String owner;
-  private String borrowTo;
+  private String ownerUid;
+  private String ownerUsername;
+  private String borrowToUid;
+  private String borrowToUsername;
   private String addedOn;
   private String position;
   private String coordinates;
   private Boolean shared;
-  private String username;
+
   
   public SharedBook() {
   }
@@ -57,17 +53,17 @@ public class SharedBook extends Book implements Serializable {
     this.additionalInformations = additionalInformations;
   }
   
-  public String getOwner() {
-    return owner;
+  public String getOwnerUid() {
+    return ownerUid;
   }
   
-  public void setOwner(String owner) {
-    this.owner = owner;
+  public void setOwnerUid(String ownerUid) {
+    this.ownerUid = ownerUid;
   }
 
-  public String getBorrowTo() {return borrowTo; }
+  public String getBorrowToUid() {return borrowToUid; }
 
-  public void setBorrowTo(String borrowTo) {this.borrowTo = borrowTo; }
+  public void setBorrowToUid(String borrowToUid) {this.borrowToUid = borrowToUid; }
 
   public String getAddedOn() {
     return addedOn;
@@ -93,12 +89,16 @@ public class SharedBook extends Book implements Serializable {
     this.shared = shared;
   }
 
-  public String getUsername(){ return username;}
+  public String getOwnerUsername(){ return ownerUsername;}
 
-  public void setUsername(String user) { this.username = user; }
+  public void setOwnerUsername(String user) { this.ownerUsername = user; }
 
   public String getCoordinates(){return coordinates;}
 
   public void setCoordinates(String coordinates) { this.coordinates = coordinates; }
+
+  public String getBorrowToUsername(){return this.borrowToUsername;}
+
+  public void setBorrowToUsername(String btu) { this.borrowToUsername = btu; }
 
 }

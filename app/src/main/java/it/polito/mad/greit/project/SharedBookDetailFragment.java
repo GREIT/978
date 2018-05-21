@@ -2,13 +2,10 @@ package it.polito.mad.greit.project;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,22 +15,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
-import java.util.function.IntConsumer;
 
 public class SharedBookDetailFragment extends android.support.v4.app.DialogFragment {
   
@@ -78,7 +64,7 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
     String date = sb.getAddedOn().subSequence(4, 10)+sb.getAddedOn().substring(29, 34);
     
     tv = (TextView) v.findViewById(R.id.shared_book_detail_owner);
-    tv.setText("Added on " + date + "\nby @" + sb.getOwner());
+    tv.setText("Added on " + date + "\nby @" + sb.getOwnerUid());
     
     tv = (TextView) v.findViewById(R.id.shared_book_detail_text);
     tv.setText("\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent dictum " +
