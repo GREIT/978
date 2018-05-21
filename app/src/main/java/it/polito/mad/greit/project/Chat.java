@@ -252,7 +252,6 @@ public class Chat implements Serializable, Comparable<Chat>{
                             //chat already present
                             Intent intent = new Intent(context,ChatActivity.class);
                             intent.putExtra("chat",c);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(intent);
                             chat_exists = true;
                         }
@@ -287,7 +286,6 @@ public class Chat implements Serializable, Comparable<Chat>{
                         c.setUserID(fbu.getUid());
                         c.setUsername(context.getSharedPreferences("sharedpref",Context.MODE_PRIVATE).getString("username",null));
                         ref_second_user.child(chatid).setValue(c);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(intent);
                         }
                     }catch (Exception e){
