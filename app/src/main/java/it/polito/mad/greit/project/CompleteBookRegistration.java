@@ -2,6 +2,7 @@ package it.polito.mad.greit.project;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -11,9 +12,13 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +26,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,6 +45,8 @@ import java.io.File;
 import java.util.Calendar;
 
 public class CompleteBookRegistration extends AppCompatActivity {
+  private final String TAG = "Book Registration";
+  
   private Book book;
   
   private Profile profile;
@@ -49,7 +57,9 @@ public class CompleteBookRegistration extends AppCompatActivity {
   private TextView tw_year;
   private TextView tw_title;
   private TextView tw_publisher;
-  private RatingBar rb_conditions;
+  private TextView tw_conditions;
+  private TextView tw_char_count;
+  private TextWatcher mTextEditorWatcher;
   private TagEditText tags;
   Toolbar t;
   
@@ -63,6 +73,21 @@ public class CompleteBookRegistration extends AppCompatActivity {
     setSupportActionBar(t);
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
     t.setNavigationOnClickListener(v -> finish());
+    
+    tw_char_count = (TextView) findViewById(R.id.complete_book_text_count);
+  
+    mTextEditorWatcher = new TextWatcher() {
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+      }
+    
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+        //This sets a textview to the current length
+        tw_char_count.setText(String.valueOf(140 - s.length()));
+      }
+    
+      public void afterTextChanged(Editable s) {
+      }
+    };
     
     book = (Book) getIntent().getSerializableExtra("book");
     
@@ -82,7 +107,8 @@ public class CompleteBookRegistration extends AppCompatActivity {
     tw_title = (TextView) findViewById(R.id.complete_book_title);
     tw_title.setText(book.getTitle());
     
-    rb_conditions = (RatingBar) findViewById(R.id.complete_book_conditions);
+    tw_conditions = (TextView) findViewById(R.id.complete_book_conditions);
+    tw_conditions.addTextChangedListener(mTextEditorWatcher);
     
     tags = (TagEditText) findViewById(R.id.complete_book_tags);
     
@@ -127,13 +153,27 @@ public class CompleteBookRegistration extends AppCompatActivity {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     
+    if (TextUtils.isEmpty(tw_conditions.getText().toString())) {
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      builder.setMessage("You must describe your book's conditions!")
+          .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              Log.d(TAG, "Dialog clicked");
+            }
+          });
+      AlertDialog alert = builder.create();
+      alert.show();
+      return true;
+    }
+    
     if (R.id.complete_book_registration_confirm == item.getItemId()) {
       FirebaseDatabase db = FirebaseDatabase.getInstance();
       String key = db.getReference("SHARED_BOOKS").push().getKey();
       
       SharedBook sb = new SharedBook(book);
       
-      sb.setConditions(String.valueOf(rb_conditions.getRating()));
+      sb.setAdditionalInformations(tw_conditions.getText().toString());
       
       String[] tagString = tags.getText().toString().toLowerCase().replaceAll("[\\/\\#\\.\\/\\$\\[]", "").split(",");
       

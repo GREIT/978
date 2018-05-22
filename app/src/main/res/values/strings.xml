@@ -60,6 +60,7 @@
 
   // Complete book's informations
   <string name="actvity_complete_book_info">Complete book\'s informations</string>
+  <string name="describe_your_book">How\'s your book</string>
 
 
   //Show Book

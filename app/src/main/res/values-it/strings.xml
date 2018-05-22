@@ -61,6 +61,7 @@
 
   // Complete book's informations
   <string name="actvity_complete_book_info">Completa le informazioni sul libro</string>
+  <string name="describe_your_book">Descrivi le condizioni in cui si trova il tuo libro</string>
 
   //Show Book
   <string name="show_book_title">Scheda libro</string>

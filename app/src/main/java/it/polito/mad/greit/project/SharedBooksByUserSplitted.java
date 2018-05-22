@@ -1,6 +1,8 @@
 package it.polito.mad.greit.project;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -12,6 +14,8 @@ import android.media.Image;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -172,78 +176,6 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
       mResultList.setItemAnimator(new DefaultItemAnimator());
       
       bookShow();
-
-//      RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this.getContext(), 2);
-//      recView.setLayoutManager(mLayoutManager);
-//      recView.addItemDecoration(new PlaceholderFragment.GridSpacingItemDecoration(2, dpToPx(10), true));
-//      recView.setItemAnimator(new DefaultItemAnimator());
-//      recView.setAdapter(adapter);
-//
-//      ItemClickSupport.addTo(recView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
-//        @Override
-//        public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-//          SharedBook current = bookList.get(position);
-//          Intent intent = new Intent(getActivity(), ShowBookActivity.class);
-//
-//          try {
-//            intent.putExtra("book", current);
-//          } catch (Exception e) {
-//            intent.putExtra("book", "");
-//          }
-//          try {
-//            ImageView iv = v.findViewById(R.id.shared_book_card_thumbnail);
-//            Bitmap bitmap = ((BitmapDrawable) iv.getDrawable()).getBitmap();
-//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-//            byte[] bitmapdata = stream.toByteArray();
-//            intent.putExtra("pic", bitmapdata);
-//          } catch (Exception e) {
-//            e.printStackTrace();
-//          }
-//
-//          startActivity(intent);
-//        }
-//      });
-//
-//      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//      FirebaseDatabase db = FirebaseDatabase.getInstance();
-//      dbref = db.getReference("SHARED_BOOKS");
-//      discriminator = getArguments().getString(DISCRMINATOR_STRING);
-//      Log.d("TabbedInfo", "onCreateView: called on Tab " + discriminator);
-//      ev = dbref.orderByChild(discriminator).equalTo(user.getUid()).addChildEventListener(
-//          new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//              SharedBook tmp = new SharedBook();
-//              tmp = dataSnapshot.getValue(SharedBook.class);
-//              bookList.add(tmp);
-//              adapter.notifyDataSetChanged();
-//            }
-//
-//            @Override
-//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-//              SharedBook tmp = new SharedBook();
-//              tmp = dataSnapshot.getValue(SharedBook.class);
-//              bookList.add(tmp);
-//              adapter.notifyDataSetChanged();
-//            }
-//
-//            @Override
-//            public void onChildRemoved(DataSnapshot dataSnapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//          }
-//      );
       return rootView;
     }
     
@@ -272,6 +204,14 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
         public PlaceholderFragment.SharedBookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
           PlaceholderFragment.SharedBookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
           
+          viewHolder.setOnClickListener(new SharedBookViewHolder.ClickListener() {
+            @Override
+            public void onItemClick(View view, SharedBook model) {
+            
+      
+            }
+          });
+          
           return viewHolder;
         }
       };
@@ -281,22 +221,29 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
     
     public static class SharedBookViewHolder extends RecyclerView.ViewHolder {
       View mView;
+      private SharedBookViewHolder.ClickListener mClickListener;
       
       public SharedBookViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
       }
+  
+      public interface ClickListener {
+        void onItemClick(View view, SharedBook model);
+      }
+  
+      public void setOnClickListener(SharedBookViewHolder.ClickListener clickListener) {
+        mClickListener = clickListener;
+      }
       
       
       public void setDetails(Context ctx, SharedBook model, String discriminator) {
         //TextView book_owner = (TextView) mView.findViewById(R.id.shared_book_card_owner);
-        RatingBar book_ratings = (RatingBar) mView.findViewById(R.id.shared_book_card_conditions);
         ImageView book_image = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
         ImageView iw1 = (ImageView) mView.findViewById(R.id.shared_book_card_contactForLoan);
         ImageView iw2 = (ImageView) mView.findViewById(R.id.shared_book_card_moreInfo);
         
         //book_owner.setText(model.getOwnerUid());
-        book_ratings.setRating(Float.valueOf(model.getConditions()));
         //book_author.setText(model.getAuthors().keySet().iterator().next());
         
         StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
@@ -320,12 +267,35 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
                     .fitCenter())
                 .into(book_image));
         
-        if (discriminator.equals("owner")) {
+        if (discriminator.equals("ownerUid")) {
           iw1.setImageResource(R.drawable.ic_mode_edit_white_48dp);
-          iw1.setOnClickListener(v -> Toast.makeText(ctx, "Edit book", Toast.LENGTH_SHORT).show());
+          iw1.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("book", model);
+  
+            SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
+            dialogFragment.setArguments(bundle);
+            dialogFragment.show(((FragmentActivity) ctx).getSupportFragmentManager(), "dialog");
+          });
           
           iw2.setImageResource(R.drawable.ic_delete_white_48dp);
-          iw2.setOnClickListener(v -> Toast.makeText(ctx, "Delete book", Toast.LENGTH_SHORT).show());
+          iw2.setOnClickListener(v -> {
+            new AlertDialog.Builder(ctx)
+                .setTitle("Confirmation needed")
+                .setMessage("Do you really want to delete this book?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+        
+                  public void onClick(DialogInterface dialog, int whichButton) {
+                    FirebaseDatabase db = FirebaseDatabase.getInstance();
+                    DatabaseReference dbref = db.getReference("SHARED_BOOKS/" + model.getKey());
+  
+                    dbref.removeValue();
+                    
+                    Toast.makeText(ctx, "Book removed from your collection", Toast.LENGTH_SHORT).show();
+                  }})
+                .setNegativeButton(android.R.string.no, null).show();
+          });
           
           if (Boolean.valueOf(model.getShared())) {
             ImageView overlay_book_card = (ImageView) mView.findViewById(R.id.overlay_shared_book_card_thumbnail);
@@ -406,8 +376,8 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
     
     public SectionsPagerAdapter(FragmentManager fm) {
       super(fm);
-      shared = PlaceholderFragment.newInstance("owner");
-      borrowed = PlaceholderFragment.newInstance("borrowTo");
+      shared = PlaceholderFragment.newInstance("ownerUid");
+      borrowed = PlaceholderFragment.newInstance("borrowToUid");
     }
     
     @Override
