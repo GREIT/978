@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,13 +63,25 @@ public class ChatActivity extends AppCompatActivity {
         final String chatID = chat.getChatID();
         final String ownerID = chat.getUserID();
 
+        //Toolbar
         Toolbar t;
         t = findViewById(R.id.chat_toolbar);
-        t.setTitle(chat.getUsername());
+        t.setTitle("@"+ chat.getUsername());
         setSupportActionBar(t);
         t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
         t.setNavigationOnClickListener(view -> onBackPressed());
 
+        //Book Bar
+        TextView cardBookTitle = findViewById(R.id.chat_card_book_title);
+        TextView cardBookAuthor = findViewById(R.id.chat_card_book_author);
+        Switch cardBookSwitch = findViewById(R.id.chat_card_book_switch);
+
+        cardBookTitle.setText(chat.getBookTitle());
+        cardBookAuthor.setText(chat.getBookAuthor());
+
+
+
+        //Messages
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USER_MESSAGES").child(chatID);
 

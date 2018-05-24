@@ -36,6 +36,7 @@
                 android:orientation="vertical"
                 android:layout_weight="1">
                 <TextView
+                    android:id="@+id/chat_card_book_title"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1"
@@ -46,6 +47,7 @@
                     android:ellipsize="end"
                     android:gravity="center_vertical"/>
                 <TextView
+                    android:id="@+id/chat_card_book_author"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Author"
@@ -56,6 +58,7 @@
 
             </LinearLayout>
             <Switch
+                android:id="@+id/chat_card_book_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:switchPadding="15dp"

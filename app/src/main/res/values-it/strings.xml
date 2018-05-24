@@ -84,9 +84,11 @@
   <string name="navigation_drawer_close">Close navigation drawer</string>
   <string name="nav_header_desc">Navigation header</string>
 
-    //chat
-    <string name="inbox">Messaggi</string>
-    <string name="input">Inserisci qui...</string>
+  //chat
+  <string name="inbox">Messaggi</string>
+  <string name="input">Inserisci qui...</string>
+  <string name="free">Libero</string>
+  <string name="borrowed">Prestato</string>
 
   //notifications
   <string name="default_msg">Ciao %1$s, posso avere in prestito il libro %2$s ?</string>

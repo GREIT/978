@@ -12,4 +12,6 @@
     <color name="backgroundColor">#f5f5f5</color>
     <color name="colorGreen">#26ea17</color>
     <color name="colorGreenDark">#087200</color>
+    <color name="colorRed">#FF1744</color>
+    <color name="colorRedDark">#9b0724</color>
     </resources>
