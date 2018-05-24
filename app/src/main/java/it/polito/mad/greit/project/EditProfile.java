@@ -130,7 +130,7 @@ public class EditProfile extends AppCompatActivity {
       @Override
       public void onPlaceSelected(Place place) {
         location = place.getAddress().toString();
-        coordinates = place.getLatLng().latitude + "-" + place.getLatLng().longitude;
+        coordinates = place.getLatLng().latitude + ";" + place.getLatLng().longitude;
       }
 
       @Override
@@ -249,7 +249,7 @@ public class EditProfile extends AppCompatActivity {
               @Override
               public void onSuccess(PlaceBufferResponse places) {
                 LatLng coords = places.get(0).getLatLng();
-                coordinates = coords.latitude + "-" + coords.longitude;
+                coordinates = coords.latitude + ";" + coords.longitude;
               }
             });
           }
