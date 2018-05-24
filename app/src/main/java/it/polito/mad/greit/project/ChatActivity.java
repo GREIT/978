@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,7 +49,6 @@ import java.util.Date;
 public class ChatActivity extends AppCompatActivity {
 
     Chat chat = null;
-    Transaction transaction = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,7 +178,8 @@ public class ChatActivity extends AppCompatActivity {
 
         if (R.id.toolbar_chat_borrow_button == item.getItemId()) {
             //TODO add logic here
-            setUpTransaction();
+            BookTransaction.startTransaction(chat,getSharedPreferences("sharedpref",
+                    Context.MODE_PRIVATE).getString("username",null));
             Toast.makeText( this , "Borrow Chat Pressed", Toast.LENGTH_SHORT).show();
             return true;
         } else return super.onOptionsItemSelected(item);
@@ -266,11 +267,6 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-
-    }
-
-    private void setUpTransaction(){
-        //transaction.get
 
     }
 }

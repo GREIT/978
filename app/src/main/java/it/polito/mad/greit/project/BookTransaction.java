@@ -1,5 +1,7 @@
 package it.polito.mad.greit.project;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -12,63 +14,47 @@ import java.io.Serializable;
 public class BookTransaction implements Serializable{
 
     private String chatId;
-    private String ownerId;
-    private String ownerUsername;
-    private String receiverId;
-    private String receiverUsername;
+    private String user1Id;
+    private String user1Username;
+    private String user2Uid;
+    private String user2Username;
     private String bookId;
-    private String bookUsername;
-    private int counter;
+    private String bookTitle;
+    private Boolean user1Checked;
+    private Boolean user2Checked;
     private long dateStart;
     private long dateEnd;
 
-    public BookTransaction(){}
-
-    public BookTransaction(String ownerId,String ownerUsername,String receiverId
-            ,String receiverUsername,String bookId,String chatId,
-                       String bookUsername){
-        this.ownerId = ownerId;
-        this.ownerUsername = ownerUsername;
-        this.receiverId = receiverId;
-        this.receiverUsername = receiverUsername;
-        this.bookId = bookId;
-        this.bookUsername = bookUsername;
-        this.dateStart = 0;
-        this.dateEnd = 0;
-        this.counter = 0;
-        this.chatId = chatId;
+    public String getUser1Id() {
+        return user1Id;
     }
 
-    public String getOwnerId() {
-        return ownerId;
+    public void setUser1Id(String user1Id) {
+        this.user1Id = user1Id;
     }
 
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
+    public String getUser1Username() {
+        return user1Username;
     }
 
-    public String getOwnerUsername() {
-        return ownerUsername;
+    public void setUser1Username(String user1Username) {
+        this.user1Username = user1Username;
     }
 
-    public void setOwnerUsername(String ownerUsername) {
-        this.ownerUsername = ownerUsername;
+    public String getUser2Uid() {
+        return user2Uid;
     }
 
-    public String getReceiverId() {
-        return receiverId;
+    public void setUser2Uid(String user2Uid) {
+        this.user2Uid = user2Uid;
     }
 
-    public void setReceiverId(String receiverId) {
-        this.receiverId = receiverId;
+    public String getUser2Username() {
+        return user2Username;
     }
 
-    public String getReceiverUsername() {
-        return receiverUsername;
-    }
-
-    public void setReceiverUsername(String receiverUsername) {
-        this.receiverUsername = receiverUsername;
+    public void setUser2Username(String user2Username) {
+        this.user2Username = user2Username;
     }
 
     public String getBookId() {
@@ -79,12 +65,12 @@ public class BookTransaction implements Serializable{
         this.bookId = bookId;
     }
 
-    public String getBookUsername() {
-        return bookUsername;
+    public String getBookTitle() {
+        return bookTitle;
     }
 
-    public void setBookUsername(String bookUsername) {
-        this.bookUsername = bookUsername;
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
     }
 
     public long getDateStart() {
@@ -103,14 +89,6 @@ public class BookTransaction implements Serializable{
         this.dateEnd = dateEnd;
     }
 
-    public int getCounter() {
-        return counter;
-    }
-
-    public void setCounter(int counter) {
-        this.counter = counter;
-    }
-
     public String getChatId() {
         return chatId;
     }
@@ -119,33 +97,60 @@ public class BookTransaction implements Serializable{
         this.chatId = chatId;
     }
 
-    public void startTransaction(){
-        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(this.chatId);
-        BookTransaction bt = this;
+    public Boolean getUser1Checked() {
+        return user1Checked;
+    }
+
+    public void setUser1Checked(Boolean user1Checked) {
+        this.user1Checked = user1Checked;
+    }
+
+    public Boolean getUser2Checked() {
+        return user2Checked;
+    }
+
+    public void setUser2Checked(Boolean user2Checked) {
+        this.user2Checked = user2Checked;
+    }
+
+    public static void startTransaction(Chat c,String username){
+        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(c.getChatID());
+        BookTransaction bt = new BookTransaction();
         dbref.runTransaction(new com.google.firebase.database.Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 if(mutableData.getValue() == null){
+                    bt.bookId = c.getBookID();
+                    bt.bookTitle = c.getBookTitle();
+                    bt.chatId = c.getChatID();
+                    bt.user1Id = fbu.getUid();
+                    bt.user1Username = username;
+                    bt.user2Uid = c.getUserID();
+                    bt.user2Username = c.getUsername();
                     bt.dateStart = System.currentTimeMillis()/1000L;
                     bt.dateEnd = 0;
-                    bt.counter++;
+                    bt.user1Checked = true;
+                    bt.user2Checked = false;
                     mutableData.setValue(bt);
                     return Transaction.success(mutableData);
                 }
                 else
-                    bt.updateTransaction(+1);
-                    return Transaction.abort();
+                    return Transaction.success(mutableData);
             }
 
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                if(b){
+                    updateTransaction(c.getChatID());
+                }
             }
         });
     }
 
-    public void updateTransaction(int toggle){
-        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(this.chatId);
-        BookTransaction localbt = this;
+    public static void updateTransaction(String chatId){
+        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(chatId);
         dbref.runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
@@ -154,26 +159,31 @@ public class BookTransaction implements Serializable{
                 }
                 else{
                     BookTransaction bt = mutableData.getValue(BookTransaction.class);
-                    bt.setCounter(bt.counter + toggle);
-                    mutableData.setValue(bt);
-                    localbt.counter++;
-                    if(bt.counter == 2){
-                        closeTransaction(System.currentTimeMillis()/1000L);
+                    if(fbu.getUid().equals(bt.getUser1Id())){
+                        bt.user1Checked = !bt.user1Checked;
                     }
+                    else{
+                        bt.user2Checked = !bt.user2Checked;
+                    }
+                    mutableData.setValue(bt);
                     return Transaction.success(mutableData);
                 }
             }
 
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                if(b){
+                    BookTransaction bt = dataSnapshot.getValue(BookTransaction.class);
+                    if(bt.user1Checked && bt.user2Checked){
+                        closeTransaction(System.currentTimeMillis()/1000L,chatId);
+                    }
+                }
             }
         });
     }
 
-    public void closeTransaction(long dateEnd){
-        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(this.chatId);
-        BookTransaction localbt = this;
-        this.setDateEnd(dateEnd);
+    public static void closeTransaction(long dateEnd,String chatId){
+        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(chatId);
         dbref.runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
@@ -183,15 +193,15 @@ public class BookTransaction implements Serializable{
                 else{
                     BookTransaction bt = mutableData.getValue(BookTransaction.class);
                     bt.setDateEnd(dateEnd);
+                    //maybe reset all to false for returning?
                     mutableData.setValue(bt);
-                    localbt.dateEnd = dateEnd;
                     return Transaction.success(mutableData);
                 }
             }
 
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-
+                //send notification
             }
         });
     }
