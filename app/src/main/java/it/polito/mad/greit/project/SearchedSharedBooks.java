@@ -1,26 +1,32 @@
 package it.polito.mad.greit.project;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.location.Location;
 import android.media.Image;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +41,9 @@ import com.bumptech.glide.load.engine.executor.GlideExecutor;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.dynamic.SupportFragmentWrapper;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -63,8 +72,12 @@ public class SearchedSharedBooks extends AppCompatActivity {
   
   private RecyclerView mResultList;
   private DatabaseReference mSharedBookDb;
-  
-  
+
+  private FusedLocationProviderClient mFusedLocationClient;
+  private static String currentLocation;
+  private static double distanceKm;
+
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -105,8 +118,25 @@ public class SearchedSharedBooks extends AppCompatActivity {
     mSharedBookDb = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS");
     mResultList = (RecyclerView) findViewById(R.id.shared_books_result_list);
     mResultList.setItemAnimator(new DefaultItemAnimator());
-    
-    sharedBookShow(book.getISBN());
+
+    mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+    // Recupero posizione attuale
+    if (ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.FINE_LOCATION_PERMISSION);
+    else {
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            currentLocation = location.getLatitude() + ";" + location.getLongitude();
+                            sharedBookShow(book.getISBN());
+                        }
+                    }
+                });
+    }
   }
   
   private void sharedBookShow(String ISBN) {
@@ -170,18 +200,27 @@ public class SearchedSharedBooks extends AppCompatActivity {
       ImageView ownerInfo = (ImageView) mView.findViewById(R.id.shared_book_card_moreInfo);
       ImageView contactForLoan = (ImageView) mView.findViewById(R.id.shared_book_card_contactForLoan);
       ImageView distance = (ImageView) mView.findViewById(R.id.shared_book_card_distance);
-      
+
       book_image.setOnClickListener(v -> {
         Bundle bundle = new Bundle();
         bundle.putSerializable("book", model);
-        
+
         SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
         dialogFragment.setArguments(bundle);
         dialogFragment.show(fm, "dialog");
       });
-      
+
       contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
       contactForLoan.setOnClickListener(v -> Chat.openchat(ctx, model));
+
+      distanceKm = Utils.calcDistance(model.getCoordinates(), currentLocation) / 1000;
+
+      if (distanceKm > 20)
+          distance.setImageResource(R.mipmap.ic_maggiore_20);
+      else if (distanceKm < 20 && distanceKm > 5)
+          distance.setImageResource(R.mipmap.ic_minore_20);
+      else
+          distance.setImageResource(R.mipmap.ic_minore_5);
 
       ownerInfo.setImageResource(R.drawable.ic_person_white_48dp);
       ownerInfo.setOnClickListener(v -> {
