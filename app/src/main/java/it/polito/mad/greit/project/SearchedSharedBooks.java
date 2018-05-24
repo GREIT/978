@@ -214,7 +214,6 @@ public class SearchedSharedBooks extends AppCompatActivity {
       contactForLoan.setOnClickListener(v -> Chat.openchat(ctx, model));
 
       distanceKm = Utils.calcDistance(model.getCoordinates(), currentLocation) / 1000;
-
       if (distanceKm > 20)
           distance.setImageResource(R.mipmap.ic_maggiore_20);
       else if (distanceKm < 20 && distanceKm > 5)
@@ -229,8 +228,6 @@ public class SearchedSharedBooks extends AppCompatActivity {
         ctx.startActivity(I);
       });
 
-      distance.setImageResource(R.mipmap.ic_minore_5);
-      
       
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
       
