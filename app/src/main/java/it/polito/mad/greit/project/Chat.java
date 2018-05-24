@@ -139,6 +139,7 @@ public class Chat implements Serializable, Comparable<Chat>{
         res.setBookTitle(c.getBookTitle());
         res.setChatID(c.getChatID());
         res.setBookID(c.getBookID());
+        res.setBookAuthor(c.getBookAuthor());
         //res.setIsnew(c.getIsnew());
         return res;
     }
