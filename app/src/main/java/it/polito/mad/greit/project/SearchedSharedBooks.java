@@ -167,7 +167,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
     
     public void setDetails(Context ctx, SharedBook model, android.support.v4.app.FragmentManager fm) {
       ImageView book_image = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
-      ImageView showMoreInfo = (ImageView) mView.findViewById(R.id.shared_book_card_moreInfo);
+      ImageView ownerInfo = (ImageView) mView.findViewById(R.id.shared_book_card_moreInfo);
       ImageView contactForLoan = (ImageView) mView.findViewById(R.id.shared_book_card_contactForLoan);
       ImageView distance = (ImageView) mView.findViewById(R.id.shared_book_card_distance);
       
@@ -182,17 +182,14 @@ public class SearchedSharedBooks extends AppCompatActivity {
       
       contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
       contactForLoan.setOnClickListener(v -> Chat.openchat(ctx, model));
-/*
-            showMoreInfo.setImageResource(R.drawable.ic_zoom_in_white_48dp);
-            showMoreInfo.setOnClickListener(v -> {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("book", model);
 
-                SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
-                dialogFragment.setArguments(bundle);
-                dialogFragment.show(fm, "dialog");
-            });
-*/
+      ownerInfo.setImageResource(R.drawable.ic_person_white_48dp);
+      ownerInfo.setOnClickListener(v -> {
+        Intent I = new Intent(ctx, OtherProfile.class);
+        I.putExtra("uid", model.getOwnerUid());
+        ctx.startActivity(I);
+      });
+
       distance.setImageResource(R.mipmap.ic_minore_5);
       
       
