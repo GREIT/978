@@ -15,6 +15,7 @@ import android.graphics.Rect;
 import android.location.Location;
 import android.media.Image;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.DialogFragment;
@@ -22,11 +23,13 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +61,16 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class SearchedSharedBooks extends AppCompatActivity {
   private Toolbar t;
@@ -76,6 +89,9 @@ public class SearchedSharedBooks extends AppCompatActivity {
   private FusedLocationProviderClient mFusedLocationClient;
   private static String currentLocation;
   private static double distanceKm;
+
+  private SortedMap<Double, Integer> distances;
+  private ArrayList<Integer> positions;
 
 
   @Override
@@ -168,10 +184,29 @@ public class SearchedSharedBooks extends AppCompatActivity {
             SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
             dialogFragment.setArguments(bundle);
             dialogFragment.show(getSupportFragmentManager(), "dialog");
-            
           }
         });
         return viewHolder;
+      }
+
+      @Override
+      public void onDataChanged() {
+        super.onDataChanged();
+
+        distances = new TreeMap<>();
+        positions = new ArrayList<>();
+
+        Log.i("*****NUMEROSTAMPE", "*****");
+
+        for (int i=1; i <= getItemCount(); i++)
+          distances.put(Utils.calcDistance(mSnapshots.getObject(i-1).getCoordinates(), currentLocation) / 1000, i-1);
+        for (Map.Entry<Double, Integer> entry : distances.entrySet())
+          positions.add(entry.getValue());
+      }
+
+      @Override
+      public SharedBook getItem(int position) {
+        return (SharedBook) mSnapshots.getObject(positions.get(position));
       }
     };
     
@@ -228,9 +263,9 @@ public class SearchedSharedBooks extends AppCompatActivity {
         ctx.startActivity(I);
       });
 
-      
+
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
-      
+
       sr.getBytes(5 * Constants.SIZE).addOnSuccessListener(bytes -> {
         Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
