@@ -143,7 +143,8 @@ public class ChatActivity extends AppCompatActivity {
                         c.setTimestamp(time);
                         mutableData.setValue(c);
                         Chat.sendnotification(getSharedPreferences("sharedpref",
-                                Context.MODE_PRIVATE).getString("username",null),c,false);
+                                Context.MODE_PRIVATE).getString("username",null),
+                                c.getChatID(),c.getUserID(),"message");
                         return Transaction.success(mutableData);
                     }
 
@@ -250,7 +251,7 @@ public class ChatActivity extends AppCompatActivity {
                 c.setTimestamp(System.currentTimeMillis()/1000L);
                 mutableData.setValue(c);
                 Chat.sendnotification(getSharedPreferences("sharedpref",
-                        Context.MODE_PRIVATE).getString("username",null),c,true);
+                        Context.MODE_PRIVATE).getString("username",null),c.getChatID(),c.getUserID(),"newRequest");
                 return Transaction.success(mutableData);
             }
 

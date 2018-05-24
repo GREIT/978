@@ -94,6 +94,7 @@
   <string name="default_msg">Ciao %1$s, posso avere in prestito il libro %2$s ?</string>
   <string name="new_request">Nuova richiesta ricevuta da %1$s per il libro %2$s</string>
   <string name="incoming">Nuovi messaggi da %1$s per il libro %2$s</string>
+  <string name="lock_event">%1$s ha accettato la richiesta per il libro %2$s</string>
 
 
 </resources>

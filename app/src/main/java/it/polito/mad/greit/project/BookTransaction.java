@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class BookTransaction implements Serializable{
 
     private String chatId;
-    private String user1Id;
+    private String user1Uid;
     private String user1Username;
     private String user2Uid;
     private String user2Username;
@@ -25,12 +25,12 @@ public class BookTransaction implements Serializable{
     private long dateStart;
     private long dateEnd;
 
-    public String getUser1Id() {
-        return user1Id;
+    public String getUser1Uid() {
+        return user1Uid;
     }
 
-    public void setUser1Id(String user1Id) {
-        this.user1Id = user1Id;
+    public void setUser1Uid(String user1Uid) {
+        this.user1Uid = user1Uid;
     }
 
     public String getUser1Username() {
@@ -124,7 +124,7 @@ public class BookTransaction implements Serializable{
                     bt.bookId = c.getBookID();
                     bt.bookTitle = c.getBookTitle();
                     bt.chatId = c.getChatID();
-                    bt.user1Id = fbu.getUid();
+                    bt.user1Uid = fbu.getUid();
                     bt.user1Username = username;
                     bt.user2Uid = c.getUserID();
                     bt.user2Username = c.getUsername();
@@ -159,7 +159,7 @@ public class BookTransaction implements Serializable{
                 }
                 else{
                     BookTransaction bt = mutableData.getValue(BookTransaction.class);
-                    if(fbu.getUid().equals(bt.getUser1Id())){
+                    if(fbu.getUid().equals(bt.getUser1Uid())){
                         bt.user1Checked = !bt.user1Checked;
                     }
                     else{
@@ -183,6 +183,7 @@ public class BookTransaction implements Serializable{
     }
 
     public static void closeTransaction(long dateEnd,String chatId){
+        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(chatId);
         dbref.runTransaction(new Transaction.Handler() {
             @Override
@@ -202,6 +203,15 @@ public class BookTransaction implements Serializable{
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
                 //send notification
+                if(b){
+                    BookTransaction bt = dataSnapshot.getValue(BookTransaction.class);
+                    if(fbu.getUid().equals(bt.getUser1Uid())){
+                        Chat.sendnotification(bt.user1Username,chatId,bt.user2Uid,"transaction");
+                    }
+                    else{
+                        Chat.sendnotification(bt.user2Username,chatId,bt.user1Uid,"transaction");
+                    }
+                }
             }
         });
     }

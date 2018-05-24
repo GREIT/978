@@ -311,14 +311,14 @@ public class Chat implements Serializable, Comparable<Chat>{
         });
     }
 
-    public static void sendnotification(String sender_username,Chat c,Boolean isNew){
+    public static void sendnotification(String sender_username,String chatId,String receiver_Uid,String type){
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference dbref = db.getReference("TOKENS").child(c.getUserID());
+        DatabaseReference dbref = db.getReference("TOKENS").child(receiver_Uid);
         dbref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String token = dataSnapshot.getValue(String.class);
-                new PostNotify().execute(token,sender_username,c.getChatID(),String.valueOf(isNew));
+                new PostNotify().execute(token,sender_username,chatId,type);
             }
 
             @Override
@@ -344,9 +344,9 @@ public class Chat implements Serializable, Comparable<Chat>{
                 jsonObject.put("to",strings[0]);
 
                 JSONObject data = new JSONObject();
-                data.put("username",strings[1]);
-                data.put("chatID",strings[2]);
-                data.put("isNew",strings[3]);
+                data.put("username", strings[1]);
+                data.put("chatID", strings[2]);
+                data.put("type", strings[3]);
 
                 jsonObject.put("data",data);
 
