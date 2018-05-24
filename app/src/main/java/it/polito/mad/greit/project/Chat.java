@@ -34,7 +34,7 @@ public class Chat implements Serializable, Comparable<Chat>{
     private String lastMsg;
     private int unreadCount;
     private long timestamp;
-    //private boolean isnew;
+    private String bookAuthor;
 
     public String getChatID() {
         return chatID;
@@ -98,6 +98,14 @@ public class Chat implements Serializable, Comparable<Chat>{
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getBookAuthor() {
+        return bookAuthor;
+    }
+
+    public void setBookAuthor(String bookAuthor) {
+        this.bookAuthor = bookAuthor;
     }
 
     /*public void setIsnew(Boolean b){
@@ -263,6 +271,7 @@ public class Chat implements Serializable, Comparable<Chat>{
                         c.setBookID(sb.getKey());
                         c.setUserID(sb.getOwnerUid());
                         c.setBookTitle(sb.getTitle());
+                        c.setBookAuthor(sb.getAuthors().values().iterator().next());
 
                         //unique id for chat
                         DatabaseReference user_mess = db.getReference("USER_MESSAGES");
