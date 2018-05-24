@@ -73,7 +73,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void sendNotification(String from,Chat c,Boolean isNew) {
-        Intent intent = new Intent(this, Chat.class);
+        Intent intent = new Intent(this, ChatActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("chat",c);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
