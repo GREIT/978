@@ -47,12 +47,15 @@ import java.util.Date;
 
 public class ChatActivity extends AppCompatActivity {
 
+    Chat chat = null;
+    Transaction transaction = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        final Chat chat = (Chat) getIntent().getSerializableExtra("chat");
+        chat = (Chat) getIntent().getSerializableExtra("chat");
         if(getIntent().hasExtra("new") && getIntent().getBooleanExtra("new",false)){
             sendDefaultMsg(chat);
         }
@@ -175,6 +178,7 @@ public class ChatActivity extends AppCompatActivity {
 
         if (R.id.toolbar_chat_borrow_button == item.getItemId()) {
             //TODO add logic here
+            setUpTransaction();
             Toast.makeText( this , "Borrow Chat Pressed", Toast.LENGTH_SHORT).show();
             return true;
         } else return super.onOptionsItemSelected(item);
@@ -262,6 +266,11 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+
+    }
+
+    private void setUpTransaction(){
+        //transaction.get
 
     }
 }
