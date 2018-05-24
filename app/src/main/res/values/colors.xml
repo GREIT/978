@@ -10,4 +10,6 @@
     <color name="white">#fff</color>
     <color name="transparent">#11FFFFFF</color>
     <color name="backgroundColor">#f5f5f5</color>
-</resources>
+    <color name="colorGreen">#26ea17</color>
+    <color name="colorGreenDark">#087200</color>
+    </resources>
