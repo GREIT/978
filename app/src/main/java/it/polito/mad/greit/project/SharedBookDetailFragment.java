@@ -6,6 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +60,6 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
     View v = inflater.inflate(R.layout.fragment_shared_book_detail, container, false);
     
     TextView tv;
-    RatingBar book_ratings = (RatingBar) v.findViewById(R.id.shared_book_detail_conditions);
     ImageView thumbnail = v.findViewById(R.id.shared_book_detail_thumbnail);
     ImageView contactForLoan = (ImageView) v.findViewById(R.id.shared_book_detail_icon1);
     ImageView zoomOut = (ImageView) v.findViewById(R.id.shared_book_detail_icon2);
@@ -64,13 +67,18 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
     String date = sb.getAddedOn().subSequence(4, 10)+sb.getAddedOn().substring(29, 34);
     
     tv = (TextView) v.findViewById(R.id.shared_book_detail_owner);
-    tv.setText("Added on " + date + "\nby @" + sb.getOwnerUid());
+    String dateAndOwnerInfo = "Added on " + date + "\nby @" + sb.getOwnerUsername();
+  
+    Spannable spannable = new SpannableString(dateAndOwnerInfo);
+    spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorAccent)), 24,
+        dateAndOwnerInfo.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD_ITALIC),
+        25, dateAndOwnerInfo.length(), 0);
+    
+    tv.setText(spannable, TextView.BufferType.SPANNABLE);
     
     tv = (TextView) v.findViewById(R.id.shared_book_detail_text);
-    tv.setText("\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent dictum " +
-        "ac dui eget sodales. Cras eget mauris vitae nunc dictum massa nunc." + "\"");
-    
-    book_ratings.setRating(Float.valueOf(sb.getConditions()));
+    tv.setText("\"" + sb.getAdditionalInformations() + "\"");
     
     contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
     contactForLoan.setOnClickListener(view -> Toast.makeText(getActivity().getApplicationContext(), "Start chat", Toast.LENGTH_SHORT).show());

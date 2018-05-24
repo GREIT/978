@@ -5,7 +5,6 @@ import java.io.Serializable;
 
 public class SharedBook extends Book implements Serializable {
   private String key;
-  private String conditions;
   private String additionalInformations;
   private String ownerUid;
   private String ownerUsername;
@@ -15,7 +14,7 @@ public class SharedBook extends Book implements Serializable {
   private String position;
   private String coordinates;
   private Boolean shared;
-
+  
   
   public SharedBook() {
   }
@@ -37,14 +36,6 @@ public class SharedBook extends Book implements Serializable {
     this.key = key;
   }
   
-  public String getConditions() {
-    return conditions;
-  }
-  
-  public void setConditions(String conditions) {
-    this.conditions = conditions;
-  }
-  
   public String getAdditionalInformations() {
     return additionalInformations;
   }
@@ -60,11 +51,15 @@ public class SharedBook extends Book implements Serializable {
   public void setOwnerUid(String ownerUid) {
     this.ownerUid = ownerUid;
   }
-
-  public String getBorrowToUid() {return borrowToUid; }
-
-  public void setBorrowToUid(String borrowToUid) {this.borrowToUid = borrowToUid; }
-
+  
+  public String getBorrowToUid() {
+    return borrowToUid;
+  }
+  
+  public void setBorrowToUid(String borrowToUid) {
+    this.borrowToUid = borrowToUid;
+  }
+  
   public String getAddedOn() {
     return addedOn;
   }
@@ -88,17 +83,29 @@ public class SharedBook extends Book implements Serializable {
   public void setShared(Boolean shared) {
     this.shared = shared;
   }
-
-  public String getOwnerUsername(){ return ownerUsername;}
-
-  public void setOwnerUsername(String user) { this.ownerUsername = user; }
-
-  public String getCoordinates(){return coordinates;}
-
-  public void setCoordinates(String coordinates) { this.coordinates = coordinates; }
-
-  public String getBorrowToUsername(){return this.borrowToUsername;}
-
-  public void setBorrowToUsername(String btu) { this.borrowToUsername = btu; }
-
+  
+  public String getOwnerUsername() {
+    return ownerUsername;
+  }
+  
+  public void setOwnerUsername(String user) {
+    this.ownerUsername = user;
+  }
+  
+  public String getCoordinates() {
+    return coordinates;
+  }
+  
+  public void setCoordinates(String coordinates) {
+    this.coordinates = coordinates;
+  }
+  
+  public String getBorrowToUsername() {
+    return this.borrowToUsername;
+  }
+  
+  public void setBorrowToUsername(String btu) {
+    this.borrowToUsername = btu;
+  }
+  
 }

@@ -33,26 +33,84 @@
         android:textColor="@color/white" />
 
       <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_vertical"
+        android:paddingVertical="10dp">
+
+        <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="horizontal"
+          android:layout_gravity="center_vertical"
+          android:layout_weight="1"
           android:paddingVertical="10dp">
 
-        <TextView
+          <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
-            android:text="@string/tag"
+            android:text="@string/conditions"
             android:textColor="@color/colorPrimaryText"
             android:textStyle="bold" />
 
-        <it.polito.mad.greit.project.TagEditText
-            android:id="@+id/complete_book_tags"
+          <EditText
+            android:id="@+id/complete_book_conditions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="@string/describe_your_book"
+            android:inputType="textMultiLine"
             android:textColor="@color/colorPrimaryText"
+            android:textColorHint="@color/colorSecondarytext"
             android:textSize="15sp"
+            android:maxLength="140"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="8"
+          android:layout_gravity="center_vertical"
+          android:orientation="horizontal"
+          android:paddingVertical="10dp">
+
+
+          <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/complete_book_text_count"
+            android:text="140"
+            android:textColor="@color/colorAccent"
             android:textStyle="bold"/>
+
+        </LinearLayout>
+
+
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="10dp">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginRight="10dp"
+          android:text="@string/tag"
+          android:textColor="@color/colorPrimaryText"
+          android:textStyle="bold" />
+
+        <it.polito.mad.greit.project.TagEditText
+          android:id="@+id/complete_book_tags"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textColor="@color/colorPrimaryText"
+          android:textSize="15sp"
+          android:textStyle="bold" />
 
       </LinearLayout>
 
@@ -97,8 +155,8 @@
           android:id="@+id/complete_book_author"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text=""
           android:ellipsize="end"
+          android:text=""
           android:textColor="@color/colorPrimaryText" />
 
       </LinearLayout>
@@ -172,35 +230,6 @@
           android:textColor="@color/colorPrimaryText" />
 
       </LinearLayout>
-
-      <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingVertical="10dp">
-
-        <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginRight="10dp"
-          android:text="@string/conditions"
-          android:textColor="@color/colorPrimaryText"
-          android:textStyle="bold" />
-
-        <RatingBar
-          android:id="@+id/complete_book_conditions"
-          style="@style/Base.Widget.AppCompat.RatingBar.Small"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:clickable="true"
-          android:focusable="true"
-          android:isIndicator="false"
-          android:rating="3"
-          android:stepSize="0.5"
-          android:theme="@style/RatingBar" />
-
-      </LinearLayout>
-
 
 
     </LinearLayout>
