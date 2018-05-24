@@ -196,8 +196,6 @@ public class SearchedSharedBooks extends AppCompatActivity {
         distances = new TreeMap<>();
         positions = new ArrayList<>();
 
-        Log.i("*****NUMEROSTAMPE", "*****");
-
         for (int i=1; i <= getItemCount(); i++)
           distances.put(Utils.calcDistance(mSnapshots.getObject(i-1).getCoordinates(), currentLocation) / 1000, i-1);
         for (Map.Entry<Double, Integer> entry : distances.entrySet())
