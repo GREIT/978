@@ -1,5 +1,7 @@
 package it.polito.mad.greit.project;
 
+import android.content.SharedPreferences;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,6 +26,8 @@ public class BookTransaction implements Serializable{
     private Boolean user2Checked;
     private long dateStart;
     private long dateEnd;
+    //if type is false, transaction is in borrow phase, if true book is about to be returned back
+    private Boolean type;
 
     public String getUser1Uid() {
         return user1Uid;
@@ -113,6 +117,14 @@ public class BookTransaction implements Serializable{
         this.user2Checked = user2Checked;
     }
 
+    public Boolean getType() {
+        return type;
+    }
+
+    public void setType(Boolean type) {
+        this.type = type;
+    }
+
     public static void startTransaction(Chat c,String username){
         FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(c.getChatID());
@@ -132,6 +144,7 @@ public class BookTransaction implements Serializable{
                     bt.dateEnd = 0;
                     bt.user1Checked = true;
                     bt.user2Checked = false;
+                    bt.type = false;
                     mutableData.setValue(bt);
                     return Transaction.success(mutableData);
                 }
@@ -193,7 +206,12 @@ public class BookTransaction implements Serializable{
                 }
                 else{
                     BookTransaction bt = mutableData.getValue(BookTransaction.class);
-                    bt.setDateEnd(dateEnd);
+                    bt.type = !bt.type;
+                    bt.user1Checked = false;
+                    bt.user2Checked = false;
+                    if(!bt.type){
+                        bt.dateEnd = dateEnd;
+                    }
                     //maybe reset all to false for returning?
                     mutableData.setValue(bt);
                     return Transaction.success(mutableData);
@@ -211,7 +229,54 @@ public class BookTransaction implements Serializable{
                     else{
                         Chat.sendnotification(bt.user2Username,chatId,bt.user1Uid,"transaction");
                     }
+                    updateSharedBook(bt);
                 }
+            }
+        });
+    }
+
+    public static void updateSharedBook(BookTransaction bt){
+        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS").child(bt.bookId);
+        dbref.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                SharedBook sb = mutableData.getValue(SharedBook.class);
+                if(!bt.type){
+                    sb.setShared(false);
+                    sb.setBorrowToUid("");
+                    sb.setBorrowToUsername("");
+                }else {
+                    if (fbu.getUid().equals(bt.getUser1Uid())) {
+                        if (bt.getUser1Uid().equals(sb.getOwnerUid())) {
+                            sb.setBorrowToUid(bt.user2Uid);
+                            sb.setBorrowToUsername(bt.user2Username);
+                            sb.setShared(true);
+                        } else {
+                            sb.setBorrowToUid(bt.user1Uid);
+                            sb.setBorrowToUsername(bt.user1Username);
+                            sb.setShared(true);
+                        }
+                    } else {
+                        if (bt.getUser2Uid().equals(sb.getOwnerUid())) {
+                            sb.setBorrowToUid(bt.user1Uid);
+                            sb.setBorrowToUsername(bt.user1Username);
+                            sb.setShared(true);
+                        } else {
+                            sb.setBorrowToUid(bt.user2Uid);
+                            sb.setBorrowToUsername(bt.user2Username);
+                            sb.setShared(true);
+                        }
+
+                    }
+                }
+                mutableData.setValue(sb);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
             }
         });
     }
