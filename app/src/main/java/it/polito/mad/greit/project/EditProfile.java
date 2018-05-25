@@ -75,6 +75,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -410,6 +411,8 @@ public class EditProfile extends AppCompatActivity {
     DatabaseReference dbref = db.getReference("USERS").child(user.getUid());
     dbref.setValue(profile);
 
+    updateLocation(coordinates, location);
+
     if (this.photo != null) {
       try {
         StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
@@ -577,5 +580,27 @@ public class EditProfile extends AppCompatActivity {
 
   }
 
+  private void updateLocation(String coordinates, String position) {
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    FirebaseDatabase db = FirebaseDatabase.getInstance();
 
+    DatabaseReference mSharedBookDb = db.getReference("SHARED_BOOKS");
+
+    mSharedBookDb.orderByChild("ownerUid").equalTo(user.getUid()).addValueEventListener(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+          SharedBook tmpBook = ds.getValue(SharedBook.class);
+          tmpBook.setCoordinates(coordinates);
+          tmpBook.setPosition(location);
+          db.getReference("SHARED_BOOKS").child(tmpBook.getKey()).setValue(tmpBook);
+        }
+      }
+
+      @Override
+      public void onCancelled(DatabaseError databaseError) {
+
+      }
+    });
+  }
 }
