@@ -243,8 +243,12 @@ public class SearchedSharedBooks extends AppCompatActivity {
         dialogFragment.show(fm, "dialog");
       });
 
-      contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
-      contactForLoan.setOnClickListener(v -> Chat.openchat(ctx, model));
+      if (model.getOwnerUsername().equals(ctx.getSharedPreferences("sharedpref",Context.MODE_PRIVATE).getString("username",null))) {
+        contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
+      } else {
+        contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
+        contactForLoan.setOnClickListener(v -> Chat.openchat(ctx, model));
+      }
 
       distanceKm = Utils.calcDistance(model.getCoordinates(), currentLocation) / 1000;
       if (distanceKm > 20)
