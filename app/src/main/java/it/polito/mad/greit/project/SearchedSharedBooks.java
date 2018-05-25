@@ -132,9 +132,6 @@ public class SearchedSharedBooks extends AppCompatActivity {
         .into(iwCover);
     
     mSharedBookDb = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS");
-    mResultList = (RecyclerView) findViewById(R.id.shared_books_result_list);
-    mResultList.setItemAnimator(new DefaultItemAnimator());
-
     mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
     // Recupero posizione attuale
@@ -148,14 +145,19 @@ public class SearchedSharedBooks extends AppCompatActivity {
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
                             currentLocation = location.getLatitude() + ";" + location.getLongitude();
-                            sharedBookShow(book.getISBN());
+                        } else {
+                            currentLocation = getIntent().getStringExtra("userLocation");
+                            Toast.makeText(SearchedSharedBooks.this, "Location not found, default user location set", Toast.LENGTH_SHORT).show();
                         }
+                        sharedBookShow(book.getISBN());
                     }
                 });
     }
   }
   
   private void sharedBookShow(String ISBN) {
+    mResultList = (RecyclerView) findViewById(R.id.shared_books_result_list);
+    mResultList.setItemAnimator(new DefaultItemAnimator());
     mResultList.setLayoutManager(new GridLayoutManager(this, 2));
     mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
     mResultList.addItemDecoration(new SearchedSharedBooks.GridSpacingItemDecoration(2, dpToPx(20), true));

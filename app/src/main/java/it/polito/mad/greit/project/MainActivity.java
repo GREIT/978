@@ -92,7 +92,7 @@ import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
   private static String TAG = "Main Activity";
-  private Profile profile;
+  private static Profile profile;
   private ImageView iw_user;
   private TextView tw_username;
   private TextView tw_name;
@@ -460,6 +460,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent I = new Intent(ctx,
             SearchedSharedBooks.class);
         I.putExtra("book", model);
+        I.putExtra("userLocation", profile.getCoordinates());
         ctx.startActivity(I);
       });
     }
