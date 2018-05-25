@@ -158,14 +158,14 @@ public class ChatActivity extends AppCompatActivity {
         });
 
     }
-
+/*
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(ChatActivity.this,InboxActivity.class);
         //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
-
+*/
     public void zerounread(FirebaseUser user,String chatID){
         //put to 0 unread count
         DatabaseReference user_chat = FirebaseDatabase.getInstance()

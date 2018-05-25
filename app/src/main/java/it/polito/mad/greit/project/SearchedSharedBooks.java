@@ -237,6 +237,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
       book_image.setOnClickListener(v -> {
         Bundle bundle = new Bundle();
         bundle.putSerializable("book", model);
+        bundle.putSerializable("currentLocation", currentLocation);
 
         SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
         dialogFragment.setArguments(bundle);

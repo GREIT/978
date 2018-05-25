@@ -2,6 +2,7 @@ package it.polito.mad.greit.project;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +30,11 @@ import java.io.ByteArrayOutputStream;
 public class SharedBookDetailFragment extends android.support.v4.app.DialogFragment {
   
   private static final String ARG_PARAM1 = "book";
+  private static final String ARG_PARAM2 = "currentLocation";
   
   private SharedBook sb;
+  private String currentLocation;
+  private double distanceKm;
   
   private OnFragmentInteractionListener mListener;
   
@@ -49,20 +54,20 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
     super.onCreate(savedInstanceState);
     if (getArguments() != null) {
       sb = (SharedBook) getArguments().getSerializable(ARG_PARAM1);
+      currentLocation = (String) getArguments().getSerializable(ARG_PARAM2);
     }
     
   }
   
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     View v = inflater.inflate(R.layout.fragment_shared_book_detail, container, false);
     
     TextView tv;
     ImageView thumbnail = v.findViewById(R.id.shared_book_detail_thumbnail);
+    ImageView ownerInfo = (ImageView) v.findViewById(R.id.shared_book_detail_icon2);
     ImageView contactForLoan = (ImageView) v.findViewById(R.id.shared_book_detail_icon1);
-    ImageView zoomOut = (ImageView) v.findViewById(R.id.shared_book_detail_icon2);
     ImageView distance = (ImageView) v.findViewById(R.id.shared_book_detail_icon3);
     String date = sb.getAddedOn().subSequence(4, 10)+sb.getAddedOn().substring(29, 34);
     
@@ -79,15 +84,28 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
     
     tv = (TextView) v.findViewById(R.id.shared_book_detail_text);
     tv.setText("\"" + sb.getAdditionalInformations() + "\"");
-    
-    contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
-    contactForLoan.setOnClickListener(view -> Toast.makeText(getActivity().getApplicationContext(), "Start chat", Toast.LENGTH_SHORT).show());
-    contactForLoan.setOnClickListener(view -> Chat.openchat(this.getContext(), sb));
-/*
-        zoomOut.setImageResource(R.drawable.ic_zoom_out_white_48dp);
-        zoomOut.setOnClickListener(view -> getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit());
-*/
-    distance.setImageResource(R.mipmap.ic_minore_5);
+
+    if (sb.getOwnerUsername().equals(this.getContext().getSharedPreferences("sharedpref",Context.MODE_PRIVATE).getString("username",null))) {
+      contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
+    } else {
+      contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
+      contactForLoan.setOnClickListener(view -> Chat.openchat(this.getContext(), sb));
+    }
+
+    distanceKm = Utils.calcDistance(sb.getCoordinates(), currentLocation) / 1000;
+    if (distanceKm > 20)
+      distance.setImageResource(R.mipmap.ic_maggiore_20);
+    else if (distanceKm < 20 && distanceKm > 5)
+      distance.setImageResource(R.mipmap.ic_minore_20);
+    else
+      distance.setImageResource(R.mipmap.ic_minore_5);
+
+    ownerInfo.setImageResource(R.drawable.ic_person_white_48dp);
+    ownerInfo.setOnClickListener(view -> {
+      Intent I = new Intent(this.getContext(), OtherProfile.class);
+      I.putExtra("uid", sb.getOwnerUid());
+      this.getContext().startActivity(I);
+    });
     
     StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + sb.getKey() + ".jpg");
     

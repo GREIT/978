@@ -116,7 +116,7 @@ public class EditProfile extends AppCompatActivity {
     t.setTitle(R.string.activity_edit_profile);
     setSupportActionBar(t);
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-    t.setNavigationOnClickListener(v -> RevertInfo());
+    t.setNavigationOnClickListener(v -> onBackPressed());
 
     Setup(b);
 
@@ -456,13 +456,6 @@ public class EditProfile extends AppCompatActivity {
     }
   }
 
-  private void RevertInfo() {
-    Intent swap = new Intent(EditProfile.this, ShowProfile.class);
-    swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    startActivity(swap);
-  }
-
-
   private void UploadPic() {
 
     Intent gallery = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -547,14 +540,14 @@ public class EditProfile extends AppCompatActivity {
       setuplocation();
     }*/
   }
-
+/*
   @Override
   public void onBackPressed() {
     Intent intent = new Intent(EditProfile.this, ShowProfile.class);
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     startActivity(intent);
   }
-
+*/
 
   private void createpic(Bitmap bm) {
 
