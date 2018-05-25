@@ -206,8 +206,9 @@ public class SearchedSharedBooks extends AppCompatActivity {
       public SharedBook getItem(int position) {
         return (SharedBook) mSnapshots.getObject(positions.get(position));
       }
+
     };
-    
+
     mResultList.setAdapter(firebaseRecyclerAdapter);
   }
   

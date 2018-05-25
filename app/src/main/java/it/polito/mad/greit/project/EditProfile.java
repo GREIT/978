@@ -289,11 +289,11 @@ public class EditProfile extends AppCompatActivity {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-
     if (R.id.confirm == item.getItemId()) {
       SaveInfo();
       return true;
-    } else return super.onOptionsItemSelected(item);
+    } else
+      return super.onOptionsItemSelected(item);
   }
 
   void Setup(Bundle b) {
@@ -426,14 +426,14 @@ public class EditProfile extends AppCompatActivity {
               bm.compress(Bitmap.CompressFormat.JPEG, 85, outs);
               outs.close();
               dialog.dismiss();
-              Intent swap = new Intent(EditProfile.this, ShowProfile.class);
+              Intent swap = new Intent(EditProfile.this, MainActivity.class);
               swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
               startActivity(swap);
             }catch (Exception e){
               if(dialog.isShowing()) {
                 dialog.dismiss();
               }
-                Intent swap = new Intent(EditProfile.this, ShowProfile.class);
+                Intent swap = new Intent(EditProfile.this, MainActivity.class);
                 swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(swap);
             }
@@ -443,7 +443,7 @@ public class EditProfile extends AppCompatActivity {
           public void onFailure(@NonNull Exception exception) {
             exception.printStackTrace();
             dialog.dismiss();
-            Intent swap = new Intent(EditProfile.this, ShowProfile.class);
+            Intent swap = new Intent(EditProfile.this, MainActivity.class);
             swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(swap);
           }
@@ -453,7 +453,7 @@ public class EditProfile extends AppCompatActivity {
       }
     }
     else{
-      Intent swap = new Intent(EditProfile.this, ShowProfile.class);
+      Intent swap = new Intent(EditProfile.this, MainActivity.class);
       swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
       startActivity(swap);
     }
