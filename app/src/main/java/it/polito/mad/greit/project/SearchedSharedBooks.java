@@ -147,7 +147,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
                             currentLocation = location.getLatitude() + ";" + location.getLongitude();
                         } else {
                             currentLocation = getIntent().getStringExtra("userLocation");
-                            Toast.makeText(SearchedSharedBooks.this, "Location not found, default user location set", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SearchedSharedBooks.this, "Location not found, profile location set.", Toast.LENGTH_SHORT).show();
                         }
                         sharedBookShow(book.getISBN());
                     }
@@ -177,17 +177,6 @@ public class SearchedSharedBooks extends AppCompatActivity {
       @Override
       public SharedBookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         SharedBookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
-        viewHolder.setOnClickListener(new SharedBookViewHolder.ClickListener() {
-          @Override
-          public void onItemClick(View view, SharedBook model) {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("book", model);
-            
-            SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
-            dialogFragment.setArguments(bundle);
-            dialogFragment.show(getSupportFragmentManager(), "dialog");
-          }
-        });
         return viewHolder;
       }
 
@@ -233,9 +222,9 @@ public class SearchedSharedBooks extends AppCompatActivity {
     
     public void setDetails(Context ctx, SharedBook model, android.support.v4.app.FragmentManager fm) {
       ImageView book_image = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
-      ImageView ownerInfo = (ImageView) mView.findViewById(R.id.shared_book_card_moreInfo);
-      ImageView contactForLoan = (ImageView) mView.findViewById(R.id.shared_book_card_contactForLoan);
-      ImageView distance = (ImageView) mView.findViewById(R.id.shared_book_card_distance);
+      ImageView contactForLoan = (ImageView) mView.findViewById(R.id.shared_book_card_icon1);
+      ImageView ownerInfo = (ImageView) mView.findViewById(R.id.shared_book_card_icon2);
+      ImageView distance = (ImageView) mView.findViewById(R.id.shared_book_card_icon3);
 
       book_image.setOnClickListener(v -> {
         Bundle bundle = new Bundle();

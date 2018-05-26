@@ -66,8 +66,8 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
     
     TextView tv;
     ImageView thumbnail = v.findViewById(R.id.shared_book_detail_thumbnail);
-    ImageView ownerInfo = (ImageView) v.findViewById(R.id.shared_book_detail_icon2);
     ImageView contactForLoan = (ImageView) v.findViewById(R.id.shared_book_detail_icon1);
+    ImageView ownerInfo = (ImageView) v.findViewById(R.id.shared_book_detail_icon2);
     ImageView distance = (ImageView) v.findViewById(R.id.shared_book_detail_icon3);
     String date = sb.getAddedOn().subSequence(4, 10)+sb.getAddedOn().substring(29, 34);
     
@@ -92,13 +92,15 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
       contactForLoan.setOnClickListener(view -> Chat.openchat(this.getContext(), sb));
     }
 
-    distanceKm = Utils.calcDistance(sb.getCoordinates(), currentLocation) / 1000;
-    if (distanceKm > 20)
-      distance.setImageResource(R.mipmap.ic_maggiore_20);
-    else if (distanceKm < 20 && distanceKm > 5)
-      distance.setImageResource(R.mipmap.ic_minore_20);
-    else
-      distance.setImageResource(R.mipmap.ic_minore_5);
+    if (currentLocation != null) {
+      distanceKm = Utils.calcDistance(sb.getCoordinates(), currentLocation) / 1000;
+      if (distanceKm > 20)
+        distance.setImageResource(R.mipmap.ic_maggiore_20);
+      else if (distanceKm < 20 && distanceKm > 5)
+        distance.setImageResource(R.mipmap.ic_minore_20);
+      else
+        distance.setImageResource(R.mipmap.ic_minore_5);
+    }
 
     ownerInfo.setImageResource(R.drawable.ic_person_white_48dp);
     ownerInfo.setOnClickListener(view -> {

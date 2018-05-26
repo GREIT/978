@@ -101,8 +101,8 @@ public class SharedBooksByUser extends AppCompatActivity {
     public void setDetails(Context ctx, SharedBook model) {
       //TextView book_owner = (TextView) mView.findViewById(R.id.shared_book_card_owner);
       ImageView book_image = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
-      ImageView editSharedBook = (ImageView) mView.findViewById(R.id.shared_book_card_contactForLoan);
-      ImageView deleteSharedBook = (ImageView) mView.findViewById(R.id.shared_book_card_moreInfo);
+      ImageView editSharedBook = (ImageView) mView.findViewById(R.id.shared_book_card_icon1);
+      ImageView deleteSharedBook = (ImageView) mView.findViewById(R.id.shared_book_card_icon2);
       
       //book_owner.setText(model.getOwnerUid());
       //book_author.setText(model.getAuthors().keySet().iterator().next());

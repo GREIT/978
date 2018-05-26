@@ -57,21 +57,21 @@
         android:paddingHorizontal="10dp">
 
         <ImageView
-          android:id="@+id/shared_book_card_contactForLoan"
+          android:id="@+id/shared_book_card_icon1"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentTop="true"
           android:elevation="3dp" />
 
         <ImageView
-          android:id="@+id/shared_book_card_moreInfo"
+          android:id="@+id/shared_book_card_icon2"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginTop="35dp"
           android:elevation="3dp" />
 
         <ImageView
-          android:id="@+id/shared_book_card_distance"
+          android:id="@+id/shared_book_card_icon3"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentBottom="true"
