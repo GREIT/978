@@ -45,7 +45,7 @@ class WriteReview : DialogFragment() {
     val v: View = inflater.inflate(R.layout.fragment_write_review, container, false)
 
     tw = v.findViewById(R.id.write_review_reviewed_username)
-    tw!!.text = "@" +username
+    tw!!.text = "@" + username
 
     tw = v.findViewById(R.id.write_review_book_title)
     tw!!.text = "for " + title
@@ -55,7 +55,7 @@ class WriteReview : DialogFragment() {
     et!!.setVerticalScrollBarEnabled(true)
 
     bt = v.findViewById(R.id.write_review_confirm)
-    // TODO set click listener
+    bt!!.setOnClickListener{v -> saveReview()}
 
     rb = v.findViewById(R.id.write_review_rating)
 
@@ -85,6 +85,6 @@ class WriteReview : DialogFragment() {
 
     mDatabase!!.getReference("USER_REVIEWS").child(key).setValue(review)
 
-     dismiss()
+    dismiss()
   }
 }

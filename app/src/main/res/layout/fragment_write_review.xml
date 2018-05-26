@@ -26,23 +26,23 @@
         android:orientation="vertical">
 
         <TextView
-          android:gravity="center"
           android:id="@+id/write_review_init_text"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_alignParentTop="true"
+          android:gravity="center"
           android:text="Write a review of"
           android:textColor="@color/colorPrimaryText"
           android:textSize="25sp"
           android:textStyle="bold" />
 
         <TextView
-          android:gravity="center"
           android:id="@+id/write_review_reviewed_username"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_below="@+id/write_review_init_text"
           android:ellipsize="end"
+          android:gravity="center"
           android:maxLines="1"
           android:text="😋helloimcarmine"
           android:textColor="@color/colorAccent"
@@ -50,12 +50,12 @@
           android:textStyle="bold" />
 
         <TextView
-          android:gravity="center"
           android:id="@+id/write_review_book_title"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_below="@+id/write_review_reviewed_username"
           android:ellipsize="end"
+          android:gravity="center"
           android:maxLines="2"
           android:text="for Il meraviglioso mondo di amelie quella sgualdrina"
           android:textColor="@color/colorPrimaryText"
@@ -76,13 +76,13 @@
 
 
         <RatingBar
-          android:layout_marginVertical="10dp"
           android:id="@+id/write_review_rating"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_above="@id/write_review_confirm"
           android:layout_centerHorizontal="true"
           android:layout_gravity="bottom"
+          android:layout_marginVertical="10dp"
           android:numStars="5"
           android:rating="2"
           android:stepSize="0.5" />
