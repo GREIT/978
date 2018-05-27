@@ -59,12 +59,14 @@ import static it.polito.mad.greit.project.Constants.DB_SHARED;
 import static it.polito.mad.greit.project.Constants.DB_USER_CHAT;
 import static it.polito.mad.greit.project.Constants.DB_USER_MESSAGES;
 
+
 public class ChatActivity extends AppCompatActivity {
 
     /*
     Ci sono diversi problemi...
         1. Non mi piace che io possa premere se il libro é prestato ad altri
      */
+    private static final String SYSTEM = "system";
 
     private final int STATE_FREE = 0;
     private final int STATE_BORROWTOUSER = 1;
@@ -119,6 +121,14 @@ public class ChatActivity extends AppCompatActivity {
         Intent intent = new Intent(ChatActivity.this,InboxActivity.class);
         //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    public void sendSystemMessage(String msg){
+        Message toSend = new Message(chat.getTimestamp(),
+                SYSTEM, SYSTEM ,msg);
+        DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USER_MESSAGES").child(chat.getChatID());
+        String key = fbd.push().getKey();
+        fbd.child(key).setValue(toSend);
     }
 
     private void zeroUnread(FirebaseUser user,String chatID){
@@ -354,10 +364,14 @@ public class ChatActivity extends AppCompatActivity {
         if(op){
             Log.d("DEBUGTRANSACTION", "startTransaction: enter lock");
             bt.lock_book();
+            sendSystemMessage( getResources().getString(R.string.system_message_accepted,
+                    Profile.getCurrentUsername(this)));
         }
         else{
             Log.d("DEBUGTRANSACTION", "startTransaction: enter unlock");
             bt.unlock_book();
+            sendSystemMessage( getResources().getString(R.string.system_message_closed,
+                    Profile.getCurrentUsername(this)));
         }
     }
 

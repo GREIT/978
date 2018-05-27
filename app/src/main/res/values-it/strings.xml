@@ -101,6 +101,9 @@
   <string name="dialog_borrowed_to_other">"Il libro é giá stato prestato ad un altro utente"</string>
   <string name="borrowed_to_other">"Libro non disponibile"</string>
 
+  <string name="system_message_accepted">L\'utente %1$s ha accettato il prestito</string>
+  <string name="system_message_closed">L\'utente %1$s ha chiuso il prestito</string>
+
   //notifications
   <string name="default_msg">Ciao %1$s, posso avere in prestito il libro %2$s ?</string>
   <string name="new_request">Nuova richiesta ricevuta da %1$s per il libro %2$s</string>

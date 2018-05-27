@@ -83,7 +83,6 @@
   <string name="dialog_clicked">Dialog clicked</string>
   <string name="denied">Permission denied</string>
 
-
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
   <string name="nav_header_desc">Navigation header</string>
@@ -113,6 +112,8 @@
   <string name="dialog_borrowed_to_other">"This book is already borrowed to another user."</string>
   <string name="borrowed_to_other">"Book not available"</string>
 
+  <string name="system_message_accepted">User %1$s accepted the loan</string>
+  <string name="system_message_closed">User %1$s closed the loan</string>
 
 
   //notifications
