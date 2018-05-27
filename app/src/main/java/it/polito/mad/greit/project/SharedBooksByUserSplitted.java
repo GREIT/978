@@ -233,6 +233,9 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
         ImageView book_image = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
         ImageView iw1 = (ImageView) mView.findViewById(R.id.shared_book_card_icon1);
         ImageView iw2 = (ImageView) mView.findViewById(R.id.shared_book_card_icon2);
+        TextView bookTitle = (TextView) mView.findViewById(R.id.shared_book_card_title);
+  
+        bookTitle.setText(model.getTitle());
         
         //book_owner.setText(model.getOwnerUid());
         //book_author.setText(model.getAuthors().keySet().iterator().next());
