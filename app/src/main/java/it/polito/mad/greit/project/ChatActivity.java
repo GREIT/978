@@ -60,6 +60,8 @@ public class ChatActivity extends AppCompatActivity {
         4. Non mi piace che io non sappia cosa ha fatto l'altro utente
      */
 
+    BookTransaction bt = null;
+    SharedBook sb = null;
     Chat chat = null;
     ImageView cardBookIcon;
     boolean isClickable, haveLoaded;
@@ -104,6 +106,9 @@ public class ChatActivity extends AppCompatActivity {
         //At the end of the query set haveLoaded to True and isClickable to false if borrowed, otherwise not.
         //DatabaseReference dbForBorrowed = FirebaseDatabase.getInstance().getReference("USER_MESSAGES").child(chatID);
 
+        //loads data for transaction and sharedbook
+        loadSharedBook();
+        loadTransaction();
 
         //Messages
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -315,7 +320,7 @@ public class ChatActivity extends AppCompatActivity {
         builder.setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(android.R.string.yes, (d,w) ->
-                        BookTransaction.startTransaction(chat, Profile.getCurrentUsername(this)))
+                        startTransaction(s.isChecked()))
                 .setNegativeButton(android.R.string.cancel, (d,w) -> {
                         s.setChecked(!state);
                         cardBookIcon.setActivated(!state);
@@ -324,6 +329,68 @@ public class ChatActivity extends AppCompatActivity {
                 .setIcon(icon)
                 .show();
 
+    }
+
+    public void loadTransaction(){
+        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(chat.getChatID());
+        dbref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() == null){
+                    bt = new BookTransaction();
+                    bt.setBookId(chat.getBookID());
+                    bt.setBookTitle(chat.getBookTitle());
+                    bt.setDateEnd(0);
+                    bt.setOwnerUid(fbu.getUid());
+                    bt.setOwnerUsername(Profile.getCurrentUsername(ChatActivity.this));
+                    bt.setReceiverUid(chat.getUserID());
+                    bt.setReceiverUsername(chat.getUsername());
+                    bt.setDateStart(0);
+                    bt.setChatId(chat.getChatID());
+                    bt.setFree(true);
+                }
+                else{
+                    bt = dataSnapshot.getValue(BookTransaction.class);
+                }
+                //attiva il bottone qui per evitare concorrenze
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+
+    public void loadSharedBook(){
+        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS").child(chat.getBookID());
+        dbref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                sb = dataSnapshot.getValue(SharedBook.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void startTransaction(Boolean op){
+        //op is true if book have to be locked, false otherwise
+        Log.d("DEBUGTRANSACTION", "startTransaction: " +  bt.getBookId());
+        if(op){
+            Log.d("DEBUGTRANSACTION", "startTransaction: enter lock");
+            bt.lock_book();
+        }
+        else{
+            Log.d("DEBUGTRANSACTION", "startTransaction: enter unlock");
+            bt.unlock_book();
+        }
     }
 
 

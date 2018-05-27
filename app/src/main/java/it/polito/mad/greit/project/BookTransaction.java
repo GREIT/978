@@ -1,6 +1,7 @@
 package it.polito.mad.greit.project;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -10,6 +11,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
 
@@ -22,12 +24,10 @@ public class BookTransaction implements Serializable{
     private String receiverUsername;
     private String bookId;
     private String bookTitle;
-    private Boolean ownerChecked;
-    private Boolean receiverChecked;
     private long dateStart;
     private long dateEnd;
-    //if type is false, transaction is in borrow phase, if true book is about to be returned back
-    private Boolean type;
+    //if the receiver has still the book, this is false, true otherwise
+    private Boolean isFree;
 
     public String getOwnerUid() {
         return ownerUid;
@@ -101,196 +101,113 @@ public class BookTransaction implements Serializable{
         this.chatId = chatId;
     }
 
-    public Boolean getOwnerChecked() {
-        return ownerChecked;
+    public Boolean getFree() {
+        return isFree;
     }
 
-    public void setOwnerChecked(Boolean ownerChecked) {
-        this.ownerChecked = ownerChecked;
+    public void setFree(Boolean free) {
+        isFree = free;
     }
 
-    public Boolean getReceiverChecked() {
-        return receiverChecked;
-    }
+    public void lock_book(){
+        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(this.chatId);
+        BookTransaction current = this;
 
-    public void setReceiverChecked(Boolean receiverChecked) {
-        this.receiverChecked = receiverChecked;
-    }
-
-    public Boolean getType() {
-        return type;
-    }
-
-    public void setType(Boolean type) {
-        this.type = type;
-    }
-
-    public static void startTransaction(Chat c,String username){
-        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(c.getChatID());
-        BookTransaction bt = new BookTransaction();
-        dbref.runTransaction(new com.google.firebase.database.Transaction.Handler() {
-            boolean isNew = false;
+        dbref.runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 if(mutableData.getValue() == null){
-                    bt.bookId = c.getBookID();
-                    bt.bookTitle = c.getBookTitle();
-                    bt.chatId = c.getChatID();
-                    if(c.isMine()) { //I'm the owner
-                        bt.ownerUid = fbu.getUid();
-                        bt.ownerUsername = username;
-                        bt.receiverUid = c.getUserID();
-                        bt.receiverUsername = c.getUsername();
-                        bt.ownerChecked = true;
-                        bt.receiverChecked = false;
-                    }
-                    else { //I'm not the owner
-                        bt.receiverUid = fbu.getUid();
-                        bt.receiverUsername = username;
-                        bt.ownerUid = c.getUserID();
-                        bt.ownerUsername = c.getUsername();
-                        bt.ownerChecked = false;
-                        bt.receiverChecked = true;
-                    }
-                    bt.dateStart = System.currentTimeMillis()/1000L;
-                    bt.dateEnd = 0;
-                    bt.type = false; //Means borrow phase
+                    current.setFree(false);
+                    current.setDateStart(System.currentTimeMillis()/1000L);
+                    mutableData.setValue(current);
+                    Log.d("DEBUGTRANSACTION", "startTransaction: set mutable data in lock" + current.isFree);
+                    return Transaction.success(mutableData);
+
+                }
+                else {
+                    BookTransaction bt = mutableData.getValue(BookTransaction.class);
+                    bt.setFree(false);
+                    bt.setDateStart(System.currentTimeMillis()/1000L);
                     mutableData.setValue(bt);
-                    isNew = true;
+                    Log.d("DEBUGTRANSACTION", "startTransaction: data already present in lock" + current.isFree);
+                    return Transaction.success(mutableData);
+                }
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                if(b) {
+                    Log.d("DEBUGTRANSACTION", "entered on complete lock");
+                    updateSharedBook(true);
+                }
+            }
+        });
+
+    }
+
+    public void unlock_book(){
+        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(this.chatId);
+
+        dbref.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                if(mutableData.getValue() != null){
+                    BookTransaction bt = mutableData.getValue(BookTransaction.class);
+                    bt.setFree(true);
+                    bt.setDateEnd(System.currentTimeMillis()/1000L);
+                    mutableData.setValue(bt);
                     return Transaction.success(mutableData);
                 }
                 else {
-                    isNew = false;
-                    return Transaction.success(mutableData);
-                }
-            }
-
-            @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                if(b && !isNew){
-                    isNew = false;
-                    updateTransaction(c.getChatID());
-                }
-            }
-        });
-    }
-
-    public static void updateTransaction(String chatId){
-        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(chatId);
-        dbref.runTransaction(new Transaction.Handler() {
-            @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                if(mutableData.getValue() == null){
                     return Transaction.abort();
                 }
-                else{
-                    BookTransaction bt = mutableData.getValue(BookTransaction.class);
-                    if(fbu.getUid().equals(bt.getOwnerUid())){
-                        bt.ownerChecked = !bt.ownerChecked;
-                    }
-                    else{
-                        bt.receiverChecked = !bt.receiverChecked;
-                    }
-                    mutableData.setValue(bt);
-                    return Transaction.success(mutableData);
-                }
             }
 
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                if(b){
-                    BookTransaction bt = dataSnapshot.getValue(BookTransaction.class);
-                    if(bt.ownerChecked && bt.receiverChecked){
-                        closeTransaction(System.currentTimeMillis()/1000L,chatId);
-                    }
+                if(b) {
+                    updateSharedBook(false);
                 }
             }
         });
     }
 
-    public static void closeTransaction(long dateEnd,String chatId){
-        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(chatId);
-        dbref.runTransaction(new Transaction.Handler() {
+    private void updateSharedBook(Boolean op){
+        //again, if op is true book is locked, unlocked otherwise
+        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS").child(this.bookId);
+        BookTransaction bt = this;
+        dbref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                if(mutableData.getValue() == null){
-                    return Transaction.abort();
-                }
-                else{
-                    BookTransaction bt = mutableData.getValue(BookTransaction.class);
-                    bt.type = !bt.type;
-                    bt.ownerChecked = false;
-                    bt.receiverChecked = false;
-                    if(!bt.type){
-                        bt.dateEnd = dateEnd;
-                    }
-                    //maybe reset all to false for returning?
-                    mutableData.setValue(bt);
-                    return Transaction.success(mutableData);
-                }
-            }
-
-            @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                //send notification
-                if(b){
-                    BookTransaction bt = dataSnapshot.getValue(BookTransaction.class);
-                    if(fbu.getUid().equals(bt.getOwnerUid())){
-                        Chat.sendnotification(bt.ownerUsername,chatId,bt.receiverUid,"transaction");
-                    }
-                    else{
-                        Chat.sendnotification(bt.receiverUsername,chatId,bt.ownerUid,"transaction");
-                    }
-                    updateSharedBook(bt);
-                }
-            }
-        });
-    }
-
-    public static void updateSharedBook(BookTransaction bt){
-        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS").child(bt.bookId);
-        dbref.runTransaction(new Transaction.Handler() {
-            @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                SharedBook sb = mutableData.getValue(SharedBook.class);
-                if(!bt.type){
-                    sb.setShared(false);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                SharedBook sb = dataSnapshot.getValue(SharedBook.class);
+                if(op){
+                    Log.d("DEBUGTRANSACTION", "startTransaction: updating lock");
+                    sb.setBorrowToUid(bt.getReceiverUid());
+                    sb.setBorrowToUsername(bt.getReceiverUsername());
+                    sb.setShared(true);
+                }else{
+                    Log.d("DEBUGTRANSACTION", "startTransaction: updating unlock");
                     sb.setBorrowToUid("");
                     sb.setBorrowToUsername("");
-                }else {
-                    if (fbu.getUid().equals(bt.getOwnerUid())) {
-                        if (bt.getOwnerUid().equals(sb.getOwnerUid())) {
-                            sb.setBorrowToUid(bt.receiverUid);
-                            sb.setBorrowToUsername(bt.receiverUsername);
-                            sb.setShared(true);
-                        } else {
-                            sb.setBorrowToUid(bt.ownerUid);
-                            sb.setBorrowToUsername(bt.ownerUsername);
-                            sb.setShared(true);
-                        }
-                    } else {
-                        if (bt.getReceiverUid().equals(sb.getOwnerUid())) {
-                            sb.setBorrowToUid(bt.ownerUid);
-                            sb.setBorrowToUsername(bt.ownerUsername);
-                            sb.setShared(true);
-                        } else {
-                            sb.setBorrowToUid(bt.receiverUid);
-                            sb.setBorrowToUsername(bt.receiverUsername);
-                            sb.setShared(true);
-                        }
+                    sb.setShared(false);
+                }
+                dbref.runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData mutableData) {
+                        mutableData.setValue(sb);
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
 
                     }
-                }
-                mutableData.setValue(sb);
-                return Transaction.success(mutableData);
+                });
+
             }
 
             @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
