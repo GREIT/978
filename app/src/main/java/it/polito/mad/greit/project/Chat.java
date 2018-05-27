@@ -141,6 +141,7 @@ public class Chat implements Serializable, Comparable<Chat>{
         res.setChatID(c.getChatID());
         res.setBookID(c.getBookID());
         res.setBookAuthor(c.getBookAuthor());
+        res.setMine(c.isMine());
         return res;
     }
 
@@ -171,7 +172,7 @@ public class Chat implements Serializable, Comparable<Chat>{
                         c.setUserID(sb.getOwnerUid());
                         c.setBookTitle(sb.getTitle());
                         c.setBookAuthor(sb.getAuthors().values().iterator().next());
-                        c.setMine(true);
+                        c.setMine(false);
 
                         //unique id for chat
                         DatabaseReference user_mess = db.getReference("USER_MESSAGES");
@@ -193,7 +194,7 @@ public class Chat implements Serializable, Comparable<Chat>{
 
                         DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwnerUid());
                         c.setUserID(fbu.getUid());
-                        c.setMine(false);
+                        c.setMine(true);
                         c.setUsername(Profile.getCurrentUsername(context));
                         ref_second_user.child(chatid).setValue(c);
                         context.startActivity(intent);

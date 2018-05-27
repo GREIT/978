@@ -93,6 +93,13 @@
   <string name="alert_message_chat_unlock">"Sei davvero sicuro di voler terminare il prestito?"</string>
   <string name="alert_title_chat_lock">"Presta"</string>
   <string name="alert_title_chat_unlock">"Termina"</string>
+  <string name="book_already_borrowed_title">"Libro prestato"</string>
+  <string name="book_already_borrowed_message">"Hai giá prestato questo libro a @%1$s"</string>
+  <string name="dialog_free_message">"Il libro é disponibile! Chiedi al possessore di confermare la richiesta di prestito."</string>
+  <string name="borrowed_to_you">"Prestito giá confermato"</string>
+  <string name="dialog_borrowed_to_you">"Il possessore del libro ha giá accettato il presito. Se non l'hai ancora fatto, prendi un appuntamento con lui."</string>
+  <string name="dialog_borrowed_to_other">"Il libro é giá stato prestato ad un altro utente"</string>
+  <string name="borrowed_to_other">"Libro non disponibile"</string>
 
   //notifications
   <string name="default_msg">Ciao %1$s, posso avere in prestito il libro %2$s ?</string>

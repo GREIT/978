@@ -14,4 +14,6 @@
     <color name="colorGreenDark">#087200</color>
     <color name="colorRed">#FF1744</color>
     <color name="colorRedDark">#9b0724</color>
+    <color name="colorGold">#FDD835</color>
+    <color name="colorGrey">#757575</color>
     </resources>

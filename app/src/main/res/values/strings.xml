@@ -105,10 +105,18 @@
   <string name="alert_message_chat_unlock">"Are you sure you want to conclude the loan?"</string>
   <string name="alert_title_chat_lock">"Borrow"</string>
   <string name="alert_title_chat_unlock">"Conclude"</string>
+  <string name="book_already_borrowed_title">"Book borrowed"</string>
+  <string name="book_already_borrowed_message">"You gave your book to @%1$s"</string>
+  <string name="dialog_free_message">"This book is free, you can ask the owner to confirm the request."</string>
+  <string name="borrowed_to_you">"Borrow already confirmed"</string>
+  <string name="dialog_borrowed_to_you">"The owner already accepted borrowing to you this book. If you haven't done it yet, set up an appointment with him/her."</string>
+  <string name="dialog_borrowed_to_other">"This book is already borrowed to another user."</string>
+  <string name="borrowed_to_other">"Book not available"</string>
+
 
 
   //notifications
-  <string name="default_msg">Hello %1$s, can i have the book %2$s ?</string>
+  <string name="default_msg">Hello %1$s, can I have the book %2$s ?</string>
   <string name="new_request">New Request Received from %1$s for the book %2$s</string>
   <string name="incoming">New messages from %1$s for the book %2$s</string>
   <string name="lock_event">%1$s accepted your request for book %2$s</string>

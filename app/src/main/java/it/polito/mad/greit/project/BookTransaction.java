@@ -27,7 +27,7 @@ public class BookTransaction implements Serializable{
     private long dateStart;
     private long dateEnd;
     //if the receiver has still the book, this is false, true otherwise
-    private Boolean isFree;
+    private Boolean free;
 
     public String getOwnerUid() {
         return ownerUid;
@@ -101,12 +101,12 @@ public class BookTransaction implements Serializable{
         this.chatId = chatId;
     }
 
-    public Boolean getFree() {
-        return isFree;
+    public boolean isFree() {
+        return free;
     }
 
-    public void setFree(Boolean free) {
-        isFree = free;
+    public void setFree(boolean free) {
+        this.free = free;
     }
 
     public void lock_book(){
@@ -120,7 +120,7 @@ public class BookTransaction implements Serializable{
                     current.setFree(false);
                     current.setDateStart(System.currentTimeMillis()/1000L);
                     mutableData.setValue(current);
-                    Log.d("DEBUGTRANSACTION", "startTransaction: set mutable data in lock" + current.isFree);
+                    Log.d("DEBUGTRANSACTION", "startTransaction: set mutable data in lock" + current.free);
                     return Transaction.success(mutableData);
 
                 }
@@ -129,7 +129,7 @@ public class BookTransaction implements Serializable{
                     bt.setFree(false);
                     bt.setDateStart(System.currentTimeMillis()/1000L);
                     mutableData.setValue(bt);
-                    Log.d("DEBUGTRANSACTION", "startTransaction: data already present in lock" + current.isFree);
+                    Log.d("DEBUGTRANSACTION", "startTransaction: data already present in lock" + current.free);
                     return Transaction.success(mutableData);
                 }
             }

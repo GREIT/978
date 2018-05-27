@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:paddingLeft="8dp"
+        android:paddingStart="8dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1">
+        <TextView
+            android:id="@+id/chat_card_book_title"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Book Title"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:gravity="center_vertical"/>
+        <TextView
+            android:id="@+id/chat_card_book_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Author"
+            android:textSize="14sp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            />
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/chat_card_book_button"
+        android:layout_width="45dp"
+        android:layout_height="40dp"
+        app:srcCompat="@drawable/switch_image_view"
+        android:layout_gravity="center_vertical"
+        android:tint="@color/white"
+        android:elevation="5dp"
+        />
+
+    <!--Switch
+        android:id="@+id/chat_card_book_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingLeft="3dp"
+        android:paddingRight="5dp"
+        android:paddingStart="3dp"
+        android:paddingEnd="5dp"
+        android:thumbTint="@color/switch_color"
+        android:trackTint="@color/switch_color_track"
+        android:textSize="14sp"
+        android:textColor="@color/colorSecondarytext"
+        android:textStyle="bold"
+        -->
+
+</LinearLayout>
