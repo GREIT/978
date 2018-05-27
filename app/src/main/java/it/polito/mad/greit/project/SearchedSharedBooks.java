@@ -85,15 +85,15 @@ public class SearchedSharedBooks extends AppCompatActivity {
   
   private RecyclerView mResultList;
   private DatabaseReference mSharedBookDb;
-
+  
   private FusedLocationProviderClient mFusedLocationClient;
   private static String currentLocation;
   private static double distanceKm;
-
+  
   private SortedMap<Double, Integer> distances;
   private ArrayList<Integer> positions;
-
-
+  
+  
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -133,25 +133,25 @@ public class SearchedSharedBooks extends AppCompatActivity {
     
     mSharedBookDb = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS");
     mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
+    
     // Recupero posizione attuale
     if (ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.FINE_LOCATION_PERMISSION);
+      ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.FINE_LOCATION_PERMISSION);
     else {
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            currentLocation = location.getLatitude() + ";" + location.getLongitude();
-                        } else {
-                            currentLocation = getIntent().getStringExtra("userLocation");
-                            Toast.makeText(SearchedSharedBooks.this, "Location not found, profile location set.", Toast.LENGTH_SHORT).show();
-                        }
-                        sharedBookShow(book.getISBN());
-                    }
-                });
+      mFusedLocationClient.getLastLocation()
+          .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+              // Got last known location. In some rare situations this can be null.
+              if (location != null) {
+                currentLocation = location.getLatitude() + ";" + location.getLongitude();
+              } else {
+                currentLocation = getIntent().getStringExtra("userLocation");
+                Toast.makeText(SearchedSharedBooks.this, "Location not found, profile location set.", Toast.LENGTH_SHORT).show();
+              }
+              sharedBookShow(book.getISBN());
+            }
+          });
     }
   }
   
@@ -179,27 +179,27 @@ public class SearchedSharedBooks extends AppCompatActivity {
         SharedBookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
         return viewHolder;
       }
-
+      
       @Override
       public void onDataChanged() {
         super.onDataChanged();
-
+        
         distances = new TreeMap<>();
         positions = new ArrayList<>();
-
-        for (int i=1; i <= getItemCount(); i++)
-          distances.put(Utils.calcDistance(mSnapshots.getObject(i-1).getCoordinates(), currentLocation) / 1000, i-1);
+        
+        for (int i = 1; i <= getItemCount(); i++)
+          distances.put(Utils.calcDistance(mSnapshots.getObject(i - 1).getCoordinates(), currentLocation) / 1000, i - 1);
         for (Map.Entry<Double, Integer> entry : distances.entrySet())
           positions.add(entry.getValue());
       }
-
+      
       @Override
       public SharedBook getItem(int position) {
         return (SharedBook) mSnapshots.getObject(positions.get(position));
       }
-
+      
     };
-
+    
     mResultList.setAdapter(firebaseRecyclerAdapter);
   }
   
@@ -221,46 +221,50 @@ public class SearchedSharedBooks extends AppCompatActivity {
     }
     
     public void setDetails(Context ctx, SharedBook model, android.support.v4.app.FragmentManager fm) {
-      ImageView book_image = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
+      ImageView bookImage = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
       ImageView contactForLoan = (ImageView) mView.findViewById(R.id.shared_book_card_icon1);
       ImageView ownerInfo = (ImageView) mView.findViewById(R.id.shared_book_card_icon2);
       ImageView distance = (ImageView) mView.findViewById(R.id.shared_book_card_icon3);
-
-      book_image.setOnClickListener(v -> {
+      TextView bookTitle = (TextView) mView.findViewById(R.id.shared_book_card_title);
+      
+      bookTitle.setText(model.getTitle());
+      
+      bookImage.setOnClickListener(v -> {
         Bundle bundle = new Bundle();
         bundle.putSerializable("book", model);
         bundle.putSerializable("currentLocation", currentLocation);
-
+        
         SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
         dialogFragment.setArguments(bundle);
         dialogFragment.show(fm, "dialog");
       });
-
-      if (model.getOwnerUsername().equals(ctx.getSharedPreferences("sharedpref",Context.MODE_PRIVATE).getString("username",null))) {
+      
+      if (model.getOwnerUsername().equals(ctx.getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username", null))) {
         contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
       } else {
         contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
         contactForLoan.setOnClickListener(v -> Chat.openchat(ctx, model));
       }
-
+      
+      
       distanceKm = Utils.calcDistance(model.getCoordinates(), currentLocation) / 1000;
       if (distanceKm > 20)
-          distance.setImageResource(R.mipmap.ic_maggiore_20);
+        distance.setImageResource(R.mipmap.ic_maggiore_20);
       else if (distanceKm < 20 && distanceKm > 5)
-          distance.setImageResource(R.mipmap.ic_minore_20);
+        distance.setImageResource(R.mipmap.ic_minore_20);
       else
-          distance.setImageResource(R.mipmap.ic_minore_5);
-
+        distance.setImageResource(R.mipmap.ic_minore_5);
+      
       ownerInfo.setImageResource(R.drawable.ic_person_white_48dp);
       ownerInfo.setOnClickListener(v -> {
         Intent I = new Intent(ctx, OtherProfile.class);
         I.putExtra("uid", model.getOwnerUid());
         ctx.startActivity(I);
       });
-
-
+      
+      
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
-
+      
       sr.getBytes(5 * Constants.SIZE).addOnSuccessListener(bytes -> {
         Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -271,14 +275,14 @@ public class SearchedSharedBooks extends AppCompatActivity {
             .apply(new RequestOptions()
                 .placeholder(R.drawable.ic_book_blue_grey_900_48dp)
                 .fitCenter())
-            .into(book_image);
+            .into(bookImage);
       }).addOnFailureListener(e ->
           Glide.with(ctx)
               .load("")
               .apply(new RequestOptions()
                   .error(R.drawable.ic_book_blue_grey_900_48dp)
                   .fitCenter())
-              .into(book_image)
+              .into(bookImage)
       );
     }
   }

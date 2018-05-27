@@ -23,7 +23,8 @@ class OtherProfile : AppCompatActivity() {
   private val TAG = "Other Profile"
 
   private var mReviewsList: RecyclerView? = null
-  private var mDatabase: DatabaseReference? = null
+  private var mDatabaseUsers: DatabaseReference? = null
+  private var mDatabaseUserReviews: DatabaseReference? = null
   private var mAdapter: FirebaseRecyclerAdapter<Review, ReviewViewHolder>? = null
   private var tw: TextView? = null
   private var rb: RatingBar? = null
@@ -45,11 +46,11 @@ class OtherProfile : AppCompatActivity() {
 
     val uid: String = intent.getStringExtra("uid")
 
-    mDatabase = FirebaseDatabase.getInstance().getReference("USERS").child(uid)
+    mDatabaseUsers = FirebaseDatabase.getInstance().getReference("USERS").child(uid)
 
     val sr: StorageReference? = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + uid + ".jpg")
 
-    mDatabase!!.addListenerForSingleValueEvent(object : ValueEventListener {
+    mDatabaseUsers!!.addListenerForSingleValueEvent(object : ValueEventListener {
       override fun onDataChange(dataSnapshot: DataSnapshot) {
         val user = dataSnapshot.getValue(Profile::class.java)
 
@@ -83,7 +84,7 @@ class OtherProfile : AppCompatActivity() {
       }
     })
 
-    mDatabase = FirebaseDatabase.getInstance().getReference("USER_REVIEWS")
+    mDatabaseUserReviews = FirebaseDatabase.getInstance().getReference("USER_REVIEWS")
     setupReviewsList(uid)
   }
 
@@ -93,7 +94,7 @@ class OtherProfile : AppCompatActivity() {
     mReviewsList!!.setHasFixedSize(true)
     mReviewsList!!.layoutManager = layoutManager
 
-    val query = mDatabase!!.orderByChild("uid").equalTo(uid)
+    val query = mDatabaseUserReviews!!.orderByChild("uid").equalTo(uid)
 
     mAdapter = object : FirebaseRecyclerAdapter<Review, ReviewViewHolder>(
         Review::class.java, R.layout.review_card, ReviewViewHolder::class.java, query) {
