@@ -153,7 +153,7 @@ public class ChatListAdapter extends RecyclerView.Adapter {
 
         void bind(Chat chat) {
             usernameText.setText(chat.getUsername());
-            titleText.setText(chat.getBookTitle());
+            titleText.setText(chat.getBookTitle() + " - " + chat.getBookAuthor() );
             // Format the stored timestamp into a readable String using method.
             lastText.setText(chat.getLastMsg());
             dateText.setText(ChatListAdapter.formatDateTime(chat.getTimestamp()));

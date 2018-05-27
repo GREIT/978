@@ -16,6 +16,17 @@
     <!-- Idea di mettere qui linear con nome libro e toggle
         se prestito o meno con background che cambia in base al toggle -->
 
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/cardview_light_background"
+        android:id="@+id/chat_card_book_layout">
+
+
+
+    </android.support.v7.widget.CardView>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/chat_message_list"
         android:layout_width="match_parent"
@@ -56,7 +67,7 @@
         <ImageButton
             android:id="@+id/chat_send_button"
             app:srcCompat="@drawable/ic_send_black_24dp"
-            android:textSize="14dp"
+            android:background="@color/white"
             android:clickable="true"
             android:focusable="true"
             android:layout_width="64dp"

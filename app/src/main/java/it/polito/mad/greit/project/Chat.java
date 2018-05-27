@@ -34,7 +34,8 @@ public class Chat implements Serializable, Comparable<Chat>{
     private String lastMsg;
     private int unreadCount;
     private long timestamp;
-    //private boolean isnew;
+    private String bookAuthor;
+    private boolean mine; //to detect if book is mine or not
 
     public String getChatID() {
         return chatID;
@@ -100,13 +101,21 @@ public class Chat implements Serializable, Comparable<Chat>{
         this.timestamp = timestamp;
     }
 
-    /*public void setIsnew(Boolean b){
-        this.isnew = b;
+    public String getBookAuthor() {
+        return bookAuthor;
     }
 
-    public Boolean getIsnew(){
-        return this.isnew;
-    }*/
+    public void setBookAuthor(String bookAuthor) {
+        this.bookAuthor = bookAuthor;
+    }
+
+    public boolean isMine() {
+        return mine;
+    }
+
+    public void setMine(boolean mine) {
+        this.mine = mine;
+    }
 
     @Override
     public int compareTo(Chat o){
@@ -131,111 +140,10 @@ public class Chat implements Serializable, Comparable<Chat>{
         res.setBookTitle(c.getBookTitle());
         res.setChatID(c.getChatID());
         res.setBookID(c.getBookID());
-        //res.setIsnew(c.getIsnew());
+        res.setBookAuthor(c.getBookAuthor());
+        res.setMine(c.isMine());
         return res;
     }
-
-    /*public static void openchat(Context context, SharedBook sb){
-        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference dbref = db.getReference("USER_CHATS").child(fbu.getUid());
-        dbref.runTransaction(new Transaction.Handler() {
-            @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                Boolean chat_exists = false;
-                try {
-                    for (MutableData ds : mutableData.getChildren()) {
-                        Chat c = ds.getValue(Chat.class);
-                        if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwnerUid())){
-                            //chat already present
-                            Intent intent = new Intent(context,ChatActivity.class);
-                            intent.putExtra("chat",c);
-                            context.startActivity(intent);
-                            chat_exists = true;
-                        }
-                    }
-
-                    if(!chat_exists){
-                        Chat c = new Chat();
-                        //getOwnerUsername(db,sb.getOwnerUid(),c);
-                        db.getReference("USERS").child(sb.getOwnerUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                Profile p = dataSnapshot.getValue(Profile.class);
-                                //c.setIsnew(true);
-                                c.setOwnerUsername(p.getOwnerUsername());
-                                c.setBookID(sb.getKey());
-                                c.setUserID(sb.getOwnerUid());
-                                c.setBookTitle(sb.getTitle());
-
-                                DatabaseReference user_mess = db.getReference("USER_MESSAGES");
-                                String chatid = user_mess.push().getKey();
-
-                                //SEND pre formatted message at startup
-                                //get msg parameters
-                                long time = System.currentTimeMillis()/1000L;
-                                String msg = context.getResources().getString(R.string.hello) + " " + p.getOwnerUsername()
-                                        +"!. " + context.getResources().getString(R.string.can_i_have) + " " + sb.getTitle() + "?";
-                                //send message parameters and put it into the chat newly created
-                                Message tosend = new Message(time,
-                                        FirebaseAuth.getInstance().getCurrentUser().getUid(),
-                                        FirebaseAuth.getInstance().getCurrentUser().getDisplayName(),msg);
-
-                                c.setTimestamp(time);
-                                c.setUnreadCount(1);
-                                c.setLastMsg(msg);
-
-                                //save the chatID and deploy the user_chat entry
-                                c.setChatID(chatid);
-                                //set the chat for the owner
-                                dbref.child(chatid).setValue(c);
-
-                                //prepare for making the other UserChat and create it
-                                Intent intent = new Intent(context,ChatActivity.class);
-
-                                intent.putExtra("chat",Chat.copy(c));
-                                intent.putExtra("new", true);
-                                intent.putExtra("msg", tosend);
-                                //second user
-                                db.getReference("USERS").child(fbu.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        Profile p = dataSnapshot.getValue(Profile.class);
-                                        DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwnerUid());
-                                        c.setUserID(fbu.getUid());
-                                        c.setOwnerUsername(p.getOwnerUsername());
-                                        //c.setIsnew(false);
-                                        //c.setOwnerUsername(fbu.getDisplayName());
-                                        //c.setOwnerUsername(getOwnerUsername(db,fbu.getUid(),c));
-                                        ref_second_user.child(chatid).setValue(c);
-                                        context.startActivity(intent);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-
-            }
-        });
-    }*/
 
     public static void openchat(Context context, SharedBook sb){
         FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
@@ -263,6 +171,8 @@ public class Chat implements Serializable, Comparable<Chat>{
                         c.setBookID(sb.getKey());
                         c.setUserID(sb.getOwnerUid());
                         c.setBookTitle(sb.getTitle());
+                        c.setBookAuthor(sb.getAuthors().values().iterator().next());
+                        c.setMine(false);
 
                         //unique id for chat
                         DatabaseReference user_mess = db.getReference("USER_MESSAGES");
@@ -284,7 +194,8 @@ public class Chat implements Serializable, Comparable<Chat>{
 
                         DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwnerUid());
                         c.setUserID(fbu.getUid());
-                        c.setUsername(context.getSharedPreferences("sharedpref",Context.MODE_PRIVATE).getString("username",null));
+                        c.setMine(true);
+                        c.setUsername(Profile.getCurrentUsername(context));
                         ref_second_user.child(chatid).setValue(c);
                         context.startActivity(intent);
                         }
@@ -301,14 +212,14 @@ public class Chat implements Serializable, Comparable<Chat>{
         });
     }
 
-    public static void sendnotification(String sender_username,Chat c,Boolean isNew){
+    public static void sendnotification(String sender_username,String chatId,String receiver_Uid,String type){
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference dbref = db.getReference("TOKENS").child(c.getUserID());
+        DatabaseReference dbref = db.getReference("TOKENS").child(receiver_Uid);
         dbref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String token = dataSnapshot.getValue(String.class);
-                new PostNotify().execute(token,sender_username,c.getChatID(),String.valueOf(isNew));
+                new PostNotify().execute(token,sender_username,chatId,type);
             }
 
             @Override
@@ -334,9 +245,9 @@ public class Chat implements Serializable, Comparable<Chat>{
                 jsonObject.put("to",strings[0]);
 
                 JSONObject data = new JSONObject();
-                data.put("username",strings[1]);
-                data.put("chatID",strings[2]);
-                data.put("isNew",strings[3]);
+                data.put("username", strings[1]);
+                data.put("chatID", strings[2]);
+                data.put("type", strings[3]);
 
                 jsonObject.put("data",data);
 

@@ -43,7 +43,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d("FirebaseMessagingServic", "Message data payload: " + remoteMessage.getData());
             String from = remoteMessage.getData().get("username");
             String chatID = remoteMessage.getData().get("chatID");
-            String isNew = remoteMessage.getData().get("isNew");
+            String type = remoteMessage.getData().get("type");
             FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
             FirebaseDatabase db = FirebaseDatabase.getInstance();
             DatabaseReference dbref = db.getReference("USER_CHATS").child(fbu.getUid()).child(chatID);
@@ -53,7 +53,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     Chat c = dataSnapshot.getValue(Chat.class);
                     //sendNotification("Received " + c.getUnreadCount() + " new messages from " + from
                      //       + " for the book " + c.getBookTitle(), );
-                    sendNotification(from,c,Boolean.getBoolean(isNew));
+                    sendNotification(from,c,type);
                 }
 
                 @Override
@@ -72,22 +72,26 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // message, here is where that should be initiated. See sendNotification method below.
     }
 
-    private void sendNotification(String from,Chat c,Boolean isNew) {
+    private void sendNotification(String from,Chat c,String type) {
         Intent intent = new Intent(this, ChatActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("chat",c);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, from.hashCode(), intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         //String messageBody = "Received " + c.getUnreadCount() + " new messages from " + from
           //     + " for the book " + c.getBookTitle();
         String messageBody = null;
-        if(isNew){
-            messageBody = getResources().getString(R.string.default_msg,from,c.getBookTitle());
+        if(type.equals("message")){
+            messageBody = getResources().getString(R.string.incoming,from,c.getBookTitle());
+        }
+        else if(type.equals("transaction")){
+            messageBody = getResources().getString(R.string.lock_event,from,c.getBookTitle());
         }
         else{
-            messageBody = getResources().getString(R.string.incoming,c.getUsername(),c.getBookTitle());
+            messageBody = getResources().getString(R.string.new_request,from,c.getBookTitle());
         }
+
         String channelId = "project";
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
@@ -110,7 +114,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(from.hashCode(), notificationBuilder.build());
         Log.d("FirebaseMessagingServic", "sendNotification: ");
     }
 }

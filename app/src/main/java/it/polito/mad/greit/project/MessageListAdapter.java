@@ -22,6 +22,8 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     FirebaseUser user;
     private static final int VIEW_TYPE_MESSAGE_SENT = 1;
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
+    private static final int VIEW_TYPE_MESSAGE_SYSTEM = 3;
+    private static final String SYSTEM = new String("system");
 
     public MessageListAdapter(Context context, List<Message> messageList) {
         mContext = context;
@@ -45,8 +47,11 @@ public class MessageListAdapter extends RecyclerView.Adapter {
                     .inflate(R.layout.item_message_received, parent, false);
             return new ReceivedMessageHolder(view);
         }
-
-        return null;
+        else {
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_system, parent, false);
+            return new SystemMessageHolder(view);
+        }
     }
 
     // Passes the message object to a ViewHolder so that the contents can be bound to UI.
@@ -59,6 +64,9 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         switch (holder.getItemViewType()) {
             case VIEW_TYPE_MESSAGE_SENT:
                 ((SentMessageHolder) holder).bind(message);
+                break;
+            case VIEW_TYPE_MESSAGE_SYSTEM:
+                ((SystemMessageHolder) holder).bind(message);
                 break;
             case VIEW_TYPE_MESSAGE_RECEIVED:
                 ((ReceivedMessageHolder) holder).bind(message);
@@ -79,7 +87,12 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         if (message.getSenderID().equals(user.getUid())) {
             // If the current user is the sender of the message
             return VIEW_TYPE_MESSAGE_SENT;
-        } else {
+        }
+        else if (message.getSenderID().equals(SYSTEM)) {
+            // If the current user is the sender of the message
+            return VIEW_TYPE_MESSAGE_SYSTEM;
+        }
+        else {
             // If some other user sent the message
             return VIEW_TYPE_MESSAGE_RECEIVED;
         }
@@ -99,6 +112,22 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             messageText.setText(message.getMessage());
             // Format the stored timestamp into a readable String using method.
             timeText.setText(MessageListAdapter.formatDateTime(message.getTimestamp()));
+        }
+    }
+
+    private class SystemMessageHolder extends RecyclerView.ViewHolder {
+        TextView messageText, timeText, nameText;
+
+        SystemMessageHolder(View itemView) {
+            super(itemView);
+            messageText = (TextView) itemView.findViewById(R.id.text_message_body);
+            //timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+        }
+
+        void bind(Message message) {
+            messageText.setText(message.getMessage());
+            // Format the stored timestamp into a readable String using method.
+            //timeText.setText(MessageListAdapter.formatDateTime(message.getTimestamp()));
         }
     }
 

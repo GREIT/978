@@ -1,5 +1,7 @@
 package it.polito.mad.greit.project;
 
+import android.content.Context;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.io.Serializable;
@@ -63,5 +65,10 @@ public class Profile implements Serializable{
  // public String getPhotoUri(){return photoUri; }
   
   //public void setPhotoUri(String photoUri) {this.photoUri = photoUri;}
-  
+
+
+  public static String getCurrentUsername(Context context){
+    return context.getSharedPreferences("sharedpref",
+            Context.MODE_PRIVATE).getString("username",null);
+  }
 }
