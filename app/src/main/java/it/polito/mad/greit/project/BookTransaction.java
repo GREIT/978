@@ -16,49 +16,49 @@ import java.io.Serializable;
 public class BookTransaction implements Serializable{
 
     private String chatId;
-    private String user1Uid;
-    private String user1Username;
-    private String user2Uid;
-    private String user2Username;
+    private String ownerUid;
+    private String ownerUsername;
+    private String receiverUid;
+    private String receiverUsername;
     private String bookId;
     private String bookTitle;
-    private Boolean user1Checked;
-    private Boolean user2Checked;
+    private Boolean ownerChecked;
+    private Boolean receiverChecked;
     private long dateStart;
     private long dateEnd;
     //if type is false, transaction is in borrow phase, if true book is about to be returned back
     private Boolean type;
 
-    public String getUser1Uid() {
-        return user1Uid;
+    public String getOwnerUid() {
+        return ownerUid;
     }
 
-    public void setUser1Uid(String user1Uid) {
-        this.user1Uid = user1Uid;
+    public void setOwnerUid(String ownerUid) {
+        this.ownerUid = ownerUid;
     }
 
-    public String getUser1Username() {
-        return user1Username;
+    public String getOwnerUsername() {
+        return ownerUsername;
     }
 
-    public void setUser1Username(String user1Username) {
-        this.user1Username = user1Username;
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
     }
 
-    public String getUser2Uid() {
-        return user2Uid;
+    public String getReceiverUid() {
+        return receiverUid;
     }
 
-    public void setUser2Uid(String user2Uid) {
-        this.user2Uid = user2Uid;
+    public void setReceiverUid(String receiverUid) {
+        this.receiverUid = receiverUid;
     }
 
-    public String getUser2Username() {
-        return user2Username;
+    public String getReceiverUsername() {
+        return receiverUsername;
     }
 
-    public void setUser2Username(String user2Username) {
-        this.user2Username = user2Username;
+    public void setReceiverUsername(String receiverUsername) {
+        this.receiverUsername = receiverUsername;
     }
 
     public String getBookId() {
@@ -101,20 +101,20 @@ public class BookTransaction implements Serializable{
         this.chatId = chatId;
     }
 
-    public Boolean getUser1Checked() {
-        return user1Checked;
+    public Boolean getOwnerChecked() {
+        return ownerChecked;
     }
 
-    public void setUser1Checked(Boolean user1Checked) {
-        this.user1Checked = user1Checked;
+    public void setOwnerChecked(Boolean ownerChecked) {
+        this.ownerChecked = ownerChecked;
     }
 
-    public Boolean getUser2Checked() {
-        return user2Checked;
+    public Boolean getReceiverChecked() {
+        return receiverChecked;
     }
 
-    public void setUser2Checked(Boolean user2Checked) {
-        this.user2Checked = user2Checked;
+    public void setReceiverChecked(Boolean receiverChecked) {
+        this.receiverChecked = receiverChecked;
     }
 
     public Boolean getType() {
@@ -130,31 +130,46 @@ public class BookTransaction implements Serializable{
         DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(c.getChatID());
         BookTransaction bt = new BookTransaction();
         dbref.runTransaction(new com.google.firebase.database.Transaction.Handler() {
+            boolean isNew = false;
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 if(mutableData.getValue() == null){
                     bt.bookId = c.getBookID();
                     bt.bookTitle = c.getBookTitle();
                     bt.chatId = c.getChatID();
-                    bt.user1Uid = fbu.getUid();
-                    bt.user1Username = username;
-                    bt.user2Uid = c.getUserID();
-                    bt.user2Username = c.getUsername();
+                    if(c.isMine()) { //I'm the owner
+                        bt.ownerUid = fbu.getUid();
+                        bt.ownerUsername = username;
+                        bt.receiverUid = c.getUserID();
+                        bt.receiverUsername = c.getUsername();
+                        bt.ownerChecked = true;
+                        bt.receiverChecked = false;
+                    }
+                    else { //I'm not the owner
+                        bt.receiverUid = fbu.getUid();
+                        bt.receiverUsername = username;
+                        bt.ownerUid = c.getUserID();
+                        bt.ownerUsername = c.getUsername();
+                        bt.ownerChecked = false;
+                        bt.receiverChecked = true;
+                    }
                     bt.dateStart = System.currentTimeMillis()/1000L;
                     bt.dateEnd = 0;
-                    bt.user1Checked = true;
-                    bt.user2Checked = false;
-                    bt.type = false;
+                    bt.type = false; //Means borrow phase
                     mutableData.setValue(bt);
+                    isNew = true;
                     return Transaction.success(mutableData);
                 }
-                else
+                else {
+                    isNew = false;
                     return Transaction.success(mutableData);
+                }
             }
 
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                if(b){
+                if(b && !isNew){
+                    isNew = false;
                     updateTransaction(c.getChatID());
                 }
             }
@@ -172,11 +187,11 @@ public class BookTransaction implements Serializable{
                 }
                 else{
                     BookTransaction bt = mutableData.getValue(BookTransaction.class);
-                    if(fbu.getUid().equals(bt.getUser1Uid())){
-                        bt.user1Checked = !bt.user1Checked;
+                    if(fbu.getUid().equals(bt.getOwnerUid())){
+                        bt.ownerChecked = !bt.ownerChecked;
                     }
                     else{
-                        bt.user2Checked = !bt.user2Checked;
+                        bt.receiverChecked = !bt.receiverChecked;
                     }
                     mutableData.setValue(bt);
                     return Transaction.success(mutableData);
@@ -187,7 +202,7 @@ public class BookTransaction implements Serializable{
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
                 if(b){
                     BookTransaction bt = dataSnapshot.getValue(BookTransaction.class);
-                    if(bt.user1Checked && bt.user2Checked){
+                    if(bt.ownerChecked && bt.receiverChecked){
                         closeTransaction(System.currentTimeMillis()/1000L,chatId);
                     }
                 }
@@ -207,8 +222,8 @@ public class BookTransaction implements Serializable{
                 else{
                     BookTransaction bt = mutableData.getValue(BookTransaction.class);
                     bt.type = !bt.type;
-                    bt.user1Checked = false;
-                    bt.user2Checked = false;
+                    bt.ownerChecked = false;
+                    bt.receiverChecked = false;
                     if(!bt.type){
                         bt.dateEnd = dateEnd;
                     }
@@ -223,11 +238,11 @@ public class BookTransaction implements Serializable{
                 //send notification
                 if(b){
                     BookTransaction bt = dataSnapshot.getValue(BookTransaction.class);
-                    if(fbu.getUid().equals(bt.getUser1Uid())){
-                        Chat.sendnotification(bt.user1Username,chatId,bt.user2Uid,"transaction");
+                    if(fbu.getUid().equals(bt.getOwnerUid())){
+                        Chat.sendnotification(bt.ownerUsername,chatId,bt.receiverUid,"transaction");
                     }
                     else{
-                        Chat.sendnotification(bt.user2Username,chatId,bt.user1Uid,"transaction");
+                        Chat.sendnotification(bt.receiverUsername,chatId,bt.ownerUid,"transaction");
                     }
                     updateSharedBook(bt);
                 }
@@ -247,24 +262,24 @@ public class BookTransaction implements Serializable{
                     sb.setBorrowToUid("");
                     sb.setBorrowToUsername("");
                 }else {
-                    if (fbu.getUid().equals(bt.getUser1Uid())) {
-                        if (bt.getUser1Uid().equals(sb.getOwnerUid())) {
-                            sb.setBorrowToUid(bt.user2Uid);
-                            sb.setBorrowToUsername(bt.user2Username);
+                    if (fbu.getUid().equals(bt.getOwnerUid())) {
+                        if (bt.getOwnerUid().equals(sb.getOwnerUid())) {
+                            sb.setBorrowToUid(bt.receiverUid);
+                            sb.setBorrowToUsername(bt.receiverUsername);
                             sb.setShared(true);
                         } else {
-                            sb.setBorrowToUid(bt.user1Uid);
-                            sb.setBorrowToUsername(bt.user1Username);
+                            sb.setBorrowToUid(bt.ownerUid);
+                            sb.setBorrowToUsername(bt.ownerUsername);
                             sb.setShared(true);
                         }
                     } else {
-                        if (bt.getUser2Uid().equals(sb.getOwnerUid())) {
-                            sb.setBorrowToUid(bt.user1Uid);
-                            sb.setBorrowToUsername(bt.user1Username);
+                        if (bt.getReceiverUid().equals(sb.getOwnerUid())) {
+                            sb.setBorrowToUid(bt.ownerUid);
+                            sb.setBorrowToUsername(bt.ownerUsername);
                             sb.setShared(true);
                         } else {
-                            sb.setBorrowToUid(bt.user2Uid);
-                            sb.setBorrowToUsername(bt.user2Username);
+                            sb.setBorrowToUid(bt.receiverUid);
+                            sb.setBorrowToUsername(bt.receiverUsername);
                             sb.setShared(true);
                         }
 

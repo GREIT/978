@@ -2,6 +2,9 @@
   <string name="app_name">Project</string>
   <string name="title_activity_main">Home</string>
 
+  //Misc
+  <string name="yes">Yes</string>
+
   // Main activity
   <string name="search_text_main">Search books by</string>
   <string name="search_field">Search here</string>
@@ -98,6 +101,11 @@
   <string name="input">Insert here...</string>
   <string name="free">Free</string>
   <string name="borrowed">Borrowed</string>
+  <string name="alert_message_chat_lock">"Are you sure you want to borrow this book?"</string>
+  <string name="alert_message_chat_unlock">"Are you sure you want to conclude the loan?"</string>
+  <string name="alert_title_chat_lock">"Borrow"</string>
+  <string name="alert_title_chat_unlock">"Conclude"</string>
+
 
   //notifications
   <string name="default_msg">Hello %1$s, can i have the book %2$s ?</string>

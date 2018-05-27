@@ -89,6 +89,10 @@
   <string name="input">Inserisci qui...</string>
   <string name="free">Libero</string>
   <string name="borrowed">Prestato</string>
+  <string name="alert_message_chat_lock">"Sei davvero sicuro di voler prestare questo libro?"</string>
+  <string name="alert_message_chat_unlock">"Sei davvero sicuro di voler terminare il prestito?"</string>
+  <string name="alert_title_chat_lock">"Presta"</string>
+  <string name="alert_title_chat_unlock">"Termina"</string>
 
   //notifications
   <string name="default_msg">Ciao %1$s, posso avere in prestito il libro %2$s ?</string>
