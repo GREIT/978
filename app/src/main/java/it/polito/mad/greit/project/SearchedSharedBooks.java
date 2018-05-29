@@ -134,6 +134,9 @@ public class SearchedSharedBooks extends AppCompatActivity {
     
     mSharedBookDb = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS");
     mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+    distances = new TreeMap<>();
+    positions = new ArrayList<>();
     
     // Recupero posizione attuale
     if (ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -184,9 +187,6 @@ public class SearchedSharedBooks extends AppCompatActivity {
       @Override
       public void onDataChanged() {
         super.onDataChanged();
-        
-        distances = new TreeMap<>();
-        positions = new ArrayList<>();
 
         DecimalFormat df = new DecimalFormat("00000.00");
 
@@ -198,6 +198,8 @@ public class SearchedSharedBooks extends AppCompatActivity {
       
       @Override
       public SharedBook getItem(int position) {
+        if (positions.isEmpty())
+          return super.getItem(position);
         return (SharedBook) mSnapshots.getObject(positions.get(position));
       }
       
