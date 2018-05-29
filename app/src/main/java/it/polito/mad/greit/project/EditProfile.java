@@ -75,6 +75,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -116,7 +117,7 @@ public class EditProfile extends AppCompatActivity {
     t.setTitle(R.string.activity_edit_profile);
     setSupportActionBar(t);
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-    t.setNavigationOnClickListener(v -> RevertInfo());
+    t.setNavigationOnClickListener(v -> onBackPressed());
 
     Setup(b);
 
@@ -130,7 +131,7 @@ public class EditProfile extends AppCompatActivity {
       @Override
       public void onPlaceSelected(Place place) {
         location = place.getAddress().toString();
-        coordinates = place.getLatLng().latitude + "-" + place.getLatLng().longitude;
+        coordinates = place.getLatLng().latitude + ";" + place.getLatLng().longitude;
       }
 
       @Override
@@ -249,7 +250,7 @@ public class EditProfile extends AppCompatActivity {
               @Override
               public void onSuccess(PlaceBufferResponse places) {
                 LatLng coords = places.get(0).getLatLng();
-                coordinates = coords.latitude + "-" + coords.longitude;
+                coordinates = coords.latitude + ";" + coords.longitude;
               }
             });
           }
@@ -288,11 +289,11 @@ public class EditProfile extends AppCompatActivity {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-
     if (R.id.confirm == item.getItemId()) {
       SaveInfo();
       return true;
-    } else return super.onOptionsItemSelected(item);
+    } else
+      return super.onOptionsItemSelected(item);
   }
 
   void Setup(Bundle b) {
@@ -410,6 +411,8 @@ public class EditProfile extends AppCompatActivity {
     DatabaseReference dbref = db.getReference("USERS").child(user.getUid());
     dbref.setValue(profile);
 
+    updateLocation(coordinates, location);
+
     if (this.photo != null) {
       try {
         StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
@@ -423,14 +426,14 @@ public class EditProfile extends AppCompatActivity {
               bm.compress(Bitmap.CompressFormat.JPEG, 85, outs);
               outs.close();
               dialog.dismiss();
-              Intent swap = new Intent(EditProfile.this, ShowProfile.class);
+              Intent swap = new Intent(EditProfile.this, MainActivity.class);
               swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
               startActivity(swap);
             }catch (Exception e){
               if(dialog.isShowing()) {
                 dialog.dismiss();
               }
-                Intent swap = new Intent(EditProfile.this, ShowProfile.class);
+                Intent swap = new Intent(EditProfile.this, MainActivity.class);
                 swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(swap);
             }
@@ -440,7 +443,7 @@ public class EditProfile extends AppCompatActivity {
           public void onFailure(@NonNull Exception exception) {
             exception.printStackTrace();
             dialog.dismiss();
-            Intent swap = new Intent(EditProfile.this, ShowProfile.class);
+            Intent swap = new Intent(EditProfile.this, MainActivity.class);
             swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(swap);
           }
@@ -450,18 +453,11 @@ public class EditProfile extends AppCompatActivity {
       }
     }
     else{
-      Intent swap = new Intent(EditProfile.this, ShowProfile.class);
+      Intent swap = new Intent(EditProfile.this, MainActivity.class);
       swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
       startActivity(swap);
     }
   }
-
-  private void RevertInfo() {
-    Intent swap = new Intent(EditProfile.this, ShowProfile.class);
-    swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    startActivity(swap);
-  }
-
 
   private void UploadPic() {
 
@@ -547,14 +543,14 @@ public class EditProfile extends AppCompatActivity {
       setuplocation();
     }*/
   }
-
+/*
   @Override
   public void onBackPressed() {
     Intent intent = new Intent(EditProfile.this, ShowProfile.class);
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     startActivity(intent);
   }
-
+*/
 
   private void createpic(Bitmap bm) {
 
@@ -584,5 +580,27 @@ public class EditProfile extends AppCompatActivity {
 
   }
 
+  private void updateLocation(String coordinates, String position) {
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    FirebaseDatabase db = FirebaseDatabase.getInstance();
 
+    DatabaseReference mSharedBookDb = db.getReference("SHARED_BOOKS");
+
+    mSharedBookDb.orderByChild("ownerUid").equalTo(user.getUid()).addValueEventListener(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+          SharedBook tmpBook = ds.getValue(SharedBook.class);
+          tmpBook.setCoordinates(coordinates);
+          tmpBook.setPosition(location);
+          db.getReference("SHARED_BOOKS").child(tmpBook.getKey()).setValue(tmpBook);
+        }
+      }
+
+      @Override
+      public void onCancelled(DatabaseError databaseError) {
+
+      }
+    });
+  }
 }

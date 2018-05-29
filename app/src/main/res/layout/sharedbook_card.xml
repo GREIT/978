@@ -19,19 +19,18 @@
 
       <LinearLayout
         android:layout_width="100dp"
-        android:layout_height="match_parent"
+        android:layout_height="150dp"
         android:orientation="vertical">
 
         <LinearLayout
           android:layout_width="match_parent"
-          android:layout_height="match_parent"
+          android:layout_height="100dp"
           android:orientation="vertical">
 
           <ImageView
             android:id="@+id/shared_book_card_thumbnail"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:layout_marginVertical="25dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="fitXY" />
 
@@ -39,10 +38,25 @@
             android:id="@+id/overlay_shared_book_card_thumbnail"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:layout_marginVertical="25dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="fitXY" />
 
+        </LinearLayout>
+
+        <LinearLayout
+          android:layout_width="100dp"
+          android:layout_height="50dp"
+          android:orientation="vertical">
+
+          <TextView
+            android:id="@+id/shared_book_card_title"
+            android:textColor="@color/colorPrimaryText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginHorizontal="3dp"
+            android:maxLines="2"
+            android:ellipsize="end"/>
         </LinearLayout>
 
       </LinearLayout>
@@ -57,21 +71,21 @@
         android:paddingHorizontal="10dp">
 
         <ImageView
-          android:id="@+id/shared_book_card_contactForLoan"
+          android:id="@+id/shared_book_card_icon1"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentTop="true"
           android:elevation="3dp" />
 
         <ImageView
-          android:id="@+id/shared_book_card_moreInfo"
+          android:id="@+id/shared_book_card_icon2"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginTop="35dp"
           android:elevation="3dp" />
 
         <ImageView
-          android:id="@+id/shared_book_card_distance"
+          android:id="@+id/shared_book_card_icon3"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentBottom="true"

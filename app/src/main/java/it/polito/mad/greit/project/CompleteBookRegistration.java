@@ -177,7 +177,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
       
       String[] tagString = tags.getText().toString().toLowerCase().replaceAll("[\\/\\#\\.\\/\\$\\[]", "").split(",");
       
-      sb.setAddedOn(Calendar.getInstance().getTime().toString());
+      sb.setAddedOn(System.currentTimeMillis() / 1000L);
       
       sb.setOwnerUid(FirebaseAuth.getInstance().getCurrentUser().getUid());
       
@@ -188,7 +188,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
   
       FirebaseDatabase dbU = FirebaseDatabase.getInstance();
-      DatabaseReference dbrefU = db.getReference("USERS").child(user.getUid());
+      DatabaseReference dbrefU = dbU.getReference("USERS").child(user.getUid());
   
       dbrefU.addListenerForSingleValueEvent(new ValueEventListener() {
         @Override

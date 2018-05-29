@@ -1,12 +1,14 @@
 package it.polito.mad.greit.project;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Book implements Serializable {
+public class Book implements Serializable, Comparable {
   private String ISBN;
   private String title;
   private Map<String, String> authors;
@@ -92,5 +94,10 @@ public class Book implements Serializable {
 
   public void setTags(Map<String, String> tags) {
     this.tags = tags;
+  }
+  
+  @Override
+  public int compareTo(@NonNull Object o) {
+    return this.getBooksOnLoan() - ((Book) o).getBooksOnLoan();
   }
 }

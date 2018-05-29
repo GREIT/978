@@ -149,12 +149,12 @@ public class Chat implements Serializable, Comparable<Chat>{
         FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference dbref = db.getReference("USER_CHATS").child(fbu.getUid());
-        dbref.runTransaction(new Transaction.Handler() {
+        dbref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 Boolean chat_exists = false;
                 try {
-                    for (MutableData ds : mutableData.getChildren()) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         Chat c = ds.getValue(Chat.class);
                         if(c.getBookID().equals(sb.getKey()) && c.getUserID().equals(sb.getOwnerUid())){
                             //chat already present
@@ -198,15 +198,14 @@ public class Chat implements Serializable, Comparable<Chat>{
                         c.setUsername(Profile.getCurrentUsername(context));
                         ref_second_user.child(chatid).setValue(c);
                         context.startActivity(intent);
-                        }
-                    }catch (Exception e){
+                    }
+                }catch (Exception e){
                     e.printStackTrace();
                 }
-                return Transaction.success(mutableData);
             }
 
             @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });

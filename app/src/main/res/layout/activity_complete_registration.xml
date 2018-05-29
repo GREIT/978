@@ -22,7 +22,7 @@ tools:context=".ShareNewBook">
     android:text="@string/activity_complete_profile"
     android:textColor="@color/white"
     android:textSize="45sp"
-    android:textStyle="normal" />
+    android:textStyle="bold" />
 
 
   <android.support.design.widget.TextInputLayout

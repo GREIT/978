@@ -105,13 +105,13 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
     });
     
   }
-  
+  /*
   public void onBackPressed() {
     Intent intent = new Intent(this, MainActivity.class);
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     startActivity(intent);
   }
-  
+  */
   @Override
   protected void onStop() {
     super.onStop();
@@ -203,15 +203,6 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
         @Override
         public PlaceholderFragment.SharedBookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
           PlaceholderFragment.SharedBookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
-          
-          viewHolder.setOnClickListener(new SharedBookViewHolder.ClickListener() {
-            @Override
-            public void onItemClick(View view, SharedBook model) {
-            
-      
-            }
-          });
-          
           return viewHolder;
         }
       };
@@ -240,8 +231,11 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
       public void setDetails(Context ctx, SharedBook model, String discriminator) {
         //TextView book_owner = (TextView) mView.findViewById(R.id.shared_book_card_owner);
         ImageView book_image = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
-        ImageView iw1 = (ImageView) mView.findViewById(R.id.shared_book_card_contactForLoan);
-        ImageView iw2 = (ImageView) mView.findViewById(R.id.shared_book_card_moreInfo);
+        ImageView iw1 = (ImageView) mView.findViewById(R.id.shared_book_card_icon1);
+        ImageView iw2 = (ImageView) mView.findViewById(R.id.shared_book_card_icon2);
+        TextView bookTitle = (TextView) mView.findViewById(R.id.shared_book_card_title);
+  
+        bookTitle.setText(model.getTitle());
         
         //book_owner.setText(model.getOwnerUid());
         //book_author.setText(model.getAuthors().keySet().iterator().next());
@@ -268,18 +262,17 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
                 .into(book_image));
         
         if (discriminator.equals("ownerUid")) {
-          iw1.setImageResource(R.drawable.ic_mode_edit_white_48dp);
-          iw1.setOnClickListener(v -> {
+          book_image.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putSerializable("book", model);
-  
+
             SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
             dialogFragment.setArguments(bundle);
             dialogFragment.show(((FragmentActivity) ctx).getSupportFragmentManager(), "dialog");
           });
           
-          iw2.setImageResource(R.drawable.ic_delete_white_48dp);
-          iw2.setOnClickListener(v -> {
+          iw1.setImageResource(R.drawable.ic_delete_white_48dp);
+          iw1.setOnClickListener(v -> {
             new AlertDialog.Builder(ctx)
                 .setTitle("Confirmation needed")
                 .setMessage("Do you really want to delete this book?")
@@ -291,13 +284,17 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
                     DatabaseReference dbref = db.getReference("SHARED_BOOKS/" + model.getKey());
   
                     dbref.removeValue();
+  
+                    dbref = db.getReference("BOOKS/" + model.getISBN());
+  
+                    dbref.child("booksOnLoan").setValue(Integer.valueOf(model.getBooksOnLoan()) - 1);
                     
                     Toast.makeText(ctx, "Book removed from your collection", Toast.LENGTH_SHORT).show();
                   }})
                 .setNegativeButton(android.R.string.no, null).show();
           });
           
-          if (Boolean.valueOf(model.getShared())) {
+          if (model.getShared()) {
             ImageView overlay_book_card = (ImageView) mView.findViewById(R.id.overlay_shared_book_card_thumbnail);
             overlay_book_card.setImageResource(R.drawable.ic_delete_white_48dp);
           }

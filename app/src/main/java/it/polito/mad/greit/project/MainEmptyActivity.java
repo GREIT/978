@@ -14,7 +14,7 @@ public class MainEmptyActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+    FirebaseDatabase.getInstance().setPersistenceEnabled(true);
    
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     Intent intent;
