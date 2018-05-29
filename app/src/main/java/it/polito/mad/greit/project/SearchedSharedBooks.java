@@ -90,7 +90,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
   private static String currentLocation;
   private static double distanceKm;
   
-  private SortedMap<Double, Integer> distances;
+  private SortedMap<String, Integer> distances;
   private ArrayList<Integer> positions;
   
   
@@ -188,8 +188,8 @@ public class SearchedSharedBooks extends AppCompatActivity {
         positions = new ArrayList<>();
         
         for (int i = 1; i <= getItemCount(); i++)
-          distances.put(Utils.calcDistance(mSnapshots.getObject(i - 1).getCoordinates(), currentLocation) / 1000, i - 1);
-        for (Map.Entry<Double, Integer> entry : distances.entrySet())
+          distances.put(Utils.calcDistance(mSnapshots.getObject(i - 1).getCoordinates(), currentLocation)/1000+mSnapshots.getObject(i - 1).getKey(), i - 1);
+        for (Map.Entry<String, Integer> entry : distances.entrySet())
           positions.add(entry.getValue());
       }
       
