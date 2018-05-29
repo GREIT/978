@@ -186,8 +186,6 @@ public class SearchedSharedBooks extends AppCompatActivity {
       
       @Override
       public void onDataChanged() {
-        super.onDataChanged();
-
         DecimalFormat df = new DecimalFormat("00000.00");
 
         for (int i = 1; i <= getItemCount(); i++)
@@ -195,7 +193,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
         for (Map.Entry<String, Integer> entry : distances.entrySet())
           positions.add(entry.getValue());
       }
-      
+
       @Override
       public SharedBook getItem(int position) {
         if (positions.isEmpty())
