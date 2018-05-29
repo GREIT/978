@@ -188,7 +188,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
   
       FirebaseDatabase dbU = FirebaseDatabase.getInstance();
-      DatabaseReference dbrefU = db.getReference("USERS").child(user.getUid());
+      DatabaseReference dbrefU = dbU.getReference("USERS").child(user.getUid());
   
       dbrefU.addListenerForSingleValueEvent(new ValueEventListener() {
         @Override
