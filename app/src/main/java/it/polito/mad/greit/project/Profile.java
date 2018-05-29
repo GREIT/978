@@ -14,6 +14,8 @@ public class Profile implements Serializable{
   private String location;
   private String coordinates;
   private String bio;
+  private Integer totReviewsReceived;
+  private Float totScoringReviews;
   //private String photoUri;
   
   public Profile() {}
@@ -62,7 +64,23 @@ public class Profile implements Serializable{
 
   public String getCoordinates(){ return this.coordinates; }
   
- // public String getPhotoUri(){return photoUri; }
+  public Integer getTotReviewsReceived() {
+    return totReviewsReceived;
+  }
+  
+  public void setTotReviewsReceived(Integer totReviewsReceived) {
+    this.totReviewsReceived = totReviewsReceived;
+  }
+  
+  public Float getTotScoringReviews() {
+    return totScoringReviews;
+  }
+  
+  public void setTotScoringReviews(Float totScoringReviews) {
+    this.totScoringReviews = totScoringReviews;
+  }
+  
+  // public String getPhotoUri(){return photoUri; }
   
   //public void setPhotoUri(String photoUri) {this.photoUri = photoUri;}
 

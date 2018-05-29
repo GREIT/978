@@ -11,25 +11,31 @@ import com.firebase.ui.database.ChangeEventListener
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Transaction
 
 import kotlinx.android.synthetic.main.activity_user_history.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 class UserHistory : AppCompatActivity() {
   private val TAG = "Transaction History"
 
   private var mTransactionList: RecyclerView? = null
   private var mDatabaseTransactions: DatabaseReference? = null
-  private var mAdapter: FirebaseRecyclerAdapter<Review, ReviewViewHolder>? = null
+  private var mAdapter: FirebaseRecyclerAdapter<BookTransaction, TransactionViewHolder>? = null
   private var tw: TextView? = null
   private var rb: RatingBar? = null
   private var iw: ImageView? = null
   private var tb: android.support.v7.widget.Toolbar? = null
 
+  private var dates: ArrayList<BookTransaction>? = null
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_user_history)
 
+    mDatabaseTransactions = FirebaseDatabase.getInstance().getReference("TRANSACTIONS");
   }
 
   override fun onStart() {
@@ -46,25 +52,41 @@ class UserHistory : AppCompatActivity() {
 
   fun setupTransactionsList (uid : String) {
     val layoutManager = LinearLayoutManager(this)
-    layoutManager.reverseLayout = false
+    layoutManager.reverseLayout = true
+    layoutManager.stackFromEnd = true
     user_history_transactions.setHasFixedSize(true)
     user_history_transactions.layoutManager = layoutManager
 
-    // val query = mDatabaseUserReviews!!.orderByChild("uid").equalTo(uid)
+    val query = mDatabaseTransactions!!.orderByChild("actors/" + uid).equalTo(uid);
 
-//    mAdapter = object : FirebaseRecyclerAdapter<Transaction, TransactionViewHolder>(
-//        Transaction::class.java, R.layout.transaction_card, TransactionViewHolder::class.java, query) {
-//
-//      override fun populateViewHolder(viewHolder: TransactionViewHolder?, model: Transaction?, position: Int) {
-//        viewHolder!!.bindReview(model)
-//      }
-//
-//      override fun onChildChanged(type: ChangeEventListener.EventType, snapshot: DataSnapshot?, index: Int, oldIndex: Int) {
-//        super.onChildChanged(type, snapshot, index, oldIndex)
-//
-//        user_history_transactions.scrollToPosition(index)
-//      }
-//    }
+    mAdapter = object : FirebaseRecyclerAdapter<BookTransaction, TransactionViewHolder>(
+        BookTransaction::class.java, R.layout.transaction_card, TransactionViewHolder::class.java, query) {
+
+      override fun populateViewHolder(viewHolder: TransactionViewHolder?, model: BookTransaction?, position: Int) {
+        viewHolder!!.bindReview(model, getSupportFragmentManager(), applicationContext)
+      }
+
+      override fun onChildChanged(type: ChangeEventListener.EventType, snapshot: DataSnapshot?, index: Int, oldIndex: Int) {
+        super.onChildChanged(type, snapshot, index, oldIndex)
+
+        user_history_transactions.scrollToPosition(index)
+      }
+
+      override fun onDataChanged() {
+        super.onDataChanged()
+
+        dates = ArrayList()
+
+        for (i in 1..itemCount)
+          dates!!.add(mSnapshots.getObject(i - 1) as BookTransaction)
+
+        Collections.sort(dates!!)
+      }
+
+      override fun getItem(position: Int): BookTransaction {
+        return dates!![position]
+      }
+    }
 
     user_history_transactions.adapter = mAdapter
   }

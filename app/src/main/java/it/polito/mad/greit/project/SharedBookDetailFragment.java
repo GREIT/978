@@ -26,6 +26,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
+import java.util.Date;
 
 public class SharedBookDetailFragment extends android.support.v4.app.DialogFragment {
   
@@ -59,7 +61,7 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
     ImageView contactForLoan = (ImageView) v.findViewById(R.id.shared_book_detail_icon1);
     ImageView ownerInfo = (ImageView) v.findViewById(R.id.shared_book_detail_icon2);
     ImageView distance = (ImageView) v.findViewById(R.id.shared_book_detail_icon3);
-    String date = sb.getAddedOn().subSequence(4, 10)+sb.getAddedOn().substring(29, 34);
+    String date = DateFormat.getDateInstance().format( new Date(sb.getAddedOn() * 1000));
     
     tv = (TextView) v.findViewById(R.id.shared_book_detail_owner);
     String dateAndOwnerInfo = "Added on " + date + "\nby @" + sb.getOwnerUsername();
