@@ -33,7 +33,7 @@
           android:id="@+id/review_card_reviewer"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="helloimcarmine"
+          android:clickable="true"
           android:textColor="@color/colorAccent"
           android:textStyle="bold" />
 
@@ -41,8 +41,7 @@
           android:id="@+id/review_card_date"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:gravity="right"
-          android:text="25/05/2018"/>
+          android:gravity="right"/>
 
       </LinearLayout>
 

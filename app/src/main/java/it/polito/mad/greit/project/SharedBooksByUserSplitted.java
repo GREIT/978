@@ -284,6 +284,10 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
                     DatabaseReference dbref = db.getReference("SHARED_BOOKS/" + model.getKey());
   
                     dbref.removeValue();
+  
+                    dbref = db.getReference("BOOKS/" + model.getISBN());
+  
+                    dbref.child("booksOnLoan").setValue(Integer.valueOf(model.getBooksOnLoan()) - 1);
                     
                     Toast.makeText(ctx, "Book removed from your collection", Toast.LENGTH_SHORT).show();
                   }})

@@ -10,7 +10,7 @@ public class SharedBook extends Book implements Serializable {
   private String ownerUsername;
   private String borrowToUid;
   private String borrowToUsername;
-  private String addedOn;
+  private Long addedOn;
   private String position;
   private String coordinates;
   private Boolean shared;
@@ -60,11 +60,11 @@ public class SharedBook extends Book implements Serializable {
     this.borrowToUid = borrowToUid;
   }
   
-  public String getAddedOn() {
+  public Long getAddedOn() {
     return addedOn;
   }
   
-  public void setAddedOn(String addedOn) {
+  public void setAddedOn(Long addedOn) {
     this.addedOn = addedOn;
   }
   

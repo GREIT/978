@@ -14,12 +14,16 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BookTransaction implements Serializable{
 
     private String chatId;
     private String ownerUid;
+  private Map<String, String> actors;
     private String ownerUsername;
+    private Boolean alreadyReviewed;
     private String receiverUid;
     private String receiverUsername;
     private String bookId;
@@ -60,8 +64,24 @@ public class BookTransaction implements Serializable{
     public void setReceiverUsername(String receiverUsername) {
         this.receiverUsername = receiverUsername;
     }
-
-    public String getBookId() {
+  
+  public Boolean getAlreadyReviewed() {
+    return alreadyReviewed;
+  }
+  
+  public void setAlreadyReviewed(Boolean alreadyReviewed) {
+    this.alreadyReviewed = alreadyReviewed;
+  }
+  
+  public Map<String, String> getActors() {
+    return actors;
+  }
+  
+  public void setActors(Map<String, String> actors) {
+    this.actors = actors;
+  }
+  
+  public String getBookId() {
         return bookId;
     }
 
@@ -118,7 +138,12 @@ public class BookTransaction implements Serializable{
             public Transaction.Result doTransaction(MutableData mutableData) {
                 if(mutableData.getValue() == null){
                     current.setFree(false);
+                    current.setAlreadyReviewed(false);
                     current.setDateStart(System.currentTimeMillis()/1000L);
+                  Map<String, String> actors = new HashMap<>();
+                  actors.put(current.getOwnerUid(), current.getOwnerUid());
+                  actors.put(current.getReceiverUid(), current.getReceiverUid());
+                  current.setActors(actors);
                     mutableData.setValue(current);
                     Log.d("DEBUGTRANSACTION", "startTransaction: set mutable data in lock" + current.free);
                     return Transaction.success(mutableData);
@@ -128,6 +153,7 @@ public class BookTransaction implements Serializable{
                     BookTransaction bt = mutableData.getValue(BookTransaction.class);
                     bt.setFree(false);
                     bt.setDateStart(System.currentTimeMillis()/1000L);
+                    bt.setDateEnd(0);
                     mutableData.setValue(bt);
                     Log.d("DEBUGTRANSACTION", "startTransaction: data already present in lock" + current.free);
                     return Transaction.success(mutableData);

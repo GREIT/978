@@ -265,6 +265,8 @@ public class CompleteRegistration extends AppCompatActivity {
     P.setUsername(edit_nickname.getText().toString());
     P.setLocation(location);
     P.setCoordinates(coordinates);
+    P.setTotReviewsReceived(0);
+    P.setTotScoringReviews(0f);
     //P.setToken(FirebaseInstanceId.getInstance().getToken());
 
     FirebaseDatabase db = FirebaseDatabase.getInstance();

@@ -61,7 +61,8 @@ class OtherProfile : AppCompatActivity() {
         tw!!.setText(user!!.bio)
 
         rb = findViewById(R.id.other_profile_mean_rating)
-        rb!!.numStars = 5
+        if (user.totReviewsReceived == 0) rb!!.rating = 0f
+        else rb!!.rating = user.totScoringReviews / user.totReviewsReceived
 
         iw = findViewById(R.id.other_profile_pic)
         sr!!.downloadUrl.addOnSuccessListener { uri ->
@@ -94,13 +95,13 @@ class OtherProfile : AppCompatActivity() {
     mReviewsList!!.setHasFixedSize(true)
     mReviewsList!!.layoutManager = layoutManager
 
-    val query = mDatabaseUserReviews!!.orderByChild("uid").equalTo(uid)
+    val query = mDatabaseUserReviews!!.orderByChild("reviewedUid").equalTo(uid)
 
     mAdapter = object : FirebaseRecyclerAdapter<Review, ReviewViewHolder>(
         Review::class.java, R.layout.review_card, ReviewViewHolder::class.java, query) {
 
       override fun populateViewHolder(viewHolder: ReviewViewHolder?, model: Review?, position: Int) {
-        viewHolder!!.bindReview(model)
+        viewHolder!!.bindReview(model, applicationContext)
       }
 
       override fun onChildChanged(type: ChangeEventListener.EventType, snapshot: DataSnapshot?, index: Int, oldIndex: Int) {

@@ -177,7 +177,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
       
       String[] tagString = tags.getText().toString().toLowerCase().replaceAll("[\\/\\#\\.\\/\\$\\[]", "").split(",");
       
-      sb.setAddedOn(Calendar.getInstance().getTime().toString());
+      sb.setAddedOn(System.currentTimeMillis() / 1000L);
       
       sb.setOwnerUid(FirebaseAuth.getInstance().getCurrentUser().getUid());
       

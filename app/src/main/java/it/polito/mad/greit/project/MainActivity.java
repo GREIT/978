@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   private TextView tw_name;
   private TextView tw_searchText;
   private TextView tw_searchMain;
+  private FirebaseUser user;
   
   // Search variables
   private RecyclerView mResultList;
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     profile = new Profile();
     
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    user = FirebaseAuth.getInstance().getCurrentUser();
     FirebaseDatabase db = FirebaseDatabase.getInstance();
     DatabaseReference dbref = db.getReference("USERS").child(user.getUid());
     
@@ -504,6 +505,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       startActivity(intent);
     } else if(id == R.id.nav_chat){
       Intent intent = new Intent(MainActivity.this, InboxActivity.class);
+      startActivity(intent);
+    } else if (id == R.id.nav_my_history) {
+      Intent intent = new Intent(MainActivity.this, UserHistory.class);
+      intent.putExtra("uid", user.getUid());
       startActivity(intent);
     } else if (id == R.id.nav_sign_out) {
       FirebaseAuth.getInstance().signOut();
