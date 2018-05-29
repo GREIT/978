@@ -16,6 +16,7 @@ import com.google.firebase.database.Transaction
 
 import kotlinx.android.synthetic.main.activity_user_history.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 class UserHistory : AppCompatActivity() {
   private val TAG = "Transaction History"
@@ -28,8 +29,7 @@ class UserHistory : AppCompatActivity() {
   private var iw: ImageView? = null
   private var tb: android.support.v7.widget.Toolbar? = null
 
-  private var dates: SortedMap<Long, Int>? = null
-  private var positions: ArrayList<Int>? = null
+  private var dates: ArrayList<BookTransaction>? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -75,19 +75,16 @@ class UserHistory : AppCompatActivity() {
       override fun onDataChanged() {
         super.onDataChanged()
 
-        dates = TreeMap<Long, Int>()
-        positions = ArrayList()
+        dates = ArrayList()
 
         for (i in 1..itemCount)
-          dates!!.put(mSnapshots.getObject(i - 1).dateStart, i - 1)
-        for (entry in dates!!.entries)
-          positions!!.add(entry.value)
+          dates!!.add(mSnapshots.getObject(i - 1) as BookTransaction)
 
-        Collections.reverse(positions!!)
+        Collections.sort(dates!!)
       }
 
       override fun getItem(position: Int): BookTransaction {
-        return mSnapshots.getObject(positions!!.get(position)) as BookTransaction
+        return dates!![position]
       }
     }
 

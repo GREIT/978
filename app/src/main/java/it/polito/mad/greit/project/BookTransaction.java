@@ -1,6 +1,7 @@
 package it.polito.mad.greit.project;
 
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,7 +18,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BookTransaction implements Serializable{
+public class BookTransaction implements Serializable, Comparable{
 
     private String chatId;
     private String ownerUid;
@@ -238,5 +239,9 @@ public class BookTransaction implements Serializable{
             }
         });
     }
-
+  
+  @Override
+  public int compareTo(@NonNull Object o) {
+    return Long.compare(this.getDateStart(), ((BookTransaction) o).getDateStart());
+  }
 }

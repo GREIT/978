@@ -43,8 +43,9 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
       }
       itemView.transaction_start_date.text = DateFormat.getDateInstance().format( Date(transaction.dateStart * 1000))
       if (transaction.dateEnd != 0L) {
-        itemView.transaction_end_date.text = transaction.dateEnd.toString()
-      } else itemView.transaction_end_date.text = DateFormat.getDateInstance().format( Date(transaction.dateStart * 1000))
+        itemView.transaction_end_date_to.text = "al "
+        itemView.transaction_end_date.text = DateFormat.getDateInstance().format( Date(transaction.dateEnd * 1000))
+      }
 
       itemView.transaction_write_review.setOnClickListener{view -> run {
         val bundle = Bundle()

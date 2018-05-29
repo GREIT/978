@@ -84,10 +84,15 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -104,6 +109,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   private RecyclerView mResultList;
   private DatabaseReference mBookDb, mSharedBookDb;
   private Button mSearchButton;
+  
+  private ArrayList<Book> tmpBooks;
   
   
   @Override
@@ -206,8 +213,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     setupSearchBox("title");
     startupRecycleView();
   }
-
-
+  
+  
   private void setupSearchBox(String field) {
     mSearchButton = (Button) findViewById(R.id.search_button);
     mSearchButton.setText(field.toUpperCase() + "▼");
@@ -217,17 +224,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         chooseSearchField();
       }
     });
-
+    
     //Create a new ArrayAdapter with your context and the simple layout for the dropdown menu provided by Android
     final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
     List<String> tmpAutoComplete = new LinkedList<>();
-
+    
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     database.child("BOOKS").addValueEventListener(new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
         autoComplete.clear();
-
+        
         for (DataSnapshot suggestionSnapshot : dataSnapshot.getChildren()) {
           if (field.equals("authors") || field.equals("tags")) {
             for (DataSnapshot A : suggestionSnapshot.child(field).getChildren()) {
@@ -244,12 +251,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         autoComplete.addAll(tmpAutoComplete);
       }
-
+      
       @Override
       public void onCancelled(DatabaseError databaseError) {
       }
     });
-
+    
     AutoCompleteTextView ACTV = (AutoCompleteTextView) findViewById(R.id.search_field);
     ACTV.setAdapter(autoComplete);
     ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -261,21 +268,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       }
     });
   }
-
+  
   public void chooseSearchField() {
     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
     builder.setTitle("Choose search field:");
-
+    
     String title = getResources().getString(R.string.item_title);
     String author = getResources().getString(R.string.item_author);
     String isbn = getResources().getString(R.string.item_isbn);
     String year = getResources().getString(R.string.item_year);
     String tag = getResources().getString(R.string.item_tag);
-
+    
     //list of items
     String[] items = {title, author, isbn, year, tag};
     final int[] choice = new int[1];
-
+    
     builder.setSingleChoiceItems(items, 0,
         new DialogInterface.OnClickListener() {
           @Override
@@ -283,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             choice[0] = which;
           }
         });
-
+    
     String positiveText = getString(android.R.string.ok);
     builder.setPositiveButton(positiveText,
         new DialogInterface.OnClickListener() {
@@ -294,30 +301,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
               case 0:
                 finalField = "title";
                 break;
-
+              
               case 1:
                 finalField = "authors";
                 break;
-
+              
               case 2:
                 finalField = "isbn";
                 break;
-
+              
               case 3:
                 finalField = "year";
                 break;
-
+              
               case 4:
                 finalField = "tags";
                 break;
             }
-
+            
             AutoCompleteTextView ACTV = (AutoCompleteTextView) findViewById(R.id.search_field);
             ACTV.setText("");
             setupSearchBox(finalField);
           }
         });
-
+    
     String negativeText = getString(android.R.string.cancel);
     builder.setNegativeButton(negativeText,
         new DialogInterface.OnClickListener() {
@@ -325,24 +332,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
           public void onClick(DialogInterface dialog, int which) {
           }
         });
-
+    
     AlertDialog dialog = builder.create();
     dialog.show();
   }
-
-
+  
+  
   private void startupRecycleView() {
     LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-    layoutManager.setReverseLayout(true);
-    layoutManager.setStackFromEnd(true);
     mResultList.setLayoutManager(layoutManager);
     mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
     mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(1, dpToPx(10), true));
-
+    
     tw_searchMain.setText(R.string.main_title_search_1);
-
+    
     // TODO for now the recycleview takes the first eight from the one with less "booksOnLoan" and then reverse them
-
+    
     Query firebaseSearchQuery = mBookDb.orderByChild("booksOnLoan").limitToFirst(8);
     FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
         Book.class,
@@ -354,7 +359,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       protected void populateViewHolder(BookViewHolder viewHolder, Book model, int position) {
         viewHolder.setDetails(getApplicationContext(), model);
       }
-
+      
       @Override
       public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         BookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
@@ -367,29 +372,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         return viewHolder;
       }
-    };
+      
+      @Override
+      public void onDataChanged() {
+        super.onDataChanged();
+        
+        tmpBooks = new ArrayList();
+  
+        for (int i = 1; i<=getItemCount(); i++){
+          tmpBooks.add((Book) mSnapshots.getObject(i-1));
+        }
+  
+        Collections.sort(tmpBooks);
+        
+        Collections.reverse(tmpBooks);
 
+        tmpBooks =
+            new ArrayList<>(tmpBooks.subList(0, (tmpBooks.size() >= 8) ? 8 : tmpBooks.size()));
+      }
+      
+      @Override
+      public Book getItem(int position) {
+        
+        
+        return (Book) tmpBooks.get(position);
+      }
+      
+      
+    };
+    
+    
     mResultList.setAdapter(firebaseRecyclerAdapter);
   }
-
+  
   private void bookSearch(String field, String value) {
     mResultList.setLayoutManager(new GridLayoutManager(this, 1));
     mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
     mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(1, dpToPx(10), true));
-
+    
     tw_searchMain.setText(R.string.main_title_search_2);
-
+    
     if (value.isEmpty()) {
       mResultList.setAdapter(null);
       return;
     }
-
+    
     Query firebaseSearchQuery;
     if (field.equals("authors") || field.equals("tags"))
       firebaseSearchQuery = mBookDb.orderByChild(field + "/" + value).equalTo(value);
     else
       firebaseSearchQuery = mBookDb.orderByChild(field).equalTo(value);
-
+    
     FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
         Book.class,
         R.layout.book_card,
@@ -400,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       protected void populateViewHolder(BookViewHolder viewHolder, Book model, int position) {
         viewHolder.setDetails(getApplicationContext(), model);
       }
-
+      
       @Override
       public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         BookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
@@ -414,27 +447,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return viewHolder;
       }
     };
-
+    
     mResultList.setAdapter(firebaseRecyclerAdapter);
   }
-
+  
   public static class BookViewHolder extends RecyclerView.ViewHolder {
     View mView;
     private BookViewHolder.ClickListener mClickListener;
-
+    
     public BookViewHolder(View itemView) {
       super(itemView);
       mView = itemView;
     }
-
+    
     public interface ClickListener {
       void onItemClick(View view, String ISBN);
     }
-
+    
     public void setOnClickListener(BookViewHolder.ClickListener clickListener) {
       mClickListener = clickListener;
     }
-
+    
     public void setDetails(Context ctx, Book model) {
       TextView twTitle = (TextView) mView.findViewById(R.id.bookCardTitle);
       TextView twAuthor = (TextView) mView.findViewById(R.id.bookCardAuthor);
@@ -443,20 +476,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       TextView twYear = (TextView) mView.findViewById(R.id.bookCardYear);
       ImageView iwCover = (ImageView) mView.findViewById(R.id.bookCardCover);
       Button btSearch = (Button) mView.findViewById(R.id.bookCardSearchButton);
-
+      
       String AS = android.text.TextUtils.join(", ", model.getAuthors().keySet());
       twAuthor.setText(AS);
       twTitle.setText(model.getTitle());
-        if (!model.getPublisher().isEmpty())
-            twPublisher.setVisibility(View.VISIBLE);
-        twPublisher.setText(model.getPublisher());
+      if (!model.getPublisher().isEmpty())
+        twPublisher.setVisibility(View.VISIBLE);
+      twPublisher.setText(model.getPublisher());
       twYear.setText(model.getYear());
       Glide.with(ctx)
           .load(model.getCover())
           .into(iwCover);
-
+      
       btSearch.setText("COPIES NEAR YOU");
-
+      
       btSearch.setOnClickListener(v -> {
         Intent I = new Intent(ctx,
             SearchedSharedBooks.class);
@@ -466,7 +499,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       });
     }
   }
-
+  
   @Override
   public void onBackPressed() {
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -476,34 +509,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       Log.d(TAG, "Back button pressed");
     }
   }
-
+  
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.main, menu);
     return true;
   }
-
+  
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     // Handle action bar item clicks here. The action bar will
     // automatically handle clicks on the Home/Up button, so long
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
-
+    
     return super.onOptionsItemSelected(item);
   }
-
+  
   @SuppressWarnings("StatementWithEmptyBody")
   @Override
   public boolean onNavigationItemSelected(MenuItem item) {
     // Handle navigation view item clicks here.
     int id = item.getItemId();
-
+    
     if (id == R.id.nav_my_books) {
       Intent intent = new Intent(MainActivity.this, SharedBooksByUserSplitted.class);
       startActivity(intent);
-    } else if(id == R.id.nav_chat){
+    } else if (id == R.id.nav_chat) {
       Intent intent = new Intent(MainActivity.this, InboxActivity.class);
       startActivity(intent);
     } else if (id == R.id.nav_my_history) {
@@ -517,12 +550,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       startActivity(intent);
       finish();
     }
-
+    
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
     drawer.closeDrawer(GravityCompat.START);
     return true;
   }
-
+  
   public static void hideKeyboard(Activity activity) {
     InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
     //Find the currently focused view, so we can grab the correct window token from it.
@@ -533,28 +566,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
   }
-
+  
   public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
-
+    
     private int spanCount;
     private int spacing;
     private boolean includeEdge;
-
+    
     public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
       this.spanCount = spanCount;
       this.spacing = spacing;
       this.includeEdge = includeEdge;
     }
-
+    
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
       int position = parent.getChildAdapterPosition(view); // item position
       int column = position % spanCount; // item column
-
+      
       if (includeEdge) {
         outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
         outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
-
+        
         if (position < spanCount) { // top edge
           outRect.top = spacing;
         }
@@ -567,18 +600,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
       }
     }
+    
   }
-
+  
   private int dpToPx(int dp) {
     Resources r = getResources();
     return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
   }
-
-  private void saveUsername(String s){
-    SharedPreferences sharedref = getApplicationContext().getSharedPreferences("sharedpref",MODE_PRIVATE);
-    if(sharedref.getString("username",null) == null){
+  
+  private void saveUsername(String s) {
+    SharedPreferences sharedref = getApplicationContext().getSharedPreferences("sharedpref", MODE_PRIVATE);
+    if (sharedref.getString("username", null) == null) {
       SharedPreferences.Editor editor = sharedref.edit();
-      editor.putString("username",s);
+      editor.putString("username", s);
       editor.commit();
     }
   }
