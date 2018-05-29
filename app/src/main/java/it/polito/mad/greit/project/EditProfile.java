@@ -586,7 +586,7 @@ public class EditProfile extends AppCompatActivity {
 
     DatabaseReference mSharedBookDb = db.getReference("SHARED_BOOKS");
 
-    mSharedBookDb.orderByChild("ownerUid").equalTo(user.getUid()).addValueEventListener(new ValueEventListener() {
+    mSharedBookDb.orderByChild("ownerUid").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
         for (DataSnapshot ds : dataSnapshot.getChildren()) {

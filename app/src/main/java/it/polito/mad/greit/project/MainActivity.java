@@ -372,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         return viewHolder;
       }
-      
+      /*
       @Override
       public void onDataChanged() {
         super.onDataChanged();
@@ -397,7 +397,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         return (Book) tmpBooks.get(position);
       }
-      
+      */
       
     };
     
