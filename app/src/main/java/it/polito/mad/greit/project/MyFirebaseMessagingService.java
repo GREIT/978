@@ -76,6 +76,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Intent intent = new Intent(this, ChatActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("chat",c);
+        intent.putExtra("notification", true);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, from.hashCode(), intent,
                 PendingIntent.FLAG_ONE_SHOT);
 

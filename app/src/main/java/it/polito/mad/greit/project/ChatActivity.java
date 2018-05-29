@@ -116,9 +116,11 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(ChatActivity.this,InboxActivity.class);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        if(getIntent().hasExtra("notification") && getIntent().getBooleanExtra("notification", true)) {
+            Intent intent = new Intent(ChatActivity.this, MainActivity.class);
+            startActivity(intent);
+        }
+        super.onBackPressed();
     }
 
     private void zeroUnread(FirebaseUser user,String chatID){
