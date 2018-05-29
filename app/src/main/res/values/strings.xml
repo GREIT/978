@@ -117,7 +117,7 @@
 
 
   //notifications
-  <string name="default_msg">Hello %1$s, can I have the book %2$s ?</string>
+  <string name="default_msg">User %1$s made a request for %2$s</string>
   <string name="new_request">New Request Received from %1$s for the book %2$s</string>
   <string name="incoming">New messages from %1$s for the book %2$s</string>
   <string name="lock_event">%1$s accepted your request for book %2$s</string>
@@ -125,6 +125,7 @@
   <!-- TODO: Remove or change this placeholder text -->
   <string name="hello_blank_fragment">Hello blank fragment</string>
 
+  <string name="cannot_delete">You cannot delete this book because there is an active loan.</string>
 
 
 </resources>

@@ -58,6 +58,7 @@ import java.util.Date;
 import static it.polito.mad.greit.project.Constants.DB_SHARED;
 import static it.polito.mad.greit.project.Constants.DB_USER_CHAT;
 import static it.polito.mad.greit.project.Constants.DB_USER_MESSAGES;
+import static it.polito.mad.greit.project.Profile.getCurrentUsername;
 
 
 public class ChatActivity extends AppCompatActivity {
@@ -92,6 +93,12 @@ public class ChatActivity extends AppCompatActivity {
         chat = (Chat) getIntent().getSerializableExtra("chat");
         if(getIntent().hasExtra("new") && getIntent().getBooleanExtra("new",false)){
             sendDefaultMsg(chat);
+        }
+        //If it was deleted, set it back to true
+        if( chat.isDeleted() ){
+            chat.setDeleted(false);
+            FirebaseDatabase.getInstance().getReference(Constants.DB_USER_CHAT)
+                    .child(user.getUid()).child(chat.getChatID()).child("deleted").setValue(false);
         }
 
         //Toolbar setup
@@ -155,12 +162,12 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendDefaultMsg(Chat chat){
-
-        String msg = getResources().getString(R.string.default_msg,chat.getUsername(),chat.getBookTitle());
+        String username = Profile.getCurrentUsername(this);
+        String msg = getResources().getString(R.string.default_msg, username ,chat.getBookTitle());
         Context ctx = this;
         Message toSend = new Message(chat.getTimestamp(),
-                FirebaseAuth.getInstance().getCurrentUser().getUid(),
-                Profile.getCurrentUsername(this)
+                SYSTEM,
+                SYSTEM
                 ,msg);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -312,7 +319,7 @@ public class ChatActivity extends AppCompatActivity {
                     bt.setDateEnd(0);
                     if(chat.isMine()) {
                         bt.setOwnerUid(fbu.getUid());
-                        bt.setOwnerUsername(Profile.getCurrentUsername(ChatActivity.this));
+                        bt.setOwnerUsername(getCurrentUsername(ChatActivity.this));
                         bt.setReceiverUid(chat.getUserID());
                         bt.setReceiverUsername(chat.getUsername());
                     }
@@ -320,7 +327,7 @@ public class ChatActivity extends AppCompatActivity {
                         bt.setOwnerUid(chat.getUserID());
                         bt.setOwnerUsername(chat.getUsername());
                         bt.setReceiverUid(fbu.getUid());
-                        bt.setReceiverUsername(Profile.getCurrentUsername(ChatActivity.this));
+                        bt.setReceiverUsername(getCurrentUsername(ChatActivity.this));
                     }
                     bt.setDateStart(0);
                     bt.setChatId(chat.getChatID());
@@ -367,13 +374,13 @@ public class ChatActivity extends AppCompatActivity {
             Log.d("DEBUGTRANSACTION", "startTransaction: enter lock");
             bt.lock_book();
             sendSystemMessage( getResources().getString(R.string.system_message_accepted,
-                    Profile.getCurrentUsername(this)));
+                    getCurrentUsername(this)));
         }
         else{
             Log.d("DEBUGTRANSACTION", "startTransaction: enter unlock");
             bt.unlock_book();
             sendSystemMessage( getResources().getString(R.string.system_message_closed,
-                    Profile.getCurrentUsername(this)));
+                    getCurrentUsername(this)));
         }
     }
 
@@ -523,7 +530,7 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 Message tosend = new Message(time,
                         FirebaseAuth.getInstance().getCurrentUser().getUid(),
-                        Profile.getCurrentUsername(ChatActivity.this),msg);
+                        getCurrentUsername(ChatActivity.this),msg);
 
                 DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USER_MESSAGES").child(chatID);
                 String key = fbd.push().getKey();
@@ -540,7 +547,7 @@ public class ChatActivity extends AppCompatActivity {
                         c.setLastMsg(msg);
                         c.setTimestamp(time);
                         mutableData.setValue(c);
-                        Chat.sendnotification(Profile.getCurrentUsername(ChatActivity.this),
+                        Chat.sendnotification(getCurrentUsername(ChatActivity.this),
                                 c.getChatID(),c.getUserID(),"message");
                         return Transaction.success(mutableData);
                     }

@@ -3,6 +3,7 @@ package it.polito.mad.greit.project;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.renderscript.Sampler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.util.SortedList;
@@ -13,6 +14,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,6 +33,8 @@ public class InboxActivity extends AppCompatActivity {
 
     RecyclerView rv;
     ChatListAdapter adapter;
+    ValueEventListener velInbox;
+    DatabaseReference dbref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +50,7 @@ public class InboxActivity extends AppCompatActivity {
 
         FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference dbref = db.getReference("USER_CHATS").child(fbu.getUid());
+        dbref = db.getReference("USER_CHATS").child(fbu.getUid());
 
         rv = findViewById(R.id.list_inbox);
 
@@ -61,8 +65,30 @@ public class InboxActivity extends AppCompatActivity {
             @Override
             public void onSwiped(RecyclerView.ViewHolder vh, int direction) {
                 Chat c = adapter.get(vh.getAdapterPosition());
-                adapter.removeAt(vh.getAdapterPosition());
-                deleteChat(c, fbu.getUid());
+                DatabaseReference ref = FirebaseDatabase.getInstance()
+                        .getReference(Constants.DB_TRANSACTIONS).child(c.getChatID());
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        BookTransaction transaction = dataSnapshot.getValue(BookTransaction.class);
+                        if(transaction!=null && !transaction.isFree()){
+                            Toast.makeText(InboxActivity.this,
+                                    R.string.cannot_delete, Toast.LENGTH_SHORT).show();
+                            adapter.notifyDataSetChanged();
+                        }
+                        else {
+                            adapter.removeAt(vh.getAdapterPosition());
+                            c.setDeleted(true);
+                            deleteChat(c, fbu.getUid());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
             }
         };
 
@@ -70,13 +96,14 @@ public class InboxActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(rv);
 
 
-        dbref.addValueEventListener(new ValueEventListener() {
+        velInbox = dbref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<Chat> chats = new ArrayList<>();
                 chats.clear();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    chats.add(ds.getValue(Chat.class));
+                    if(!ds.getValue(Chat.class).isDeleted())
+                        chats.add(ds.getValue(Chat.class));
                 }
                 //adapter.clear();
                 adapter.addAll(chats);
@@ -97,14 +124,13 @@ public class InboxActivity extends AppCompatActivity {
         });
 
     }
-/*
+
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(InboxActivity.this,MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        dbref.removeEventListener(velInbox);
+        super.onBackPressed();
     }
-*/
+
     public void openChat(Chat chat){
         Intent intent = new Intent(InboxActivity.this,ChatActivity.class);
         intent.putExtra("chat",chat);
@@ -114,20 +140,33 @@ public class InboxActivity extends AppCompatActivity {
     public void deleteChat(Chat c,String user){
         //user is the current session FireBaseUser
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        db.getReference("USER_CHATS").child(user).child(c.getChatID()).removeValue();
+        //db.getReference("USER_CHATS").child(user).child(c.getChatID()).removeValue();
 
-        DatabaseReference dbref = db.getReference("USER_CHATS").child(c.getUserID()).child(c.getChatID());
-        dbref.runTransaction(new Transaction.Handler() {
+
+
+        DatabaseReference dbref = db.getReference(Constants.DB_USER_CHAT).child(c.getUserID()).child(c.getChatID());
+        dbref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                if(mutableData == null){
-                    db.getReference("USER_MESSAGES").child(c.getChatID()).removeValue();
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Chat other = (dataSnapshot!=null)?dataSnapshot.getValue(Chat.class):null;
+                if(other == null){
+                    //the other chat doesn't exist anymore, delete my chat
+                    db.getReference(Constants.DB_USER_MESSAGES).child(c.getChatID()).removeValue();
                 }
-                return Transaction.success(mutableData);
+                else if(other.isDeleted()){
+                    //other already tried to delete his chat, delete both
+                    db.getReference(Constants.DB_USER_MESSAGES).child(c.getChatID()).removeValue(); //remove messages
+                    db.getReference(Constants.DB_USER_CHAT).child(user).child(c.getChatID()).removeValue(); //remove my chat
+                    db.getReference(Constants.DB_USER_CHAT).child(c.getUserID()).child(c.getChatID()).removeValue(); //remove his chat
+                }
+                else {
+                    //chat exist but not deleted. Add my delete information and return
+                    db.getReference(Constants.DB_USER_CHAT).child(user).child(c.getChatID()).child("deleted").setValue(true);
+                }
             }
 
             @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
