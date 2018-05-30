@@ -172,13 +172,14 @@ public class SearchedSharedBooks extends AppCompatActivity {
                     currentLocation = location.getLatitude() + ";" + location.getLongitude();
                   } else {
                     currentLocation = getIntent().getStringExtra("userLocation");
-                    Toast.makeText(SearchedSharedBooks.this, "Location not found, profile location set.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SearchedSharedBooks.this, "Location not available, profile location set.", Toast.LENGTH_SHORT).show();
                   }
                   sharedBookShow(book.getISBN());
                 }
               });
     } else {
       currentLocation = getIntent().getStringExtra("userLocation");
+      Toast.makeText(SearchedSharedBooks.this, "Location not available, profile location set.", Toast.LENGTH_SHORT).show();
       sharedBookShow(book.getISBN());
     }
     return;
