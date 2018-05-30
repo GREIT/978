@@ -107,10 +107,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   
   // Search variables
   private RecyclerView mResultList;
+  private FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter;
   private DatabaseReference mBookDb, mSharedBookDb;
   private Button mSearchButton;
   
-  private ArrayList<Book> tmpBooks;
+  
   
   
   @Override
@@ -349,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     tw_searchMain.setText(R.string.main_title_search_1);
     
     Query firebaseSearchQuery = mBookDb.orderByChild("lentBooks").limitToLast(8);
-    FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
+    firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
         Book.class,
         R.layout.book_card,
         BookViewHolder.class,
@@ -397,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     else
       firebaseSearchQuery = mBookDb.orderByChild(field).equalTo(value);
     
-    FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
+    firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
         Book.class,
         R.layout.book_card,
         BookViewHolder.class,
@@ -589,5 +590,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       editor.putString("username", s);
       editor.commit();
     }
+  }
+  
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    firebaseRecyclerAdapter.cleanup();
   }
 }
