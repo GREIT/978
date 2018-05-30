@@ -593,10 +593,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   }
   
   @Override
-  protected void onStop() {
-    super.onStop();
-    if (firebaseRecyclerAdapter != null) {
-      firebaseRecyclerAdapter.cleanup();
-    }
+  protected void onDestroy() {
+    super.onDestroy();
+    firebaseRecyclerAdapter.cleanup();
   }
 }
