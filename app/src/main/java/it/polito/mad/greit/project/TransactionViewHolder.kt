@@ -2,6 +2,7 @@ package it.polito.mad.greit.project
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -23,9 +24,12 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
           ctx.startActivity(I)
         }}
         if (transaction.dateEnd == 0L) {
-          itemView.transaction_arrow.setImageResource(R.drawable.ic_arrow_forward_red_800_48dp)
+          itemView.transaction_right.setImageResource(R.drawable.ic_triangle_right)
+          itemView.transaction_right.visibility = View.VISIBLE
         } else {
-          itemView.transaction_arrow.setImageResource(R.drawable.ic_arrow_forward_grey_800_48dp)
+          itemView.transaction_right.setImageResource(R.drawable.ic_triangle_right)
+          itemView.transaction_right.visibility = View.VISIBLE
+          itemView.transaction_right.setColorFilter(Color.GRAY)
         }
       } else {
         itemView.transaction_from_to.text = "From"
@@ -36,9 +40,12 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
           ctx.startActivity(I)
         }}
         if (transaction.dateEnd == 0L) {
-          itemView.transaction_arrow.setImageResource(R.drawable.ic_arrow_back_green_800_48dp)
+          itemView.transaction_left.setImageResource(R.drawable.ic_triangle_right)
+          itemView.transaction_left.visibility = View.VISIBLE
         } else {
-          itemView.transaction_arrow.setImageResource(R.drawable.ic_arrow_back_grey_800_48dp)
+          itemView.transaction_left.setImageResource(R.drawable.ic_triangle_right)
+          itemView.transaction_left.visibility = View.VISIBLE
+          itemView.transaction_left.setColorFilter(Color.GRAY)
         }
       }
       itemView.transaction_start_date.text = DateFormat.getDateInstance().format( Date(transaction.dateStart * 1000))
