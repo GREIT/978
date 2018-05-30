@@ -29,16 +29,17 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:background="@color/colorGreenDark"
-                android:visibility="gone"/>
+                android:visibility="invisible"/>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/transaction_left"
-                android:layout_marginLeft="20dp"
-                android:layout_marginStart="20dp"
-                android:layout_centerVertical="true"
-                android:layout_marginVertical="3dp">
+                android:layout_toEndOf="@id/transaction_left"
+                android:layout_toLeftOf="@id/transaction_write_review"
+                android:layout_toStartOf="@id/transaction_write_review"
+                android:layout_marginHorizontal="20dp"
+                android:layout_centerVertical="true">
 
                 <TextView
                     android:id="@+id/transaction_book_title"
@@ -49,7 +50,9 @@
                     android:layout_alignParentLeft="true"
                     android:text="Book title"
                     android:textColor="@color/colorPrimaryText"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:singleLine="true"
+                    android:ellipsize="end"/>
 
                 <TextView
                     android:id="@+id/transaction_from_to"
@@ -57,7 +60,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorPrimaryText"
                     android:layout_below="@id/transaction_book_title"
-                    android:text="To"/>
+                    android:text="To/From"/>
 
                 <TextView
                     android:id="@+id/transaction_actor"
@@ -68,7 +71,7 @@
                     android:layout_toEndOf="@id/transaction_from_to"
                     android:clickable="true"
                     android:focusable="true"
-                    android:text=" @lmoro"
+                    android:text=" @username"
                     android:textColor="@color/colorAccent"
                     android:textStyle="bold" />
 
@@ -78,30 +81,35 @@
                     android:layout_below="@id/transaction_from_to">
 
                     <TextView
+                        android:id="@+id/transaction_start_date_from"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Dal "
-                        android:textColor="@color/colorPrimaryText" />
+                        android:textColor="@color/colorPrimaryText"
+                        android:text="From " />
 
                     <TextView
                         android:id="@+id/transaction_start_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorPrimaryText"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:text="Jan 01, 1900"/>
 
                     <TextView
                         android:id="@+id/transaction_end_date_to"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorPrimaryText" />
+                        android:textColor="@color/colorPrimaryText"
+                        android:text=" to "/>
 
                     <TextView
                         android:id="@+id/transaction_end_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorPrimaryText"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:text="Dec 31, 2000"/>
+
                 </LinearLayout>
 
             </RelativeLayout>
@@ -115,6 +123,7 @@
                 android:text="REVIEW"
                 android:textColor="@color/white"
                 android:layout_toLeftOf="@id/transaction_right"
+                android:layout_toStartOf="@id/transaction_right"
                 android:layout_marginRight="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_centerInParent="true"/>
