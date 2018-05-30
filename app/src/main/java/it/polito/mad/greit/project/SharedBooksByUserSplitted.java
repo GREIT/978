@@ -51,6 +51,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -105,6 +106,7 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
     });
     
   }
+  
   /*
   public void onBackPressed() {
     Intent intent = new Intent(this, MainActivity.class);
@@ -218,11 +220,11 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
         super(itemView);
         mView = itemView;
       }
-  
+      
       public interface ClickListener {
         void onItemClick(View view, SharedBook model);
       }
-  
+      
       public void setOnClickListener(SharedBookViewHolder.ClickListener clickListener) {
         mClickListener = clickListener;
       }
@@ -234,14 +236,14 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
         ImageView iw1 = (ImageView) mView.findViewById(R.id.shared_book_card_icon1);
         ImageView iw2 = (ImageView) mView.findViewById(R.id.shared_book_card_icon2);
         TextView bookTitle = (TextView) mView.findViewById(R.id.shared_book_card_title);
-  
+        
         bookTitle.setText(model.getTitle());
         
         //book_owner.setText(model.getOwnerUid());
         //book_author.setText(model.getAuthors().keySet().iterator().next());
         
         StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
-  
+        
         sr.getBytes(5 * Constants.SIZE).addOnSuccessListener(bytes -> {
           Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
           ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -265,7 +267,7 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
           book_image.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putSerializable("book", model);
-
+            
             SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
             dialogFragment.setArguments(bundle);
             dialogFragment.show(((FragmentActivity) ctx).getSupportFragmentManager(), "dialog");
@@ -278,19 +280,35 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
                 .setMessage("Do you really want to delete this book?")
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-        
+                  
                   public void onClick(DialogInterface dialog, int whichButton) {
                     FirebaseDatabase db = FirebaseDatabase.getInstance();
                     DatabaseReference dbref = db.getReference("SHARED_BOOKS/" + model.getKey());
-  
-                    dbref.removeValue();
-  
-                    dbref = db.getReference("BOOKS/" + model.getISBN());
-  
-                    dbref.child("booksOnLoan").setValue(Integer.valueOf(model.getBooksOnLoan()) - 1);
                     
-                    Toast.makeText(ctx, "Book removed from your collection", Toast.LENGTH_SHORT).show();
-                  }})
+                    dbref.removeValue();
+                    
+                    dbref = db.getReference("BOOKS");
+                    
+                    dbref.orderByKey().equalTo(model.getISBN()).addListenerForSingleValueEvent(new ValueEventListener() {
+                      @Override
+                      public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                          Book tmpBook = ds.getValue(Book.class);
+                          DatabaseReference tmpDbRef  = db.getReference("BOOKS/" + model.getISBN());
+                          tmpDbRef.child("booksOnLoan").setValue(Integer.valueOf(tmpBook.getBooksOnLoan()) - 1);
+                          Toast.makeText(ctx, "Book removed from your collection", Toast.LENGTH_SHORT).show();
+                        }
+                      }
+                      
+                      @Override
+                      public void onCancelled(DatabaseError databaseError) {
+                      
+                      }
+                    });
+                    
+                    
+                  }
+                })
                 .setNegativeButton(android.R.string.no, null).show();
           });
           
@@ -302,7 +320,7 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
         } else {
           iw1.setImageResource(R.drawable.ic_textsms_white_48dp);
           iw1.setOnClickListener(v -> Toast.makeText(ctx, "Contact owner", Toast.LENGTH_SHORT).show());
-  
+          
           iw2.setImageResource(R.drawable.ic_zoom_in_white_48dp);
           iw2.setOnClickListener(v -> {
             Intent I = new Intent(ctx, ShowSharedBook.class);
