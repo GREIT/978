@@ -340,15 +340,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   
   private void startupRecycleView() {
     LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+    layoutManager.setReverseLayout(true);
+    layoutManager.setStackFromEnd(true);
     mResultList.setLayoutManager(layoutManager);
     mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
     mResultList.addItemDecoration(new MainActivity.GridSpacingItemDecoration(1, dpToPx(10), true));
     
     tw_searchMain.setText(R.string.main_title_search_1);
     
-    // TODO for now the recycleview takes the first eight from the one with less "booksOnLoan" and then reverse them
-    
-    Query firebaseSearchQuery = mBookDb.orderByChild("booksOnLoan").limitToFirst(8);
+    Query firebaseSearchQuery = mBookDb.orderByChild("lentBooks").limitToLast(8);
     FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(
         Book.class,
         R.layout.book_card,
@@ -372,32 +372,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         return viewHolder;
       }
-      /*
-      @Override
-      public void onDataChanged() {
-        super.onDataChanged();
-        
-        tmpBooks = new ArrayList();
-  
-        for (int i = 1; i<=getItemCount(); i++){
-          tmpBooks.add((Book) mSnapshots.getObject(i-1));
-        }
-  
-        Collections.sort(tmpBooks);
-        
-        Collections.reverse(tmpBooks);
-
-        tmpBooks =
-            new ArrayList<>(tmpBooks.subList(0, (tmpBooks.size() >= 8) ? 8 : tmpBooks.size()));
-      }
-      
-      @Override
-      public Book getItem(int position) {
-        
-        
-        return (Book) tmpBooks.get(position);
-      }
-      */
       
     };
     
