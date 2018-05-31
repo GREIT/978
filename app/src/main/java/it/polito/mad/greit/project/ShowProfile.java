@@ -117,11 +117,10 @@ public class ShowProfile extends AppCompatActivity {
         @Override
         public void onSuccess(byte[] bytes) {
           try{
-            File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg");
             Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             iw.setImageBitmap(bm);
             OutputStream outs = new FileOutputStream(pic);
-            bm.compress(Bitmap.CompressFormat.JPEG, 85,outs);
+            bm.compress(Bitmap.CompressFormat.JPEG, 100,outs);
             outs.flush();
             outs.close();
           }catch (Exception e){

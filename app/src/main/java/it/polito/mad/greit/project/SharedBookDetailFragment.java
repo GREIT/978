@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -100,36 +101,26 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
       I.putExtra("uid", sb.getOwnerUid());
       this.getContext().startActivity(I);
     });
-    
+
+    thumbnail.setImageResource(R.drawable.ic_book_blue_grey_900_48dp);
     StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + sb.getKey() + ".jpg");
-    
-    sr.getBytes(5 * Constants.SIZE).addOnSuccessListener(bytes -> {
-      Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-      ByteArrayOutputStream stream = new ByteArrayOutputStream();
-      bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-      if (getContext() != null) {
-        Glide.with(this)
-            .asBitmap()
-            .load(stream.toByteArray())
-            
-            .apply(new RequestOptions()
-                .placeholder(R.drawable.ic_book_blue_grey_900_48dp)
-                .fitCenter())
-            .into(thumbnail);
-      }
-    }).addOnFailureListener(e -> {
-          if (getContext() != null) {
-            Glide.with(this)
-                .load("")
-                .apply(new RequestOptions()
-                    .error(R.drawable.ic_book_blue_grey_900_48dp)
-                    .fitCenter())
-                .into(thumbnail);
+    sr.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+      @Override
+      public void onSuccess(Uri uri) {
+          try {
+              Glide.with(SharedBookDetailFragment.this)
+                      .load(uri)
+                      .into(thumbnail);
+          }catch (Exception e){
+              e.printStackTrace();
           }
-        }
-    );
-    
-    
+        /*Picasso.get()
+                .load(uri)
+                .error(R.drawable.ic_book_blue_grey_900_48dp)
+                .into(thumbnail);*/
+      }
+    });
+
     return v;
   }
  

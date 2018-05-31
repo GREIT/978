@@ -11,6 +11,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -43,6 +45,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -241,27 +246,29 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
         
         //book_owner.setText(model.getOwnerUid());
         //book_author.setText(model.getAuthors().keySet().iterator().next());
+
+        book_image.setImageResource(R.drawable.ic_book_blue_grey_900_48dp);
         
         StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
-        
-        sr.getBytes(5 * Constants.SIZE).addOnSuccessListener(bytes -> {
-          Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-          ByteArrayOutputStream stream = new ByteArrayOutputStream();
-          bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-          Glide.with(ctx)
-              .asBitmap()
-              .load(stream.toByteArray())
-              .apply(new RequestOptions()
-                  .placeholder(R.drawable.ic_book_blue_grey_900_48dp)
-                  .fitCenter())
-              .into(book_image);
-        }).addOnFailureListener(e ->
-            Glide.with(ctx)
-                .load("")
-                .apply(new RequestOptions()
+
+        sr.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+          @Override
+          public void onSuccess(Uri uri) {
+              try {
+                  Glide.with(ctx)
+                          .load(uri)
+                          .into(book_image);
+              }catch (Exception e){
+                  e.printStackTrace();
+              }
+            /*Picasso.get()
+                    .load(uri)
+                    //.fit()
+                    //.centerCrop()
                     .error(R.drawable.ic_book_blue_grey_900_48dp)
-                    .fitCenter())
-                .into(book_image));
+                    .into(book_image);*/
+          }
+        });
         
         if (discriminator.equals("ownerUid")) {
           book_image.setOnClickListener(v -> {

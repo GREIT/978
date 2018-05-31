@@ -171,10 +171,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
               @Override
               public void onSuccess(byte[] bytes) {
                 try {
-                  File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(), "pic.jpg");
                   Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                   OutputStream outs = new FileOutputStream(pic);
-                  bm.compress(Bitmap.CompressFormat.JPEG, 85, outs);
+                  bm.compress(Bitmap.CompressFormat.JPEG, 100, outs);
                   iw_user.setImageBitmap(bm);
                   outs.close();
                 } catch (Exception e) {

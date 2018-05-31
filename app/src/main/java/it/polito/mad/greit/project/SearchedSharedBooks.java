@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.location.Location;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -284,25 +285,26 @@ public class SearchedSharedBooks extends AppCompatActivity {
 
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
 
-      sr.getBytes(5 * Constants.SIZE).addOnSuccessListener(bytes -> {
-        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-        Glide.with(ctx)
-            .asBitmap()
-            .load(stream.toByteArray())
-            .apply(new RequestOptions()
-                .placeholder(R.drawable.ic_book_blue_grey_900_48dp)
-                .fitCenter())
-            .into(bookImage);
-      }).addOnFailureListener(e ->
-          Glide.with(ctx)
-              .load("")
-              .apply(new RequestOptions()
+      bookImage.setImageResource(R.drawable.ic_book_blue_grey_900_48dp);
+
+      sr.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        @Override
+        public void onSuccess(Uri uri) {
+            try {
+                Glide.with(ctx)
+                        .load(uri)
+                        .into(bookImage);
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+
+          /*Picasso.get()
+                  .load(uri)
                   .error(R.drawable.ic_book_blue_grey_900_48dp)
-                  .fitCenter())
-              .into(bookImage)
-      );
+                  .into(bookImage);*/
+        }
+      });
+
     }
   }
 

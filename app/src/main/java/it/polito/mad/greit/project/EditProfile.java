@@ -77,16 +77,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -102,7 +107,9 @@ public class EditProfile extends AppCompatActivity {
   private Toolbar t;
   private Profile profile;
   private CircleImageView ciw;
-  private byte[] photo = null;
+  private File pic = null;
+  private Uri imageUri = null;
+  private boolean changed = false;
   private String coordinates=null;
   private String location=null;
  // boolean def = false;
@@ -118,6 +125,8 @@ public class EditProfile extends AppCompatActivity {
     setSupportActionBar(t);
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
     t.setNavigationOnClickListener(v -> onBackPressed());
+
+    pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg");
 
     Setup(b);
 
@@ -140,8 +149,6 @@ public class EditProfile extends AppCompatActivity {
       }
     });
 
-    //setuplocation();
-
   }
 
   public static void hideKeyboard(Activity activity) {
@@ -153,109 +160,6 @@ public class EditProfile extends AppCompatActivity {
       view = new View(activity);
     }
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-  }
-
-  public  void setuplocation() {
-
-    /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && !def) {
-      ActivityCompat.requestPermissions(EditProfile.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.FINE_LOCATION_PERMISSION);
-      ActivityCompat.requestPermissions(EditProfile.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Constants.COARSE_LOCATION_PERMISSION);
-    } else {
-
-      try {*/
-
-       /* if(def){
-          northEast = new LatLng(41.5 + radiusDegrees, 12.3 + radiusDegrees);
-          southWest = new LatLng(41.5 - radiusDegrees, 12.3 - radiusDegrees);
-          Log.d("POSPOSPOS", "setuplocation: DEFAULT");
-        }else{
-          LocationManager mLocationManager;
-          Location myLocation;
-
-          mLocationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
-          List<String> providers = mLocationManager.getProviders(true);
-          Location bestLocation = null;
-          for (String provider : providers) {
-            Location l = mLocationManager.getLastKnownLocation(provider);
-            if (l == null) {
-              continue;
-            }
-            if (bestLocation == null || l.getAccuracy() > bestLocation.getAccuracy()) {
-              bestLocation = l;
-            }
-          }*/
-
-    double radiusDegrees = 30;
-    LatLng northEast,southWest;
-    northEast = new LatLng(41.5 + radiusDegrees, 12.3 + radiusDegrees);
-    southWest = new LatLng(41.5 - radiusDegrees, 12.3 - radiusDegrees);
-    LatLngBounds bounds = LatLngBounds.builder().include(northEast).include(southWest).build();
-    final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-    AutoCompleteTextView ACTV = null;//findViewById(R.id.edit_location);
-    ACTV.setAdapter(autoComplete);
-    HashMap<String,String> place_ids = new HashMap<>();
-    ACTV.addTextChangedListener(new TextWatcher() {
-      @Override
-      public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-      }
-
-      @Override
-      public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        Task<AutocompletePredictionBufferResponse> results =
-                Places.getGeoDataClient(EditProfile.this)
-                        .getAutocompletePredictions(charSequence.toString(), bounds, null);
-        results.addOnSuccessListener(new OnSuccessListener<AutocompletePredictionBufferResponse>() {
-          @Override
-          public void onSuccess(AutocompletePredictionBufferResponse autocompletePredictions) {
-            try {
-              autoComplete.clear();
-              for (int i = 0; i < results.getResult().getCount() && i < 10; i++) {
-                autoComplete.add(results.getResult().get(i).getFullText(null).toString());
-                place_ids.put(results.getResult().get(i).getFullText(null).toString()
-                        ,results.getResult().get(i).getPlaceId());
-              }
-                results.getResult().release();
-              Log.d("DEBUGDEBUGDEBUG", "onSuccess: ENTERED,autocomplete has " + autoComplete.getCount() + "elements");
-            } catch (Exception e) {
-                results.getResult().release();
-                autoComplete.clear();
-            }
-
-          }
-            }).addOnFailureListener(new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception e) {
-            results.getResult().release();
-            autoComplete.clear();
-            place_ids.clear();
-          }
-        });
-      }
-
-      @Override
-      public void afterTextChanged(Editable editable) {
-      }
-
-    });
-
-        ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-          @Override
-          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            hideKeyboard(EditProfile.this);
-            String place_id = place_ids.get(autoComplete.getItem(position));
-            Log.d("DEBUGDEBUGDEBUG", "onItemClick: " + place_ids.get(autoComplete.getItem(position)));
-            Places.getGeoDataClient(EditProfile.this).getPlaceById(place_id).addOnSuccessListener(new OnSuccessListener<PlaceBufferResponse>() {
-              @Override
-              public void onSuccess(PlaceBufferResponse places) {
-                LatLng coords = places.get(0).getLatLng();
-                coordinates = coords.latitude + ";" + coords.longitude;
-              }
-            });
-          }
-        });
-
   }
 
   private void pic_action() {
@@ -344,23 +248,35 @@ public class EditProfile extends AppCompatActivity {
     }
 
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg");
+
     if(pic.exists()){
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        createpic(BitmapFactory.decodeFile(pic.toString(), options));
+        //createpic(BitmapFactory.decodeFile(pic.toString()));
+      Bitmap bm = BitmapFactory.decodeFile(pic.getPath());
+      ciw.setImageBitmap(bm);
     }
     else {
       StorageReference sr = FirebaseStorage.getInstance().getReference()
               .child("profile_pictures/" + user.getUid() + ".jpg");
-      sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+      sr.getFile(pic).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+        @Override
+        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+          try {
+            Bitmap bm = BitmapFactory.decodeFile(pic.getPath());
+            ciw.setImageBitmap(bm);
+          }catch (Exception e){
+            e.printStackTrace();
+            ciw.setImageResource(R.mipmap.ic_launcher_round);
+          }
+        }
+      });
+              /*new OnSuccessListener<byte[]>() {
         @Override
         public void onSuccess(byte[] bytes) {
           try{
             File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg");
             Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             OutputStream outs = new FileOutputStream(pic);
-            bm.compress(Bitmap.CompressFormat.JPEG, 85,outs);
+            bm.compress(Bitmap.CompressFormat.JPEG, 100,outs);
             createpic(bm);
           }catch (Exception e){
             e.printStackTrace();
@@ -375,7 +291,7 @@ public class EditProfile extends AppCompatActivity {
           exception.printStackTrace();
           ciw.setImageResource(R.mipmap.ic_launcher_round);
         }
-      });
+      });*/
     }
   }
 
@@ -413,44 +329,20 @@ public class EditProfile extends AppCompatActivity {
 
     updateLocation(coordinates, location);
 
-    if (this.photo != null) {
-      try {
-        StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
-        ProgressDialog dialog = ProgressDialog.show(EditProfile.this, "", "Uploading, please wait...", true);
-        sr.putBytes(this.photo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-          @Override
-          public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-            try{
-              Bitmap bm = BitmapFactory.decodeByteArray(photo,0,photo.length);
-              OutputStream outs = new FileOutputStream(new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg"));
-              bm.compress(Bitmap.CompressFormat.JPEG, 85, outs);
-              outs.close();
-              dialog.dismiss();
-              Intent swap = new Intent(EditProfile.this, MainActivity.class);
-              swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-              startActivity(swap);
-            }catch (Exception e){
-              if(dialog.isShowing()) {
-                dialog.dismiss();
-              }
-                Intent swap = new Intent(EditProfile.this, MainActivity.class);
-                swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(swap);
-            }
-          }
-        }).addOnFailureListener(new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception exception) {
-            exception.printStackTrace();
-            dialog.dismiss();
-            Intent swap = new Intent(EditProfile.this, MainActivity.class);
-            swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(swap);
-          }
-        });
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+
+    if(changed){
+      StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
+      ProgressDialog dialog = ProgressDialog.show(EditProfile.this, "", "Uploading, please wait...", true);
+      sr.putFile(FileProvider.getUriForFile(this, "it.polito.mad.greit.project", pic))
+              .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        @Override
+        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+          dialog.dismiss();
+          Intent swap = new Intent(EditProfile.this, MainActivity.class);
+          swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+          startActivity(swap);
+        }
+      });
     }
     else{
       Intent swap = new Intent(EditProfile.this, MainActivity.class);
@@ -471,55 +363,57 @@ public class EditProfile extends AppCompatActivity {
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    Bitmap bm = null;
 
     if (requestCode == Constants.REQUEST_GALLERY && resultCode == RESULT_OK) {
       try {
-        Uri uri = data.getData();
-        bm = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-      } catch (Exception e) {
+        Uri result = data.getData();
+        CropImage.activity(result)
+                .setCropShape(CropImageView.CropShape.OVAL)
+                .setOutputUri(FileProvider.getUriForFile(this, "it.polito.mad.greit.project", pic))
+                .setAspectRatio(1, 1)
+                .setRequestedSize(300, 300, CropImageView.RequestSizeOptions.RESIZE_INSIDE)
+                .start(this);
+      }catch (Exception e){
         e.printStackTrace();
       }
     }
     else if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-      try{
-        bm = (Bitmap) data.getExtras().get("data");
-      }catch (Exception e){
-        e.printStackTrace();
-      }
-    }
-    /*else if (requestCode == Constants.PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
       try {
-        Place place = PlacePicker.getPlace(this, data);
-        TextView tv = findViewById(R.id.edit_location);
-        tv.setText(place.getAddress().toString());
-        Toast.makeText(this, R.string.location_msg + place.getAddress().toString(), Toast.LENGTH_LONG).show();
+        CropImage.activity(imageUri)
+                .setCropShape(CropImageView.CropShape.OVAL)
+                .setOutputUri(FileProvider.getUriForFile(this, "it.polito.mad.greit.project", pic))
+                .setAspectRatio(1, 1)
+                .setRequestedSize(300, 300,CropImageView.RequestSizeOptions.RESIZE_INSIDE)
+                .start(this);
       }catch (Exception e){
         e.printStackTrace();
       }
-    }*/
-
-    if (bm != null) {
-      ByteArrayOutputStream stream = new ByteArrayOutputStream();
-      bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-      this.photo = stream.toByteArray();
-      this.createpic(bm);
-      bm.recycle();
-      try{
-          stream.close();
+    }
+    else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+      try {
+        changed = true;
+        Bitmap bm = BitmapFactory.decodeFile(pic.getPath());
+        ciw.setImageBitmap(bm);
       }catch (Exception e){
-          e.printStackTrace();
+        e.printStackTrace();
       }
     }
+
   }
 
   void Camera() {
-
     if (ContextCompat.checkSelfPermission(EditProfile.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions(EditProfile.this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_PERMISSION);
     } else {
       Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-      startActivityForResult(takePictureIntent, Constants.REQUEST_IMAGE_CAPTURE);
+      try {
+        File img = File.createTempFile("temp", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+        imageUri = FileProvider.getUriForFile(this, "it.polito.mad.greit.project", img);
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(takePictureIntent, Constants.REQUEST_IMAGE_CAPTURE);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -528,20 +422,6 @@ public class EditProfile extends AppCompatActivity {
     if (requestCode == Constants.CAMERA_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
       Camera();
     }
-    /*else if(requestCode == Constants.FINE_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-     setuplocation();
-    }
-    else if(requestCode == Constants.COARSE_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-      setuplocation();
-    }
-    else if(requestCode == Constants.COARSE_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
-      def=true;
-      setuplocation();
-    }
-    else if(requestCode == Constants.FINE_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
-      def=true;
-      setuplocation();
-    }*/
   }
 /*
   @Override
@@ -552,7 +432,7 @@ public class EditProfile extends AppCompatActivity {
   }
 */
 
-  private void createpic(Bitmap bm) {
+  /*private void createpic(Bitmap bm) {
 
     int width = ciw.getWidth();
     int height = ciw.getHeight();
@@ -566,7 +446,7 @@ public class EditProfile extends AppCompatActivity {
     canvas.drawRect((float)(width/2 - (0.03*width)),(float)(0.7*height),(float)(width/2 + (0.03*width)),(float)(0.3*height),p);
     canvas.drawRect((float)(0.7*width),(float)(height/2 - (0.03*height)),(float)(0.3*width),(float)(height/2 + (0.03*height)),p);
     ciw.setImageBitmap(imageBitmap);
-  }
+  }*/
 
   protected void onSaveInstanceState(Bundle b) {
     super.onSaveInstanceState(b);
@@ -603,4 +483,5 @@ public class EditProfile extends AppCompatActivity {
       }
     });
   }
+
 }
