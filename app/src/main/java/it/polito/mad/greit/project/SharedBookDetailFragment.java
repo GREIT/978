@@ -1,10 +1,7 @@
 package it.polito.mad.greit.project;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -12,23 +9,18 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -71,7 +63,7 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
     String dateAndOwnerInfo = "Added on " + date + "\nby @" + sb.getOwnerUsername();
 
     Spannable spannable = new SpannableString(dateAndOwnerInfo);
-    spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorAccent)), 24,
+    spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.accent)), 24,
             dateAndOwnerInfo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD_ITALIC),
             25, dateAndOwnerInfo.length(), 0);
@@ -85,7 +77,7 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
       contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
     } else if(sb.getShared() == true) {
       contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
-      rightBar.setBackgroundColor(ContextCompat.getColor(v.getContext(), R.color.colorGrey));
+      rightBar.setBackgroundColor(ContextCompat.getColor(v.getContext(), R.color.unavailable));
     } else {
       contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
       contactForLoan.setOnClickListener(view -> Chat.openchat(this.getContext(), sb));

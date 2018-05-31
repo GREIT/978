@@ -14,7 +14,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="@color/colorPrimary"
+        android:background="@color/primary"
         android:orientation="horizontal"
         android:padding="15dp">
 
@@ -34,7 +34,7 @@
                 android:layout_alignParentTop="true"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="@color/white"
+                android:textColor="@color/onPrimary"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -46,7 +46,7 @@
                 android:layout_marginBottom="10dp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="@color/white"
+                android:textColor="@color/onPrimary"
                 android:textStyle="bold" />
 
             <TextView
@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/bookCardAuthor"
-                android:textColor="@color/white"
+                android:textColor="@color/onPrimary"
                 android:visibility="gone" />
 
             <TextView
@@ -62,14 +62,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/bookCardPublisher"
-                android:textColor="@color/white" />
+                android:textColor="@color/onPrimary" />
 
             <TextView
                 android:id="@+id/bookCardISBN"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:textColor="@color/white" />
+                android:textColor="@color/onPrimary" />
 
         </RelativeLayout>
 

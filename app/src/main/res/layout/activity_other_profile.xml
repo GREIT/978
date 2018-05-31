@@ -15,7 +15,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
-    android:background="@color/colorPrimary"
+    android:background="@color/primary"
     android:orientation="horizontal"
     android:padding="30dp">
 
@@ -27,7 +27,7 @@
       android:layout_marginEnd="20dp"
       android:layout_marginRight="20dp"
       android:contentDescription="Profile Picture"
-      app:civ_border_color="@color/colorAccent"
+      app:civ_border_color="@color/accent"
       app:civ_border_width="3dp"
       app:srcCompat="@mipmap/ic_launcher_round" />
 
@@ -46,7 +46,7 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        android:textColor="@color/colorPrimaryTitle"
+        android:textColor="@color/onPrimary"
         android:textStyle="bold" />
 
       <RatingBar
@@ -71,7 +71,7 @@
         android:ellipsize="end"
         android:maxLines="3"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@color/colorSecondaryTitle" />
+        android:textColor="@color/onSecondary" />
     </LinearLayout>
 
   </LinearLayout>

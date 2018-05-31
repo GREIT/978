@@ -36,7 +36,7 @@
           android:layout_alignParentTop="true"
           android:ellipsize="end"
           android:maxLines="1"
-          android:textColor="@color/colorPrimaryText"
+          android:textColor="@color/onBackground"
           android:textSize="20sp"
           android:textStyle="bold" />
 
@@ -77,7 +77,7 @@
           android:layout_alignParentRight="true"
           android:elevation="3dp"
           android:minWidth="0dp"
-          android:textColor="@color/colorAccent"
+          android:textColor="@color/accent"
           android:textStyle="bold" />
 
       </RelativeLayout>

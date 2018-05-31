@@ -23,8 +23,8 @@
     <android.support.design.widget.TextInputLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:textColorHint="@color/colorPrimaryText"
-      android:textColor="@color/colorPrimaryTitle"
+      android:textColorHint="@color/onBackground"
+      android:textColor="@color/onPrimary"
       android:hint="@string/insert_isbn">
 
       <EditText
@@ -32,8 +32,8 @@
         android:id="@+id/share_new_book_ISBN"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:backgroundTint="@color/colorPrimaryText"
-        android:textColor="@color/colorPrimaryText"
+        app:backgroundTint="@color/onBackground"
+        android:textColor="@color/onBackground"
         android:inputType="text" />
     </android.support.design.widget.TextInputLayout>
 
@@ -42,7 +42,7 @@
       android:layout_height="wrap_content"
       android:text="@string/or"
       android:paddingVertical="10dp"
-      android:textColor="@color/colorPrimaryText"/>
+      android:textColor="@color/onBackground"/>
 
     <Button
       android:id="@+id/share_new_book_scan"

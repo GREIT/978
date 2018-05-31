@@ -1,38 +1,22 @@
 package it.polito.mad.greit.project;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.DatabaseUtils;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.os.AsyncTask;
 import android.os.Build;
-import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -44,16 +28,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONObject;
-
-import java.io.BufferedWriter;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import static it.polito.mad.greit.project.Constants.DB_SHARED;
 import static it.polito.mad.greit.project.Constants.DB_USER_CHAT;
@@ -246,15 +221,15 @@ public class ChatActivity extends AppCompatActivity {
         if( state == STATE_FREE) {
             title = getResources().getString(R.string.free);
             message = getResources().getString(R.string.dialog_free_message);
-            color = getResources().getColor(R.color.colorGreen);
+            color = getResources().getColor(R.color.green);
         } else if (state == STATE_BORROWTOUSER){
             title = getResources().getString(R.string.borrowed_to_you);
             message = getResources().getString(R.string.dialog_borrowed_to_you);
-            color = getResources().getColor(R.color.colorGold);
+            color = getResources().getColor(R.color.gold);
         } else {
             title = getResources().getString(R.string.borrowed_to_other);
             message = getResources().getString(R.string.dialog_borrowed_to_other);
-            color = getResources().getColor(R.color.colorRed);
+            color = getResources().getColor(R.color.red);
         }
         icon.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
 
@@ -442,16 +417,16 @@ public class ChatActivity extends AppCompatActivity {
 
         switch (state){
             case STATE_FREE:
-                color = getResources().getColor(R.color.colorGreen);
+                color = getResources().getColor(R.color.green);
                 break;
             case STATE_BORROWTOUSER:
-                color = getResources().getColor(R.color.colorGold);
+                color = getResources().getColor(R.color.gold);
                 break;
             case STATE_BORROWTOOTHER:
-                color = getResources().getColor(R.color.colorRed);
+                color = getResources().getColor(R.color.red);
                 break;
             default:
-                color = getResources().getColor(R.color.colorGrey);
+                color = getResources().getColor(R.color.unavailable);
         }
         if(isOwner()){
             b.setBackgroundColor(color);

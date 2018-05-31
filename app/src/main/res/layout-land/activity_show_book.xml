@@ -22,7 +22,7 @@
                 android:layout_weight="3"
                 android:gravity="top"
                 android:padding="30dp"
-                android:background="@color/colorPrimary">
+                android:background="@color/primary">
 
             <ImageView
                 android:id="@+id/show_book_pic"
@@ -74,7 +74,7 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                        android:textColor="@color/colorPrimaryText" />
+                        android:textColor="@color/onBackground" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -105,7 +105,7 @@
                         android:maxLines="2"
                         android:ellipsize="end"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                        android:textColor="@color/colorPrimaryText" />
+                        android:textColor="@color/onBackground" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -134,7 +134,7 @@
                         android:fontFamily="@font/nunito_semibold"
                         android:text="848451765168"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                        android:textColor="@color/colorPrimaryText" />
+                        android:textColor="@color/onBackground" />
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -164,7 +164,7 @@
                         android:ellipsize="end"
                         android:text="Rizzoli, Sempre Lui"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                        android:textColor="@color/colorPrimaryText" />
+                        android:textColor="@color/onBackground" />
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -192,7 +192,7 @@
                         android:fontFamily="@font/nunito_semibold"
                         android:text="6666"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                        android:textColor="@color/colorPrimaryText" />
+                        android:textColor="@color/onBackground" />
                 </LinearLayout>
 
 

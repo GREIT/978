@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:text="@string/conditions"
-            android:textColor="@color/colorPrimaryText"
+            android:textColor="@color/onBackground"
             android:textStyle="bold" />
 
           <EditText
@@ -61,8 +61,8 @@
             android:layout_height="wrap_content"
             android:hint="@string/describe_your_book"
             android:inputType="textMultiLine"
-            android:textColor="@color/colorPrimaryText"
-            android:textColorHint="@color/colorSecondarytext"
+            android:textColor="@color/onBackground"
+            android:textColorHint="@color/onSurface"
             android:textSize="15sp"
             android:maxLength="140"/>
 
@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/complete_book_text_count"
             android:text="140"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/accent"
             android:textStyle="bold"/>
 
         </LinearLayout>
@@ -101,14 +101,14 @@
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
           android:text="@string/tag"
-          android:textColor="@color/colorPrimaryText"
+          android:textColor="@color/onBackground"
           android:textStyle="bold" />
 
         <it.polito.mad.greit.project.TagEditText
           android:id="@+id/complete_book_tags"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:textColor="@color/colorPrimaryText"
+          android:textColor="@color/onBackground"
           android:textSize="15sp"
           android:textStyle="bold" />
 
@@ -125,7 +125,7 @@
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
           android:text="@string/title"
-          android:textColor="@color/colorPrimaryText"
+          android:textColor="@color/onBackground"
           android:textStyle="bold" />
 
         <TextView
@@ -133,7 +133,7 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:text=""
-          android:textColor="@color/colorPrimaryText" />
+          android:textColor="@color/onBackground" />
 
       </LinearLayout>
 
@@ -148,7 +148,7 @@
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
           android:text="@string/author"
-          android:textColor="@color/colorPrimaryText"
+          android:textColor="@color/onBackground"
           android:textStyle="bold" />
 
         <TextView
@@ -157,7 +157,7 @@
           android:layout_height="wrap_content"
           android:ellipsize="end"
           android:text=""
-          android:textColor="@color/colorPrimaryText" />
+          android:textColor="@color/onBackground" />
 
       </LinearLayout>
 
@@ -172,7 +172,7 @@
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
           android:text="@string/ISBN"
-          android:textColor="@color/colorPrimaryText"
+          android:textColor="@color/onBackground"
           android:textStyle="bold" />
 
         <TextView
@@ -180,7 +180,7 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:text=""
-          android:textColor="@color/colorPrimaryText" />
+          android:textColor="@color/onBackground" />
 
       </LinearLayout>
 
@@ -195,7 +195,7 @@
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
           android:text="@string/publisher"
-          android:textColor="@color/colorPrimaryText"
+          android:textColor="@color/onBackground"
           android:textStyle="bold" />
 
         <TextView
@@ -203,7 +203,7 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:text=""
-          android:textColor="@color/colorPrimaryText" />
+          android:textColor="@color/onBackground" />
 
       </LinearLayout>
 
@@ -218,7 +218,7 @@
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
           android:text="@string/published"
-          android:textColor="@color/colorPrimaryText"
+          android:textColor="@color/onBackground"
           android:textStyle="bold" />
 
         <TextView
@@ -227,7 +227,7 @@
           android:layout_height="wrap_content"
           android:inputType="number"
           android:text=""
-          android:textColor="@color/colorPrimaryText" />
+          android:textColor="@color/onBackground" />
 
       </LinearLayout>
 

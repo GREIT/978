@@ -28,7 +28,7 @@
                 android:tint="@color/white"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
-                android:background="@color/colorGreenDark"
+                android:background="@color/greenDark"
                 android:visibility="invisible"/>
 
             <RelativeLayout
@@ -49,7 +49,7 @@
                     android:textSize="20dp"
                     android:layout_alignParentLeft="true"
                     android:text="Book title"
-                    android:textColor="@color/colorPrimaryText"
+                    android:textColor="@color/onBackground"
                     android:textStyle="bold"
                     android:singleLine="true"
                     android:ellipsize="end"/>
@@ -58,7 +58,7 @@
                     android:id="@+id/transaction_from_to"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimaryText"
+                    android:textColor="@color/onBackground"
                     android:layout_below="@id/transaction_book_title"
                     android:text="To/From"/>
 
@@ -72,7 +72,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:text=" @username"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="@color/accent"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -84,14 +84,14 @@
                         android:id="@+id/transaction_start_date_from"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorPrimaryText"
+                        android:textColor="@color/onBackground"
                         android:text="From " />
 
                     <TextView
                         android:id="@+id/transaction_start_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorPrimaryText"
+                        android:textColor="@color/onBackground"
                         android:textStyle="bold"
                         android:text="Jan 01, 1900"/>
 
@@ -99,14 +99,14 @@
                         android:id="@+id/transaction_end_date_to"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorPrimaryText"
+                        android:textColor="@color/onBackground"
                         android:text=" to "/>
 
                     <TextView
                         android:id="@+id/transaction_end_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorPrimaryText"
+                        android:textColor="@color/onBackground"
                         android:textStyle="bold"
                         android:text="Dec 31, 2000"/>
 
@@ -138,7 +138,7 @@
                 android:tint="@color/white"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:background="@color/colorAccent"
+                android:background="@color/accent"
                 android:visibility="invisible" />
 
         </RelativeLayout>

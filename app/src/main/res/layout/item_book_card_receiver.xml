@@ -43,7 +43,7 @@
         android:layout_height="30dp"
         android:layout_margin="5dp"
         android:background="@drawable/circular_button"
-        android:backgroundTint="@color/colorGrey"
+        android:backgroundTint="@color/unavailable"
         android:layout_gravity="center_vertical"
         android:elevation="2dp"
         />
@@ -59,7 +59,7 @@
         android:thumbTint="@color/switch_color"
         android:trackTint="@color/switch_color_track"
         android:textSize="14sp"
-        android:textColor="@color/colorSecondarytext"
+        android:textColor="@color/onSurface"
         android:textStyle="bold"
         -->
 

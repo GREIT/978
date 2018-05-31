@@ -14,7 +14,7 @@
     android:id="@+id/search_box_main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimary"
+    android:background="@color/primary"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="10dp"
@@ -32,7 +32,7 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
         android:text="@string/search_text_main"
-        android:textColor="@color/white"
+        android:textColor="@color/onPrimary"
         android:textSize="20sp" />
 
       <Button
@@ -42,7 +42,7 @@
         android:layout_toEndOf="@+id/search_text_main"
         android:layout_toRightOf="@+id/search_text_main"
         android:background="@drawable/common_google_signin_btn_icon_light_normal_background"
-        android:backgroundTint="@color/colorAccent"
+        android:backgroundTint="@color/accent"
         android:elevation="3dp"
         android:minWidth="0dp"
         android:paddingLeft="16dp"

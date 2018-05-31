@@ -23,7 +23,7 @@
             android:layout_weight="3"
             android:gravity="top"
             android:padding="30dp"
-            android:background="@color/colorPrimary">
+            android:background="@color/primary">
 
             <de.hdodenhof.circleimageview.CircleImageView
               xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -34,7 +34,7 @@
               android:layout_marginEnd="20dp"
               android:layout_marginRight="20dp"
               android:layout_gravity="center_vertical"
-              app:civ_border_color="@color/colorAccent"
+              app:civ_border_color="@color/accent"
               app:srcCompat="@mipmap/ic_launcher_round"
               app:civ_border_width="3dp" />
 
@@ -50,7 +50,7 @@
                     android:layout_gravity="top"
                     android:contentDescription="Name"
                     android:text="Mario Rossi"
-                    android:textColor="@color/colorPrimaryTitle"
+                    android:textColor="@color/onPrimary"
                     android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
 
                 <TextView
@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/username"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textColor="@color/colorSecondaryTitle" />
+                    android:textColor="@color/onSecondary" />
             </LinearLayout>
         </LinearLayout>
 
@@ -87,7 +87,7 @@
                         android:layout_gravity="top"
                         android:layout_marginRight="40dp"
                         android:src="@drawable/ic_email_black_24dp"
-                        android:tint="@color/colorPrimaryDark" />
+                        android:tint="@color/primaryDark" />
 
                     <TextView
                         android:id="@+id/email"
@@ -97,7 +97,7 @@
                         android:contentDescription="Email"
                         android:text="@string/email"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                        android:textColor="@color/colorPrimaryText" />
+                        android:textColor="@color/onBackground" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -112,7 +112,7 @@
                         android:layout_gravity="top"
                         android:layout_marginRight="40dp"
                         android:src="@drawable/ic_place_black_24dp"
-                        android:tint="@color/colorPrimaryDark" />
+                        android:tint="@color/primaryDark" />
 
                     <TextView
                         android:id="@+id/location"
@@ -121,7 +121,7 @@
                         android:layout_gravity="center_vertical"
                         android:contentDescription="Location"
                         android:text="@string/location"
-                        android:textColor="@color/colorPrimaryText"
+                        android:textColor="@color/onBackground"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
                 </LinearLayout>
 
@@ -137,7 +137,7 @@
                         android:layout_gravity="top"
                         android:layout_marginRight="40dp"
                         android:src="@drawable/ic_description_black_24dp"
-                        android:tint="@color/colorPrimaryDark" />
+                        android:tint="@color/primaryDark" />
 
                     <TextView
                         android:id="@+id/biography"
@@ -146,7 +146,7 @@
                         android:layout_gravity="center_vertical"
                         android:contentDescription="Biography"
                         android:text="@string/bio"
-                        android:textColor="@color/colorPrimaryText"
+                        android:textColor="@color/onBackground"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
                 </LinearLayout>
             </LinearLayout>

@@ -63,7 +63,7 @@
           android:id="@+id/right_bar_detail"
           android:layout_width="80dp"
           android:layout_height="match_parent"
-          android:background="@color/colorAccent"
+          android:background="@color/accent"
           android:elevation="3dp"
           android:gravity="center_horizontal"
           android:orientation="vertical"

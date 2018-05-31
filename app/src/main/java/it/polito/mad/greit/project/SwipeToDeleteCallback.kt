@@ -2,7 +2,6 @@ package it.polito.mad.greit.project
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
@@ -18,7 +17,7 @@ abstract class SwipeToDeleteCallback(context: Context) : ItemTouchHelper.SimpleC
     private val intrinsicWidth = deleteIcon.intrinsicWidth
     private val intrinsicHeight = deleteIcon.intrinsicHeight
     private val background = ColorDrawable()
-    private val backgroundColor = context.resources.getColor(R.color.colorAccent)
+    private val backgroundColor = context.resources.getColor(R.color.accent)
     private val clearPaint = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
 
 

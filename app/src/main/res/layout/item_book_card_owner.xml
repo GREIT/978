@@ -58,7 +58,7 @@
         android:thumbTint="@color/switch_color"
         android:trackTint="@color/switch_color_track"
         android:textSize="14sp"
-        android:textColor="@color/colorSecondarytext"
+        android:textColor="@color/onSurface"
         android:textStyle="bold"
         -->
 

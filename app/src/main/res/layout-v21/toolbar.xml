@@ -4,7 +4,7 @@
   android:layout_height="wrap_content"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:minHeight="?attr/actionBarSize"
-  android:background="@color/colorPrimary"
+  android:background="@color/primary"
   android:elevation="6dp"
   app:theme="@style/ToolbarTheme"
   app:popupTheme="@style/PupupTheme">

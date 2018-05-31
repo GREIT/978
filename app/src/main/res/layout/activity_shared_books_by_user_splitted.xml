@@ -54,7 +54,7 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_add_book_from_shared_books_split"
-        app:backgroundTint="@color/colorAccent"
+        app:backgroundTint="@color/accent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
