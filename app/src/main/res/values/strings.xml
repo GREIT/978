@@ -17,6 +17,8 @@
   <string name="item_year">Year</string>
   <string name="item_tag">Tag</string>
   <string name="nav_my_books">My Books</string>
+  <string name="nav_my_reviews">Received Reviews</string>
+  <string name="nav_history">History</string>
 
   // Authentication
   <string name="signout">Sign out</string>
@@ -65,7 +67,6 @@
   <string name="actvity_complete_book_info">Complete book\'s informations</string>
   <string name="describe_your_book">How\'s your book</string>
 
-
   //Show Book
   <string name="show_book_title">Book</string>
   <string name="edit">Edit</string>
@@ -92,10 +93,11 @@
   <string name="tab_text_1">Your Books</string>
   <string name="tab_text_2">Borrowed Books</string>
   <string name="tab_text_3">Tab 3</string>
+
   <string name="action_settings">Settings</string>
-  <string name="section_format">Hello World from section: %1$d</string>
 
   //Chat
+  <string name="enter_message">Enter message</string>
   <string name="inbox">Inbox</string>
   <string name="input">Insert here...</string>
   <string name="free">Free</string>
@@ -122,10 +124,6 @@
   <string name="incoming">New messages from %1$s for the book %2$s</string>
   <string name="lock_event">%1$s accepted your request for book %2$s</string>
 
-  <!-- TODO: Remove or change this placeholder text -->
-  <string name="hello_blank_fragment">Hello blank fragment</string>
-
   <string name="cannot_delete">You cannot delete this book because there is an active loan.</string>
-
 
 </resources>

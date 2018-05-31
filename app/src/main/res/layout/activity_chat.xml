@@ -30,8 +30,11 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/chat_message_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingHorizontal="5dp"
+        android:layout_height="0dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
         android:layout_marginBottom="5dp"
         android:layout_weight="1"
         android:clipToPadding="false" />
@@ -54,12 +57,12 @@
 
         <EditText
             android:id="@+id/chat_input"
-            android:hint="Enter message"
+            android:hint="@string/enter_message"
             android:background="@android:color/transparent"
             android:layout_gravity="center"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:maxLines="6"/>

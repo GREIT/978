@@ -3,6 +3,9 @@
   <string name="app_name">Project</string>
   <string name="title_activity_main">Home</string>
 
+  //Misc
+  <string name="yes">Si</string>
+
   // Main activity
   <string name="search_text_main">Cerca i libri per</string>
   <string name="search_field">Cerca qui</string>
@@ -14,10 +17,13 @@
   <string name="item_isbn">ISBN</string>
   <string name="item_year">Anno</string>
   <string name="item_tag">Tag</string>
-  <string name="nav_my_books">My Books</string>
+  <string name="nav_my_books">I miei libri</string>
+  <string name="nav_my_reviews">Recensioni ricevute</string>
+  <string name="nav_history">Storico</string>
+
 
   // Authentication
-  <string name="signout">Sign out</string>
+  <string name="signout">Esci</string>
 
   // Complete Profile
   <string name="activity_complete_profile">Completa il tuo profilo</string>
@@ -80,13 +86,23 @@
   <string name="dialog_clicked">Dialog clicked</string>
   <string name="denied">Permesso negato</string>
 
+  //Navigator
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
   <string name="nav_header_desc">Navigation header</string>
 
+  //Tabbed Page Strings
+  <string name="title_activity_shared_books_by_user_splitted">Libri condivisi</string>
+  <string name="tab_text_1">I tuoi libri</string>
+  <string name="tab_text_2">Libri in prestito</string>
+  <string name="tab_text_3">Tab 3</string>
+
+  <string name="action_settings">Impostazioni</string>
+
   //chat
+  <string name="enter_message">Inserisci messaggio</string>
   <string name="inbox">Messaggi</string>
-  <string name="input">Inserisci qui...</string>
+  <string name="input">Inserisci qui</string>
   <string name="free">Libero</string>
   <string name="borrowed">Prestato</string>
   <string name="alert_message_chat_lock">"Sei davvero sicuro di voler prestare questo libro?"</string>

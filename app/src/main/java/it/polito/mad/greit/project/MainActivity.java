@@ -496,9 +496,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       Intent intent = new Intent(MainActivity.this, InboxActivity.class);
       startActivity(intent);
     } else if (id == R.id.nav_my_history) {
-      Intent intent = new Intent(MainActivity.this, UserHistory.class);
-      intent.putExtra("uid", user.getUid());
-      startActivity(intent);
+        Intent intent = new Intent(MainActivity.this, UserHistory.class);
+        intent.putExtra("uid", user.getUid());
+        startActivity(intent);
+    } else if (id == R.id.nav_my_reviews) {
+        Intent intent = new Intent(MainActivity.this, ReceivedReviewsActivity.class);
+        startActivity(intent);
     } else if (id == R.id.nav_sign_out) {
       FirebaseAuth.getInstance().signOut();
       Intent intent = new Intent(MainActivity.this, SignInActivity.class);
