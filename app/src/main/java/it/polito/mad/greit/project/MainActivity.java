@@ -364,13 +364,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       @Override
       public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         BookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
-        viewHolder.setOnClickListener(new BookViewHolder.ClickListener() {
-          @Override
-          public void onItemClick(View view, String ISBN) {
-            hideKeyboard(MainActivity.this);
-            //bookExpand(ISBN);
-          }
-        });
         return viewHolder;
       }
       
@@ -412,13 +405,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       @Override
       public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         BookViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
-        viewHolder.setOnClickListener(new BookViewHolder.ClickListener() {
-          @Override
-          public void onItemClick(View view, String ISBN) {
-            hideKeyboard(MainActivity.this);
-            //bookExpand(ISBN);
-          }
-        });
+        
         return viewHolder;
       }
     };
@@ -428,19 +415,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   
   public static class BookViewHolder extends RecyclerView.ViewHolder {
     View mView;
-    private BookViewHolder.ClickListener mClickListener;
     
     public BookViewHolder(View itemView) {
       super(itemView);
       mView = itemView;
-    }
-    
-    public interface ClickListener {
-      void onItemClick(View view, String ISBN);
-    }
-    
-    public void setOnClickListener(BookViewHolder.ClickListener clickListener) {
-      mClickListener = clickListener;
     }
     
     public void setDetails(Context ctx, Book model) {
@@ -450,7 +428,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       TextView twISBN = (TextView) mView.findViewById(R.id.bookCardISBN);
       TextView twYear = (TextView) mView.findViewById(R.id.bookCardYear);
       ImageView iwCover = (ImageView) mView.findViewById(R.id.bookCardCover);
-      Button btSearch = (Button) mView.findViewById(R.id.bookCardSearchButton);
+      TextView twCopies = (TextView) mView.findViewById(R.id.bookCardCopies);
+  
+      itemView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          Intent I = new Intent(itemView.getContext(),
+              SearchedSharedBooks.class);
+          I.putExtra("book", model);
+          I.putExtra("userLocation", profile.getCoordinates());
+          itemView.getContext().startActivity(I);
+        }
+      });
       
       String AS = android.text.TextUtils.join(", ", model.getAuthors().keySet());
       twAuthor.setText(AS);
@@ -463,15 +452,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
           .load(model.getCover())
           .into(iwCover);
       
-      btSearch.setText("COPIES NEAR YOU");
-      
-      btSearch.setOnClickListener(v -> {
-        Intent I = new Intent(ctx,
-            SearchedSharedBooks.class);
-        I.putExtra("book", model);
-        I.putExtra("userLocation", profile.getCoordinates());
-        ctx.startActivity(I);
-      });
+      if (model.getBooksOnLoan() == 1) twCopies.setText(model.getBooksOnLoan() + " COPY AVAILABLE");
+      else twCopies.setText(model.getBooksOnLoan() + " COPIES AVAILABLE");
     }
   }
   

@@ -294,9 +294,14 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
                       public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
                           Book tmpBook = ds.getValue(Book.class);
-                          DatabaseReference tmpDbRef  = db.getReference("BOOKS/" + model.getISBN());
-                          tmpDbRef.child("booksOnLoan").setValue(Integer.valueOf(tmpBook.getBooksOnLoan()) - 1);
-                          Toast.makeText(ctx, "Book removed from your collection", Toast.LENGTH_SHORT).show();
+                          if (tmpBook.getBooksOnLoan() == 1) {
+                            DatabaseReference tmpDbRef  = db.getReference("BOOKS/" + model.getISBN());
+                            tmpDbRef.removeValue();
+                          } else {
+                            DatabaseReference tmpDbRef  = db.getReference("BOOKS/" + model.getISBN());
+                            tmpDbRef.child("booksOnLoan").setValue(Integer.valueOf(tmpBook.getBooksOnLoan()) - 1);
+                            Toast.makeText(ctx, "Book removed from your collection", Toast.LENGTH_SHORT).show();
+                          }
                         }
                       }
                       
