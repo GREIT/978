@@ -163,17 +163,21 @@ public class ChatListAdapter extends RecyclerView.Adapter {
             sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + chat.getUserID() + ".jpg");
     
             sr.getDownloadUrl().addOnSuccessListener(uri -> {
-               Glide.with(ctx)
-                   .load(uri)
-                   .into(imageProfile);
+                if (ctx != null) {
+                    Glide.with(ctx)
+                        .load(uri)
+                        .into(imageProfile);
+                }
                    
             }).addOnFailureListener( e -> {
-                Glide.with(ctx)
-                    .load("")
-                    .apply(new RequestOptions()
-                        .error(R.mipmap.ic_launcher_round)
-                    .fitCenter())
-                    .into(imageProfile);
+                if (ctx != null) {
+                    Glide.with(ctx)
+                        .load("")
+                        .apply(new RequestOptions()
+                            .error(R.mipmap.ic_launcher_round)
+                            .fitCenter())
+                        .into(imageProfile);
+                }
             });
             
             usernameText.setText(chat.getUsername());
