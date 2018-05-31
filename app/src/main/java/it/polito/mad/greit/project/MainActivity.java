@@ -490,7 +490,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     int id = item.getItemId();
     
     if (id == R.id.nav_my_books) {
-      Intent intent = new Intent(MainActivity.this, SharedBooksByUserSplitted.class);
+      Intent intent = new Intent(MainActivity.this, SharedBooksByUser.class);
       startActivity(intent);
     } else if (id == R.id.nav_chat) {
       Intent intent = new Intent(MainActivity.this, InboxActivity.class);
