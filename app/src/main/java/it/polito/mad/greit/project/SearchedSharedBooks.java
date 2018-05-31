@@ -224,19 +224,10 @@ public class SearchedSharedBooks extends AppCompatActivity {
 
   public static class SharedBookViewHolder extends RecyclerView.ViewHolder {
     View mView;
-    private SharedBookViewHolder.ClickListener mClickListener;
 
     public SharedBookViewHolder(View itemView) {
       super(itemView);
       mView = itemView;
-    }
-
-    public interface ClickListener {
-      void onItemClick(View view, SharedBook model);
-    }
-
-    public void setOnClickListener(SharedBookViewHolder.ClickListener clickListener) {
-      mClickListener = clickListener;
     }
 
     public void setDetails(Context ctx, SharedBook model, android.support.v4.app.FragmentManager fm) {
@@ -247,6 +238,15 @@ public class SearchedSharedBooks extends AppCompatActivity {
       TextView bookTitle = (TextView) mView.findViewById(R.id.shared_book_card_title);
 
       bookTitle.setText(model.getTitle());
+      bookTitle.setOnClickListener(v -> {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("book", model);
+        bundle.putSerializable("currentLocation", currentLocation);
+  
+        SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(fm, "dialog");
+      });
 
       bookImage.setOnClickListener(v -> {
         Bundle bundle = new Bundle();
