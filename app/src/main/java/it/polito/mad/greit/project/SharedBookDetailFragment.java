@@ -158,7 +158,7 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
       if (sb.getShared() == true) {
         // Book is currently on loan
         rightBar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorGrey));
-        contactForLoan.setImageResource(R.drawable.ic_textsms_grey_800_48dp);
+        contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
         contactForLoan.setOnClickListener(view -> Toast.makeText(getContext(), "The book is currently on loan!", Toast.LENGTH_SHORT).show());
       } else {
         contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
