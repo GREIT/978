@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MessageListAdapter extends RecyclerView.Adapter {
     private Context mContext;
@@ -24,11 +25,13 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
     private static final int VIEW_TYPE_MESSAGE_SYSTEM = 3;
     private static final String SYSTEM = new String("system");
+    static Locale locale;
 
     public MessageListAdapter(Context context, List<Message> messageList) {
         mContext = context;
         mMessageList = messageList;
         user = FirebaseAuth.getInstance().getCurrentUser();
+        locale = context.getResources().getConfiguration().locale;
     }
 
     // Inflates the appropriate layout according to the ViewType.
@@ -150,8 +153,8 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
     private static String formatDateTime(long time){
         Date date = new Date(time*1000L);
-        SimpleDateFormat dt1 = new SimpleDateFormat("dd-MM hh:mm");
 
+        SimpleDateFormat dt1 = new SimpleDateFormat("dd-MM kk:mm", locale);
 
         return dt1.format(date);
     }

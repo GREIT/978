@@ -83,7 +83,6 @@
   <string name="dialog_clicked">Dialog clicked</string>
   <string name="denied">Permission denied</string>
 
-
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
   <string name="nav_header_desc">Navigation header</string>
@@ -113,10 +112,12 @@
   <string name="dialog_borrowed_to_other">"This book is already borrowed to another user."</string>
   <string name="borrowed_to_other">"Book not available"</string>
 
+  <string name="system_message_accepted">User %1$s accepted the loan</string>
+  <string name="system_message_closed">User %1$s closed the loan</string>
 
 
   //notifications
-  <string name="default_msg">Hello %1$s, can I have the book %2$s ?</string>
+  <string name="default_msg">User %1$s made a request for %2$s</string>
   <string name="new_request">New Request Received from %1$s for the book %2$s</string>
   <string name="incoming">New messages from %1$s for the book %2$s</string>
   <string name="lock_event">%1$s accepted your request for book %2$s</string>
@@ -124,6 +125,7 @@
   <!-- TODO: Remove or change this placeholder text -->
   <string name="hello_blank_fragment">Hello blank fragment</string>
 
+  <string name="cannot_delete">You cannot delete this book because there is an active loan.</string>
 
 
 </resources>

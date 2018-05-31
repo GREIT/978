@@ -9,10 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -127,7 +132,7 @@ public class ChatListAdapter extends RecyclerView.Adapter {
 
         Chat chat = (Chat) chatList.get(iPos);
 
-        ((ChatItemHolder) holder).bind(chat);
+        ((ChatItemHolder) holder).bind(chat, mContext);
     }
 
 
@@ -137,26 +142,51 @@ public class ChatListAdapter extends RecyclerView.Adapter {
     }
 
     private class ChatItemHolder extends RecyclerView.ViewHolder {
+        StorageReference sr;
+        ImageView imageProfile;
         TextView usernameText, titleText, lastText, dateText;
         Button unreadBut;
 
         ChatItemHolder(View itemView) {
             super(itemView);
+            imageProfile = (ImageView) itemView.findViewById(R.id.inbox_chat_profile_pic);
             usernameText = (TextView) itemView.findViewById(R.id.inbox_chat_user);
             titleText = (TextView) itemView.findViewById(R.id.inbox_chat_title);
             lastText = (TextView) itemView.findViewById(R.id.inbox_chat_last);
             unreadBut = (Button) itemView.findViewById(R.id.inbox_chat_unread);
             dateText = (TextView) itemView.findViewById(R.id.inbox_chat_date);
-
+            
 
         }
 
-        void bind(Chat chat) {
+        void bind(Chat chat, Context ctx) {
+            sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + chat.getUserID() + ".jpg");
+    
+            sr.getDownloadUrl().addOnSuccessListener(uri -> {
+                if (ctx != null) {
+                    Glide.with(ctx)
+                        .load(uri)
+                        .into(imageProfile);
+                }
+                   
+            }).addOnFailureListener( e -> {
+                if (ctx != null) {
+                    Glide.with(ctx)
+                        .load("")
+                        .apply(new RequestOptions()
+                            .error(R.mipmap.ic_launcher_round)
+                            .fitCenter())
+                        .into(imageProfile);
+                }
+            });
+            
             usernameText.setText(chat.getUsername());
             titleText.setText(chat.getBookTitle() + " - " + chat.getBookAuthor() );
             // Format the stored timestamp into a readable String using method.
             lastText.setText(chat.getLastMsg());
             dateText.setText(ChatListAdapter.formatDateTime(chat.getTimestamp()));
+            
+            
 
             if(chat.getUnreadCount() == 0){
                 unreadBut.setVisibility(View.INVISIBLE);

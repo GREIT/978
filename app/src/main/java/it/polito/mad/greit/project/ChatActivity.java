@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import static it.polito.mad.greit.project.Constants.DB_SHARED;
 import static it.polito.mad.greit.project.Constants.DB_USER_CHAT;
 import static it.polito.mad.greit.project.Constants.DB_USER_MESSAGES;
+import static it.polito.mad.greit.project.Profile.getCurrentUsername;
+
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -40,6 +42,7 @@ public class ChatActivity extends AppCompatActivity {
     Ci sono diversi problemi...
         1. Non mi piace che io possa premere se il libro é prestato ad altri
      */
+    private static final String SYSTEM = "system";
 
     private final int STATE_FREE = 0;
     private final int STATE_BORROWTOUSER = 1;
@@ -65,6 +68,12 @@ public class ChatActivity extends AppCompatActivity {
         chat = (Chat) getIntent().getSerializableExtra("chat");
         if(getIntent().hasExtra("new") && getIntent().getBooleanExtra("new",false)){
             sendDefaultMsg(chat);
+        }
+        //If it was deleted, set it back to true
+        if( chat.isDeleted() ){
+            chat.setDeleted(false);
+            FirebaseDatabase.getInstance().getReference(Constants.DB_USER_CHAT)
+                    .child(user.getUid()).child(chat.getChatID()).child("deleted").setValue(false);
         }
 
         //Toolbar setup
@@ -98,6 +107,14 @@ public class ChatActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    public void sendSystemMessage(String msg){
+        Message toSend = new Message(chat.getTimestamp(),
+                SYSTEM, SYSTEM ,msg);
+        DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USER_MESSAGES").child(chat.getChatID());
+        String key = fbd.push().getKey();
+        fbd.child(key).setValue(toSend);
+    }
+
     private void zeroUnread(FirebaseUser user,String chatID){
         //put to 0 unread count
         DatabaseReference user_chat = FirebaseDatabase.getInstance()
@@ -120,12 +137,12 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendDefaultMsg(Chat chat){
-
-        String msg = getResources().getString(R.string.default_msg,chat.getUsername(),chat.getBookTitle());
+        String username = Profile.getCurrentUsername(this);
+        String msg = getResources().getString(R.string.default_msg, username ,chat.getBookTitle());
         Context ctx = this;
         Message toSend = new Message(chat.getTimestamp(),
-                FirebaseAuth.getInstance().getCurrentUser().getUid(),
-                Profile.getCurrentUsername(this)
+                SYSTEM,
+                SYSTEM
                 ,msg);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -277,7 +294,7 @@ public class ChatActivity extends AppCompatActivity {
                     bt.setDateEnd(0);
                     if(chat.isMine()) {
                         bt.setOwnerUid(fbu.getUid());
-                        bt.setOwnerUsername(Profile.getCurrentUsername(ChatActivity.this));
+                        bt.setOwnerUsername(getCurrentUsername(ChatActivity.this));
                         bt.setReceiverUid(chat.getUserID());
                         bt.setReceiverUsername(chat.getUsername());
                     }
@@ -285,7 +302,7 @@ public class ChatActivity extends AppCompatActivity {
                         bt.setOwnerUid(chat.getUserID());
                         bt.setOwnerUsername(chat.getUsername());
                         bt.setReceiverUid(fbu.getUid());
-                        bt.setReceiverUsername(Profile.getCurrentUsername(ChatActivity.this));
+                        bt.setReceiverUsername(getCurrentUsername(ChatActivity.this));
                     }
                     bt.setDateStart(0);
                     bt.setChatId(chat.getChatID());
@@ -331,10 +348,14 @@ public class ChatActivity extends AppCompatActivity {
         if(op){
             Log.d("DEBUGTRANSACTION", "startTransaction: enter lock");
             bt.lock_book();
+            sendSystemMessage( getResources().getString(R.string.system_message_accepted,
+                    getCurrentUsername(this)));
         }
         else{
             Log.d("DEBUGTRANSACTION", "startTransaction: enter unlock");
             bt.unlock_book();
+            sendSystemMessage( getResources().getString(R.string.system_message_closed,
+                    getCurrentUsername(this)));
         }
     }
 
@@ -484,7 +505,7 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 Message tosend = new Message(time,
                         FirebaseAuth.getInstance().getCurrentUser().getUid(),
-                        Profile.getCurrentUsername(ChatActivity.this),msg);
+                        getCurrentUsername(ChatActivity.this),msg);
 
                 DatabaseReference fbd = FirebaseDatabase.getInstance().getReference("USER_MESSAGES").child(chatID);
                 String key = fbd.push().getKey();
@@ -501,7 +522,7 @@ public class ChatActivity extends AppCompatActivity {
                         c.setLastMsg(msg);
                         c.setTimestamp(time);
                         mutableData.setValue(c);
-                        Chat.sendnotification(Profile.getCurrentUsername(ChatActivity.this),
+                        Chat.sendnotification(getCurrentUsername(ChatActivity.this),
                                 c.getChatID(),c.getUserID(),"message");
                         return Transaction.success(mutableData);
                     }

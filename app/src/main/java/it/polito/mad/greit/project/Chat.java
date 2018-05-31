@@ -36,6 +36,15 @@ public class Chat implements Serializable, Comparable<Chat>{
     private long timestamp;
     private String bookAuthor;
     private boolean mine; //to detect if book is mine or not
+    private boolean deleted;
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
 
     public String getChatID() {
         return chatID;

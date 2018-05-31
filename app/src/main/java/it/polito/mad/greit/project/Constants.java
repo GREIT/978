@@ -16,6 +16,7 @@ public class Constants {
     public static final String DB_USER_MESSAGES = "USER_MESSAGES";
     public static final String DB_USER_CHAT = "USER_CHATS";
     public static final String DB_SHARED = "SHARED_BOOKS";
+    public static final String DB_TRANSACTIONS = "TRANSACTIONS";
 
 
 
