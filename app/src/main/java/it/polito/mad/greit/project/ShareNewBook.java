@@ -258,13 +258,13 @@ public class ShareNewBook extends AppCompatActivity {
     }
     
     try {
-      toBeReturned.setTitle(bookInfo.getString("title"));
+      toBeReturned.setTitle(bookInfo.getString("title").replaceAll("[\\/\\#\\.\\/\\$\\[]", ""));
     } catch (Exception e) {
       toBeReturned.setTitle("");
     }
     
     try {
-      toBeReturned.setPublisher(bookInfo.getString("publisher"));
+      toBeReturned.setPublisher(bookInfo.getString("publisher").replaceAll("[\\/\\#\\.\\/\\$\\[]", ""));
     } catch (Exception e) {
       toBeReturned.setPublisher("");
     }
@@ -281,7 +281,7 @@ public class ShareNewBook extends AppCompatActivity {
       JSONArray authors = bookInfo.getJSONArray("authors");
       
       for (int i = 0; i < authors.length(); i++) {
-        as.put((String) authors.get(i), (String) authors.get(i));
+        as.put((String) authors.get(i).toString().replaceAll("[\\/\\#\\.\\/\\$\\[]", ""), (String) authors.get(i));
       }
       toBeReturned.setAuthors(as);
     } catch (Exception e) {
