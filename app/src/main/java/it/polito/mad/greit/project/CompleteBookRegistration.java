@@ -2,9 +2,13 @@ package it.polito.mad.greit.project;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -40,8 +44,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.nio.file.Files;
 import java.util.Calendar;
 
 public class CompleteBookRegistration extends AppCompatActivity {
@@ -51,7 +59,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
   
   private Profile profile;
   private Button bb;
-  private Uri photo;
+  //private byte[] photo = null;
   private TextView tw_ISBN;
   private TextView tw_author;
   private TextView tw_year;
@@ -61,6 +69,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
   private TextView tw_char_count;
   private TextWatcher mTextEditorWatcher;
   private TagEditText tags;
+  private Uri imageUri;
   Toolbar t;
   
   @Override
@@ -122,9 +131,9 @@ public class CompleteBookRegistration extends AppCompatActivity {
     } else {
       Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
       try {
-        File img = File.createTempFile("photoBook", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
-        photo = FileProvider.getUriForFile(this, "it.polito.mad.greit.project", img);
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photo);
+        File img = File.createTempFile("temp", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+        imageUri = FileProvider.getUriForFile(this, "it.polito.mad.greit.project", img);
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(takePictureIntent, Constants.REQUEST_IMAGE_CAPTURE);
       } catch (Exception e) {
         e.printStackTrace();
@@ -135,12 +144,29 @@ public class CompleteBookRegistration extends AppCompatActivity {
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    
-    if (requestCode == Constants.REQUEST_GALLERY && resultCode == RESULT_OK) {
-      this.photo = data.getData();
+
+    if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK ) {
+      //Log.d("DEBUGDEBUG", "onActivityResult: " + uri.getPath().toString());
+      try {
+        CropImage.activity(imageUri)
+                .setCropShape(CropImageView.CropShape.RECTANGLE)
+                .setAspectRatio(1, 1)
+                .setRequestedSize(500, 500,CropImageView.RequestSizeOptions.RESIZE_INSIDE)
+                .start(this);
+      }catch (Exception e){
+        e.printStackTrace();
+      }
+    }
+    else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+      try {
+        CropImage.ActivityResult result = CropImage.getActivityResult(data);
+        imageUri = result.getUri();
+      }catch (Exception e){
+        e.printStackTrace();
+      }
     }
     //else if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_CANCELED) {}
-    
+
   }
   
   @Override
@@ -220,9 +246,8 @@ public class CompleteBookRegistration extends AppCompatActivity {
         if(!x.isEmpty())
           dbref.child("tags").child(x).setValue(x);
       }
-      
-      if (photo == null) {
-        
+
+      if (imageUri == null) {
         Intent intent = new Intent(CompleteBookRegistration.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -230,7 +255,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
         try {
           StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + sb.getKey() + ".jpg");
           ProgressDialog dialog = ProgressDialog.show(CompleteBookRegistration.this, "", "Uploading, please wait...", true);
-          sr.putFile(this.photo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+          sr.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
               // Get a URL to the uploaded content
