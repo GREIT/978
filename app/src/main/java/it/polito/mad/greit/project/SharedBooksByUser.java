@@ -144,7 +144,7 @@ public class SharedBooksByUser extends AppCompatActivity {
       
       if (model.getShared() == true) {
         // Book is currently on loan
-        rightBar.setBackgroundColor(ContextCompat.getColor(mView.getContext(), R.color.colorGrey));
+        rightBar.setBackgroundColor(ContextCompat.getColor(mView.getContext(), R.color.unavailable));
         contactForLoan.setImageResource(R.drawable.ic_delete_transparent_48dp);
         contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, "You can't delete a book currently on loan!", Toast.LENGTH_SHORT).show());
       } else {
