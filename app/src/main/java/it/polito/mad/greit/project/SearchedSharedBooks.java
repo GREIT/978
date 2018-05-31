@@ -283,103 +283,100 @@ public class SearchedSharedBooks extends AppCompatActivity {
             });
           });
         }
-      }
-    } else
-    
-    {
-      // Not my book
-      if (model.getShared() == true) {
-        // Book is currently on loan
-        rightBar.setBackgroundColor(ContextCompat.getColor(mView.getContext(), R.color.colorGrey));
-        contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
-        contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, "The book is currently on loan!", Toast.LENGTH_SHORT).show());
       } else {
-        contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
-        contactForLoan.setOnClickListener(v -> Chat.openchat(ctx, model));
+        // Not my book
+        if (model.getShared() == true) {
+          // Book is currently on loan
+          rightBar.setBackgroundColor(ContextCompat.getColor(mView.getContext(), R.color.colorGrey));
+          contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
+          contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, "The book is currently on loan!", Toast.LENGTH_SHORT).show());
+        } else {
+          contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
+          contactForLoan.setOnClickListener(v -> Chat.openchat(ctx, model));
+        }
       }
-    }
-    
-    
-    distanceKm =Utils.calcDistance(model.getCoordinates(),currentLocation)/1000;
-      if(distanceKm >20)
+      
+      
+      distanceKm = Utils.calcDistance(model.getCoordinates(), currentLocation) / 1000;
+      if (distanceKm > 20)
         distance.setImageResource(R.mipmap.ic_maggiore_20);
-      else if(distanceKm< 20&&distanceKm >5)
+      else if (distanceKm < 20 && distanceKm > 5)
         distance.setImageResource(R.mipmap.ic_minore_20);
       else
-          distance.setImageResource(R.mipmap.ic_minore_5);
-
+        distance.setImageResource(R.mipmap.ic_minore_5);
+      
       ownerInfo.setImageResource(R.drawable.ic_person_white_48dp);
       ownerInfo.setOnClickListener(v ->
-    
-    {
-      Intent I = new Intent(ctx, OtherProfile.class);
-      I.putExtra("uid", model.getOwnerUid());
-      ctx.startActivity(I);
-    });
-    
-    
-    StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
-
+      
+      {
+        Intent I = new Intent(ctx, OtherProfile.class);
+        I.putExtra("uid", model.getOwnerUid());
+        ctx.startActivity(I);
+      });
+      
+      
+      StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
+      
       bookImage.setImageResource(R.drawable.ic_book_blue_grey_900_48dp);
-
+      
       sr.getDownloadUrl().
-    
-    addOnSuccessListener(new OnSuccessListener<Uri>() {
-      @Override
-      public void onSuccess (Uri uri){
-        try {
-          Glide.with(ctx)
-              .load(uri)
-              .into(bookImage);
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
+          
+          addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+              try {
+                Glide.with(ctx)
+                    .load(uri)
+                    .into(bookImage);
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
 
           /*Picasso.get()
                   .load(uri)
                   .error(R.drawable.ic_book_blue_grey_900_48dp)
                   .into(bookImage);*/
-      }
-    });
-    
-  }
-}
-
-public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
-  
-  private int spanCount;
-  private int spacing;
-  private boolean includeEdge;
-  
-  public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
-    this.spanCount = spanCount;
-    this.spacing = spacing;
-    this.includeEdge = includeEdge;
-  }
-  
-  @Override
-  public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-    int position = parent.getChildAdapterPosition(view); // item position
-    int column = position % spanCount; // item column
-    
-    if (includeEdge) {
-      outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
-      outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+            }
+          });
       
-      if (position < spanCount) { // top edge
-        outRect.top = spacing;
-      }
-      outRect.bottom = spacing; // item bottom
-    } else {
-      outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
-      outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
-      if (position >= spanCount) {
-        outRect.top = spacing; // item top
-      }
     }
   }
   
-}
+  public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+    
+    private int spanCount;
+    private int spacing;
+    private boolean includeEdge;
+    
+    public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+      this.spanCount = spanCount;
+      this.spacing = spacing;
+      this.includeEdge = includeEdge;
+    }
+    
+    @Override
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+      int position = parent.getChildAdapterPosition(view); // item position
+      int column = position % spanCount; // item column
+      
+      if (includeEdge) {
+        outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+        outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+        
+        if (position < spanCount) { // top edge
+          outRect.top = spacing;
+        }
+        outRect.bottom = spacing; // item bottom
+      } else {
+        outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+        outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+        if (position >= spanCount) {
+          outRect.top = spacing; // item top
+        }
+      }
+    }
+    
+  }
   
   private int dpToPx(int dp) {
     Resources r = getResources();
