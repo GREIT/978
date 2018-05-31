@@ -252,35 +252,46 @@ public class SearchedSharedBooks extends AppCompatActivity {
         } else {
           contactForLoan.setImageResource(R.drawable.ic_delete_white_48dp);
           contactForLoan.setOnClickListener(v -> {
+            new AlertDialog.Builder(itemView.getContext())
+                .setTitle("Confirmation needed")
+                .setMessage("Do you really want to delete this book?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+        
+                  public void onClick(DialogInterface dialog, int whichButton) {
+                    FirebaseDatabase db = FirebaseDatabase.getInstance();
+                    DatabaseReference dbref = db.getReference("SHARED_BOOKS/" + model.getKey());
+          
+                    dbref.removeValue();
+          
+                    dbref = db.getReference("BOOKS");
+          
+                    dbref.orderByKey().equalTo(model.getISBN()).addListenerForSingleValueEvent(new ValueEventListener() {
+                      @Override
+                      public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                          Book tmpBook = ds.getValue(Book.class);
+                          if (tmpBook.getBooksOnLoan() == 1) {
+                            DatabaseReference tmpDbRef  = db.getReference("BOOKS/" + model.getISBN());
+                            tmpDbRef.removeValue();
+                          } else {
+                            DatabaseReference tmpDbRef  = db.getReference("BOOKS/" + model.getISBN());
+                            tmpDbRef.child("booksOnLoan").setValue(Integer.valueOf(tmpBook.getBooksOnLoan()) - 1);
+                            Toast.makeText(ctx, "Book removed from your collection", Toast.LENGTH_SHORT).show();
+                          }
+                        }
+                      }
             
-            FirebaseDatabase db = FirebaseDatabase.getInstance();
-            DatabaseReference dbref = db.getReference("SHARED_BOOKS/" + model.getKey());
-            
-            dbref.removeValue();
-            
-            dbref = db.getReference("BOOKS");
-            
-            dbref.orderByKey().equalTo(model.getISBN()).addListenerForSingleValueEvent(new ValueEventListener() {
-              @Override
-              public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                  Book tmpBook = ds.getValue(Book.class);
-                  if (tmpBook.getBooksOnLoan() == 1) {
-                    DatabaseReference tmpDbRef = db.getReference("BOOKS/" + model.getISBN());
-                    tmpDbRef.removeValue();
-                  } else {
-                    DatabaseReference tmpDbRef = db.getReference("BOOKS/" + model.getISBN());
-                    tmpDbRef.child("booksOnLoan").setValue(Integer.valueOf(tmpBook.getBooksOnLoan()) - 1);
-                    Toast.makeText(ctx, "Book removed from your collection", Toast.LENGTH_SHORT).show();
+                      @Override
+                      public void onCancelled(DatabaseError databaseError) {
+              
+                      }
+                    });
+          
+          
                   }
-                }
-              }
-              
-              @Override
-              public void onCancelled(DatabaseError databaseError) {
-              
-              }
-            });
+                })
+                .setNegativeButton(android.R.string.no, null).show();
           });
         }
       } else {
