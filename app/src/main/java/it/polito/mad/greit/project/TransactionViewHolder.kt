@@ -32,7 +32,7 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         } else {
           itemView.transaction_right.setImageResource(R.drawable.ic_triangle_right)
           itemView.transaction_right.visibility = View.VISIBLE
-          itemView.transaction_right.setBackgroundColor(Color.GRAY)
+          itemView.transaction_right.setBackgroundColor(ctx.getResources().getColor(R.color.unavailable))
           itemView.transaction_left.layoutParams.width = 0
           itemView.transaction_left.requestLayout()
         }
@@ -52,7 +52,7 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         } else {
           itemView.transaction_left.setImageResource(R.drawable.ic_triangle_right)
           itemView.transaction_left.visibility = View.VISIBLE
-          itemView.transaction_left.setBackgroundColor(Color.GRAY)
+          itemView.transaction_left.setBackgroundColor(ctx.getResources().getColor(R.color.unavailable))
           itemView.transaction_right.layoutParams.width = 0
           itemView.transaction_right.requestLayout()
         }
