@@ -2,9 +2,11 @@ package it.polito.mad.greit.project
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.widget.ImageView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.transaction_card.view.*
 import java.text.DateFormat
@@ -15,20 +17,27 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     with(transaction!!) {
       itemView.transaction_book_title.text = transaction.bookTitle
       if (transaction.ownerUid.equals(FirebaseAuth.getInstance().getCurrentUser()!!.uid)) {
-        itemView.transaction_from_to.text = "To"
-        itemView.transaction_actor.text = " @" + transaction.receiverUsername
+        itemView.transaction_from_to.text = "To "
+        itemView.transaction_actor.text = "@" + transaction.receiverUsername
         itemView.transaction_actor.setOnClickListener{view -> run {
           val I = Intent(ctx, OtherProfile::class.java)
           I.putExtra("uid", transaction.receiverUid)
           ctx.startActivity(I)
         }}
         if (transaction.dateEnd == 0L) {
-          itemView.transaction_arrow.setImageResource(R.drawable.ic_arrow_forward_red_800_48dp)
+          itemView.transaction_right.setImageResource(R.drawable.ic_triangle_right)
+          itemView.transaction_right.visibility = View.VISIBLE
+          itemView.transaction_left.layoutParams.width = 0
+          itemView.transaction_left.requestLayout()
         } else {
-          itemView.transaction_arrow.setImageResource(R.drawable.ic_arrow_forward_grey_800_48dp)
+          itemView.transaction_right.setImageResource(R.drawable.ic_triangle_right)
+          itemView.transaction_right.visibility = View.VISIBLE
+          itemView.transaction_right.setBackgroundColor(Color.GRAY)
+          itemView.transaction_left.layoutParams.width = 0
+          itemView.transaction_left.requestLayout()
         }
       } else {
-        itemView.transaction_from_to.text = "From"
+        itemView.transaction_from_to.text = "From "
         itemView.transaction_actor.text = "@" + transaction.ownerUsername
         itemView.transaction_actor.setOnClickListener{view -> run {
           val I = Intent(ctx, OtherProfile::class.java)
@@ -36,14 +45,22 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
           ctx.startActivity(I)
         }}
         if (transaction.dateEnd == 0L) {
-          itemView.transaction_arrow.setImageResource(R.drawable.ic_arrow_back_green_800_48dp)
+          itemView.transaction_left.setImageResource(R.drawable.ic_triangle_right)
+          itemView.transaction_left.visibility = View.VISIBLE
+          itemView.transaction_right.layoutParams.width = 0
+          itemView.transaction_right.requestLayout()
         } else {
-          itemView.transaction_arrow.setImageResource(R.drawable.ic_arrow_back_grey_800_48dp)
+          itemView.transaction_left.setImageResource(R.drawable.ic_triangle_right)
+          itemView.transaction_left.visibility = View.VISIBLE
+          itemView.transaction_left.setBackgroundColor(Color.GRAY)
+          itemView.transaction_right.layoutParams.width = 0
+          itemView.transaction_right.requestLayout()
         }
       }
+      itemView.transaction_start_date_from.text = "From "
       itemView.transaction_start_date.text = DateFormat.getDateInstance().format( Date(transaction.dateStart * 1000))
       if (transaction.dateEnd != 0L) {
-        itemView.transaction_end_date_to.text = "al "
+        itemView.transaction_end_date_to.text = " to "
         itemView.transaction_end_date.text = DateFormat.getDateInstance().format( Date(transaction.dateEnd * 1000))
       }
 

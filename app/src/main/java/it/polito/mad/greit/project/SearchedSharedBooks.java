@@ -12,9 +12,11 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.location.Location;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -36,6 +38,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -172,13 +175,14 @@ public class SearchedSharedBooks extends AppCompatActivity {
                     currentLocation = location.getLatitude() + ";" + location.getLongitude();
                   } else {
                     currentLocation = getIntent().getStringExtra("userLocation");
-                    Toast.makeText(SearchedSharedBooks.this, "Location not found, profile location set.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SearchedSharedBooks.this, "Location not available, profile location set.", Toast.LENGTH_SHORT).show();
                   }
                   sharedBookShow(book.getISBN());
                 }
               });
     } else {
       currentLocation = getIntent().getStringExtra("userLocation");
+      Toast.makeText(SearchedSharedBooks.this, "Location not available, profile location set.", Toast.LENGTH_SHORT).show();
       sharedBookShow(book.getISBN());
     }
     return;
@@ -223,22 +227,14 @@ public class SearchedSharedBooks extends AppCompatActivity {
 
   public static class SharedBookViewHolder extends RecyclerView.ViewHolder {
     View mView;
-    private SharedBookViewHolder.ClickListener mClickListener;
 
     public SharedBookViewHolder(View itemView) {
       super(itemView);
       mView = itemView;
     }
 
-    public interface ClickListener {
-      void onItemClick(View view, SharedBook model);
-    }
-
-    public void setOnClickListener(SharedBookViewHolder.ClickListener clickListener) {
-      mClickListener = clickListener;
-    }
-
     public void setDetails(Context ctx, SharedBook model, android.support.v4.app.FragmentManager fm) {
+      RelativeLayout rightBar = (RelativeLayout) mView.findViewById(R.id.right_bar);
       ImageView bookImage = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
       ImageView contactForLoan = (ImageView) mView.findViewById(R.id.shared_book_card_icon1);
       ImageView ownerInfo = (ImageView) mView.findViewById(R.id.shared_book_card_icon2);
@@ -246,6 +242,15 @@ public class SearchedSharedBooks extends AppCompatActivity {
       TextView bookTitle = (TextView) mView.findViewById(R.id.shared_book_card_title);
 
       bookTitle.setText(model.getTitle());
+      bookTitle.setOnClickListener(v -> {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("book", model);
+        bundle.putSerializable("currentLocation", currentLocation);
+  
+        SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(fm, "dialog");
+      });
 
       bookImage.setOnClickListener(v -> {
         Bundle bundle = new Bundle();
@@ -257,12 +262,15 @@ public class SearchedSharedBooks extends AppCompatActivity {
         dialogFragment.show(fm, "dialog");
       });
 
-      if (model.getOwnerUsername().equals(ctx.getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username", null))) {
+      if (model.getOwnerUsername().equals(ctx.getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username", null)) || model.getShared() == true) {
         contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
       } else {
         contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
         contactForLoan.setOnClickListener(v -> Chat.openchat(ctx, model));
       }
+      if (model.getShared() == true) {
+        rightBar.setBackgroundColor(ContextCompat.getColor(mView.getContext(), R.color.colorGrey));
+      } else
 
 
       distanceKm = Utils.calcDistance(model.getCoordinates(), currentLocation) / 1000;
@@ -283,25 +291,26 @@ public class SearchedSharedBooks extends AppCompatActivity {
 
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + model.getKey() + ".jpg");
 
-      sr.getBytes(5 * Constants.SIZE).addOnSuccessListener(bytes -> {
-        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-        Glide.with(ctx)
-            .asBitmap()
-            .load(stream.toByteArray())
-            .apply(new RequestOptions()
-                .placeholder(R.drawable.ic_book_blue_grey_900_48dp)
-                .fitCenter())
-            .into(bookImage);
-      }).addOnFailureListener(e ->
-          Glide.with(ctx)
-              .load("")
-              .apply(new RequestOptions()
+      bookImage.setImageResource(R.drawable.ic_book_blue_grey_900_48dp);
+
+      sr.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        @Override
+        public void onSuccess(Uri uri) {
+            try {
+                Glide.with(ctx)
+                        .load(uri)
+                        .into(bookImage);
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+
+          /*Picasso.get()
+                  .load(uri)
                   .error(R.drawable.ic_book_blue_grey_900_48dp)
-                  .fitCenter())
-              .into(bookImage)
-      );
+                  .into(bookImage);*/
+        }
+      });
+
     }
   }
 

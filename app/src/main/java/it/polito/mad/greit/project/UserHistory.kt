@@ -36,6 +36,7 @@ class UserHistory : AppCompatActivity() {
     setContentView(R.layout.activity_user_history)
 
     mDatabaseTransactions = FirebaseDatabase.getInstance().getReference("TRANSACTIONS");
+    dates = ArrayList()
   }
 
   override fun onStart() {
@@ -72,18 +73,12 @@ class UserHistory : AppCompatActivity() {
         user_history_transactions.scrollToPosition(index)
       }
 
-      override fun onDataChanged() {
-        super.onDataChanged()
-
-        dates = ArrayList()
-
-        for (i in 1..itemCount)
-          dates!!.add(mSnapshots.getObject(i - 1) as BookTransaction)
-
-        Collections.sort(dates!!)
-      }
-
       override fun getItem(position: Int): BookTransaction {
+        if (dates!!.isEmpty()) {
+          for (i in 1..itemCount)
+            dates!!.add(mSnapshots.getObject(i - 1) as BookTransaction)
+          Collections.sort(dates!!)
+        }
         return dates!![position]
       }
     }
