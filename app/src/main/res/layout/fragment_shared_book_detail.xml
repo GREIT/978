@@ -60,6 +60,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+          android:id="@+id/right_bar_detail"
           android:layout_width="80dp"
           android:layout_height="match_parent"
           android:background="@color/colorAccent"

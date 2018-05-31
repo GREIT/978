@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,30 +58,34 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     View v = inflater.inflate(R.layout.fragment_shared_book_detail, container, false);
-    
+
     TextView tv;
+    RelativeLayout rightBar = v.findViewById(R.id.right_bar_detail);
     ImageView thumbnail = v.findViewById(R.id.shared_book_detail_thumbnail);
     ImageView contactForLoan = (ImageView) v.findViewById(R.id.shared_book_detail_icon1);
     ImageView ownerInfo = (ImageView) v.findViewById(R.id.shared_book_detail_icon2);
     ImageView distance = (ImageView) v.findViewById(R.id.shared_book_detail_icon3);
-    String date = DateFormat.getDateInstance().format( new Date(sb.getAddedOn() * 1000));
-    
+    String date = DateFormat.getDateInstance().format(new Date(sb.getAddedOn() * 1000));
+
     tv = (TextView) v.findViewById(R.id.shared_book_detail_owner);
     String dateAndOwnerInfo = "Added on " + date + "\nby @" + sb.getOwnerUsername();
-  
+
     Spannable spannable = new SpannableString(dateAndOwnerInfo);
     spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorAccent)), 24,
-        dateAndOwnerInfo.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            dateAndOwnerInfo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD_ITALIC),
-        25, dateAndOwnerInfo.length(), 0);
-    
+            25, dateAndOwnerInfo.length(), 0);
+
     tv.setText(spannable, TextView.BufferType.SPANNABLE);
-    
+
     tv = (TextView) v.findViewById(R.id.shared_book_detail_text);
     tv.setText("\"" + sb.getAdditionalInformations() + "\"");
 
-    if (sb.getOwnerUsername().equals(this.getContext().getSharedPreferences("sharedpref",Context.MODE_PRIVATE).getString("username",null))) {
+    if (sb.getOwnerUsername().equals(this.getContext().getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username", null))) {
       contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
+    } else if(sb.getShared() == true) {
+      contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
+      rightBar.setBackgroundColor(ContextCompat.getColor(v.getContext(), R.color.colorGrey));
     } else {
       contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
       contactForLoan.setOnClickListener(view -> Chat.openchat(this.getContext(), sb));

@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.location.Location;
 import android.media.Image;
@@ -37,6 +38,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -232,6 +234,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
     }
 
     public void setDetails(Context ctx, SharedBook model, android.support.v4.app.FragmentManager fm) {
+      RelativeLayout rightBar = (RelativeLayout) mView.findViewById(R.id.right_bar);
       ImageView bookImage = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
       ImageView contactForLoan = (ImageView) mView.findViewById(R.id.shared_book_card_icon1);
       ImageView ownerInfo = (ImageView) mView.findViewById(R.id.shared_book_card_icon2);
@@ -259,12 +262,15 @@ public class SearchedSharedBooks extends AppCompatActivity {
         dialogFragment.show(fm, "dialog");
       });
 
-      if (model.getOwnerUsername().equals(ctx.getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username", null))) {
+      if (model.getOwnerUsername().equals(ctx.getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username", null)) || model.getShared() == true) {
         contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
       } else {
         contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
         contactForLoan.setOnClickListener(v -> Chat.openchat(ctx, model));
       }
+      if (model.getShared() == true) {
+        rightBar.setBackgroundColor(ContextCompat.getColor(mView.getContext(), R.color.colorGrey));
+      } else
 
 
       distanceKm = Utils.calcDistance(model.getCoordinates(), currentLocation) / 1000;
