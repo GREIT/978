@@ -1,44 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:orientation="vertical"
-  android:background="@color/primaryDark"
-  tools:context=".SignInActivity">
-
-  <LinearLayout
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:paddingVertical="90dp"
-    android:paddingHorizontal="50dp"
-    android:orientation="vertical">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/primaryDark"
+    tools:context=".SignInActivity">
 
     <ImageView
-      android:id="@+id/status_imageview"
-      android:layout_width="150dp"
-      android:layout_height="150dp"
-      android:layout_gravity="center"
-      android:padding="16dp"
-      android:contentDescription="app_logo"
-      app:srcCompat="@mipmap/ic_launcher" />
+        android:id="@+id/status_imageview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="app_logo"
+        app:srcCompat="@drawable/logo" />
 
-  </LinearLayout>
+    <TextView
+        android:id="@+id/welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/status_imageview"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/bilbo_swash_caps"
+        android:text="Welcome to 978"
+        android:textColor="@color/onPrimary"
+        android:textSize="30sp"/>
 
-  <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:gravity="center">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/welcome"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/nunito"
+        android:text="978 are the first barcode digits of every book.\n It's a country code, referring to a non-geographic\n but tantalizing realm, Bookland."
+        android:textColor="@color/onPrimary"
+        android:textAlignment="center" />
 
     <com.google.android.gms.common.SignInButton
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="50dp"
-      android:id="@+id/sign_in_button"/>
+        android:id="@+id/sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
-  </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

@@ -72,7 +72,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:text=" @username"
-                    android:textColor="@color/accent"
+                    android:textColor="@color/primary"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -138,7 +138,7 @@
                 android:tint="@color/white"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:background="@color/accent"
+                android:background="@color/redDark"
                 android:visibility="invisible" />
 
         </RelativeLayout>

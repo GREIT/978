@@ -9,7 +9,8 @@
     android:layout_gravity="center"
     android:layout_margin="5dp"
     android:elevation="5dp"
-    card_view:cardCornerRadius="3dp">
+    card_view:cardCornerRadius="3dp"
+      android:background="@color/surface">
 
     <LinearLayout
       android:layout_width="match_parent"
@@ -77,7 +78,7 @@
           android:layout_alignParentRight="true"
           android:elevation="3dp"
           android:minWidth="0dp"
-          android:textColor="@color/accent"
+          android:textColor="@color/primary"
           android:textStyle="bold" />
 
       </RelativeLayout>
