@@ -66,8 +66,6 @@ public class CompleteBookRegistration extends AppCompatActivity {
   private TextView tw_title;
   private TextView tw_publisher;
   private TextView tw_conditions;
-  private TextView tw_char_count;
-  private TextWatcher mTextEditorWatcher;
   private TagEditText tags;
   private Uri imageUri;
   Toolbar t;
@@ -82,22 +80,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
     setSupportActionBar(t);
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
     t.setNavigationOnClickListener(v -> finish());
-    
-    tw_char_count = (TextView) findViewById(R.id.complete_book_text_count);
-  
-    mTextEditorWatcher = new TextWatcher() {
-      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-      }
-    
-      public void onTextChanged(CharSequence s, int start, int before, int count) {
-        //This sets a textview to the current length
-        tw_char_count.setText(String.valueOf(140 - s.length()));
-      }
-    
-      public void afterTextChanged(Editable s) {
-      }
-    };
-    
+
     book = (Book) getIntent().getSerializableExtra("book");
     
     tw_ISBN = (TextView) findViewById(R.id.complete_book_ISBN);
@@ -117,7 +100,6 @@ public class CompleteBookRegistration extends AppCompatActivity {
     tw_title.setText(book.getTitle());
     
     tw_conditions = (TextView) findViewById(R.id.complete_book_conditions);
-    tw_conditions.addTextChangedListener(mTextEditorWatcher);
     
     tags = (TagEditText) findViewById(R.id.complete_book_tags);
     

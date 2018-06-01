@@ -45,7 +45,9 @@ tools:context=".ShareNewBook">
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:hint="@string/bio"
-      android:textColorHint="@color/onPrimary">
+      android:textColorHint="@color/onPrimary"
+      app:counterEnabled="true"
+      app:counterMaxLength="140">
 
     <EditText
         android:id="@+id/complete_biography"
@@ -53,7 +55,8 @@ tools:context=".ShareNewBook">
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
         android:textColor="@color/onPrimary"
-        app:backgroundTint="@color/white" />
+        app:backgroundTint="@color/white"
+        android:maxLength="140"/>
 
   </android.support.design.widget.TextInputLayout>
 

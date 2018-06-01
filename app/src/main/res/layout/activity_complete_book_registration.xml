@@ -39,54 +39,33 @@
         android:layout_gravity="center_vertical"
         android:paddingVertical="10dp">
 
-        <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:orientation="horizontal"
-          android:layout_gravity="center_vertical"
-          android:layout_weight="1"
-          android:paddingVertical="10dp">
-
           <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:layout_marginRight="10dp"
             android:text="@string/conditions"
             android:textColor="@color/onBackground"
             android:textStyle="bold" />
 
-          <EditText
-            android:id="@+id/complete_book_conditions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/describe_your_book"
-            android:inputType="textMultiLine"
-            android:textColor="@color/onBackground"
-            android:textColorHint="@color/onSurface"
-            android:textSize="15sp"
-            android:maxLength="140"/>
+          <android.support.design.widget.TextInputLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              app:counterEnabled="true"
+              app:counterMaxLength="140">
 
-        </LinearLayout>
+            <EditText
+                android:id="@+id/complete_book_conditions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/describe_your_book"
+                android:inputType="textMultiLine"
+                android:textColor="@color/onBackground"
+                android:textColorHint="@color/onSurface"
+                android:textSize="15sp"
+                android:maxLength="140"/>
 
-        <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_weight="8"
-          android:layout_gravity="center_vertical"
-          android:orientation="horizontal"
-          android:paddingVertical="10dp">
-
-
-          <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/complete_book_text_count"
-            android:text="140"
-            android:textColor="@color/accent"
-            android:textStyle="bold"/>
-
-        </LinearLayout>
-
+          </android.support.design.widget.TextInputLayout>
 
       </LinearLayout>
 
