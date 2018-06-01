@@ -14,22 +14,26 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import java.util.*
 
 
 private const val ARG_UID = "reviewed_uid"
 private const val ARG_USERNAME = "reviewed_username"
 private const val ARG_TITLE = "shared_book_title"
 private const val ARG_CHAT_ID = "chat_id"
-private const val ARG_ALREADY_REVIEWED = "already_reviewed"
+private const val ARG_ALREADY_REVIEWED_BY_OWNER = "already_reviewed_by_owner"
+private const val ARG_AM_I_OWNER = "owner"
+private const val ARG_ALREADY_REVIEWED_BY_BORROWER = "already_reviewed_by_borrower"
 
 class WriteReview : DialogFragment() {
 
-  private var uid: String? = null
-  private var username: String? = null
+  private var reviewedUid: String? = null
+  private var reviewedUsername: String? = null
+  private var reviewerUid: String? = null
   private var title: String? = null
   private var chatId: String? = null
-  private var alreadyReviewed: Boolean? = null
+  private var alreadyReviewedbyOwner: Boolean? = null
+  private var alreadyReviewedbyBorrower: Boolean? = null
+  private var amIOwner: Boolean? = null
 
   private var mDatabase: FirebaseDatabase? = null
 
@@ -40,12 +44,17 @@ class WriteReview : DialogFragment() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    reviewerUid = FirebaseAuth.getInstance().currentUser!!.uid
+
     arguments?.let {
-      uid = it.getString(ARG_UID)
-      username = it.getString(ARG_USERNAME)
+      reviewedUid = it.getString(ARG_UID)
+      reviewedUsername = it.getString(ARG_USERNAME)
       title = it.getString(ARG_TITLE)
       chatId = it.getString(ARG_CHAT_ID)
-      alreadyReviewed = it.getBoolean(ARG_ALREADY_REVIEWED)
+      alreadyReviewedbyOwner = it.getBoolean(ARG_ALREADY_REVIEWED_BY_OWNER)
+      alreadyReviewedbyBorrower = it.getBoolean(ARG_ALREADY_REVIEWED_BY_BORROWER)
+      amIOwner = it.getBoolean(ARG_AM_I_OWNER)
     }
   }
 
@@ -55,7 +64,7 @@ class WriteReview : DialogFragment() {
     val v: View = inflater.inflate(R.layout.fragment_write_review, container, false)
 
     tw = v.findViewById(R.id.write_review_reviewed_username)
-    tw!!.text = "@" + username
+    tw!!.text = "@" + reviewedUsername
 
     tw = v.findViewById(R.id.write_review_book_title)
     tw!!.text = "for " + title
@@ -69,9 +78,9 @@ class WriteReview : DialogFragment() {
 
     rb = v.findViewById(R.id.write_review_rating)
 
-    if (alreadyReviewed!!) {
+    if ((amIOwner!! && alreadyReviewedbyOwner!!) || (!amIOwner!! && alreadyReviewedbyBorrower!!)) {
       val db = FirebaseDatabase.getInstance()
-      val dbref = db.getReference("USER_REVIEWS").child(chatId)
+      val dbref = db.getReference("USER_REVIEWS").child(chatId + reviewerUid)
 
       dbref.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -101,34 +110,38 @@ class WriteReview : DialogFragment() {
 
     review.date = System.currentTimeMillis() / 1000L
     review.comment = comment
-    review.reviewedUid = uid
-    review.reviewedUsername = username
+    review.reviewedUid = reviewedUid
+    review.reviewedUsername = reviewedUsername
     review.rating = rb!!.rating
 
-    val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
-    review.reviewerUid = user!!.uid
+    review.reviewerUid = reviewerUid
     review.reviewerUsername =
         this.activity.getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username", null)
 
     mDatabase = FirebaseDatabase.getInstance()
 
-    mDatabase!!.getReference("USER_REVIEWS").child(chatId).setValue(review)
+    mDatabase!!.getReference("USER_REVIEWS").child(chatId + reviewerUid).setValue(review)
 
-    mDatabase!!.getReference("TRANSACTIONS/" + chatId).child("alreadyReviewed").setValue(true)
+    if (amIOwner!!) {
+      mDatabase!!.getReference("TRANSACTIONS/" + chatId).child("alreadyReviewedByOwner").setValue(true)
+    } else {
+      mDatabase!!.getReference("TRANSACTIONS/" + chatId).child("alreadyReviewedByBorrower").setValue(true)
+    }
 
-    if (alreadyReviewed!!) {
+
+    if ((amIOwner!! && alreadyReviewedbyOwner!!) || (!amIOwner!! && alreadyReviewedbyBorrower!!)) {
       dismiss()
     } else {
       val db = FirebaseDatabase.getInstance()
-      val dbref = db.getReference("USERS").child(uid)
+      val dbref = db.getReference("USERS").child(reviewedUid)
 
       dbref.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
           val profile = dataSnapshot!!.getValue<Profile>(Profile::class.java)
           mDatabase = FirebaseDatabase.getInstance()
 
-          mDatabase!!.getReference("USERS/" + uid).child("totReviewsReceived").setValue(Integer.valueOf(profile!!.totReviewsReceived + 1))
-          mDatabase!!.getReference("USERS/" + uid).child("totScoringReviews").setValue(profile!!.totScoringReviews + rb!!.rating)
+          mDatabase!!.getReference("USERS/" + reviewedUid).child("totReviewsReceived").setValue(Integer.valueOf(profile!!.totReviewsReceived + 1))
+          mDatabase!!.getReference("USERS/" + reviewedUid).child("totScoringReviews").setValue(profile!!.totScoringReviews + rb!!.rating)
           dismiss()
         }
 

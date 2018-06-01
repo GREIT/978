@@ -25,7 +25,8 @@ public class BookTransaction implements Serializable, Comparable {
   private String ownerUid;
   private Map<String, String> actors;
   private String ownerUsername;
-  private Boolean alreadyReviewed;
+  private Boolean alreadyReviewedByOwner;
+  private Boolean alreadyReviewedByBorrower;
   private String receiverUid;
   private String receiverUsername;
   private String bookId;
@@ -67,12 +68,20 @@ public class BookTransaction implements Serializable, Comparable {
     this.receiverUsername = receiverUsername;
   }
   
-  public Boolean getAlreadyReviewed() {
-    return alreadyReviewed;
+  public Boolean getAlreadyReviewedByOwner() {
+    return alreadyReviewedByOwner;
   }
   
-  public void setAlreadyReviewed(Boolean alreadyReviewed) {
-    this.alreadyReviewed = alreadyReviewed;
+  public void setAlreadyReviewedByOwner(Boolean alreadyReviewedByOwner) {
+    this.alreadyReviewedByOwner = alreadyReviewedByOwner;
+  }
+  
+  public Boolean getAlreadyReviewedByBorrower() {
+    return alreadyReviewedByBorrower;
+  }
+  
+  public void setAlreadyReviewedByBorrower(Boolean alreadyReviewedByBorrower) {
+    this.alreadyReviewedByBorrower = alreadyReviewedByBorrower;
   }
   
   public Map<String, String> getActors() {
@@ -140,7 +149,8 @@ public class BookTransaction implements Serializable, Comparable {
       public Transaction.Result doTransaction(MutableData mutableData) {
         if (mutableData.getValue() == null) {
           current.setFree(false);
-          current.setAlreadyReviewed(false);
+          current.setAlreadyReviewedByBorrower(false);
+          current.setAlreadyReviewedByOwner(false);
           current.setDateStart(System.currentTimeMillis() / 1000L);
           Map<String, String> actors = new HashMap<>();
           actors.put(current.getOwnerUid(), current.getOwnerUid());
@@ -153,7 +163,8 @@ public class BookTransaction implements Serializable, Comparable {
         } else {
           BookTransaction bt = mutableData.getValue(BookTransaction.class);
           bt.setFree(false);
-          bt.setAlreadyReviewed(false);
+          bt.setAlreadyReviewedByBorrower(false);
+          bt.setAlreadyReviewedByOwner(false);
           bt.setDateStart(System.currentTimeMillis() / 1000L);
           bt.setDateEnd(0);
           Map<String, String> actors = new HashMap<>();
