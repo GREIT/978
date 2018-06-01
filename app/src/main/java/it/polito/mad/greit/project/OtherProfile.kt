@@ -67,7 +67,11 @@ class OtherProfile : AppCompatActivity() {
 
         rb = findViewById(R.id.other_profile_mean_rating)
         if (user.totReviewsReceived == 0) rb!!.rating = 0f
-        else rb!!.rating = user.totScoringReviews / user.totReviewsReceived
+        else {
+          val newRating: Float? = user.totScoringReviews/user.totReviewsReceived
+          println(newRating)
+          rb!!.rating = newRating!!
+        }
 
         iw = findViewById(R.id.other_profile_pic)
         sr!!.downloadUrl.addOnSuccessListener { uri ->
