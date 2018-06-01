@@ -141,8 +141,9 @@ class WriteReview : DialogFragment() {
         mDatabase = FirebaseDatabase.getInstance()
 
         if ((amIOwner!! && alreadyReviewedbyOwner!!) || (!amIOwner!! && alreadyReviewedbyBorrower!!)) {
-          mDatabase!!.getReference("USERS/" + reviewedUid).child("totScoringReviews").setValue(profile!!.totScoringReviews - oldRating!!)
-          mDatabase!!.getReference("USERS/" + reviewedUid).child("totScoringReviews").setValue(profile!!.totScoringReviews + rb!!.rating)
+          println(oldRating!!)
+          val newRating: Float = (profile!!.totScoringReviews - oldRating!!) + rb!!.rating
+          mDatabase!!.getReference("USERS/" + reviewedUid).child("totScoringReviews").setValue(newRating)
 
         } else {
           mDatabase!!.getReference("USERS/" + reviewedUid).child("totReviewsReceived").setValue(Integer.valueOf(profile!!.totReviewsReceived + 1))
