@@ -34,6 +34,7 @@ class WriteReview : DialogFragment() {
   private var alreadyReviewedbyOwner: Boolean? = null
   private var alreadyReviewedbyBorrower: Boolean? = null
   private var amIOwner: Boolean? = null
+  private var oldRating: Float? = null
 
   private var mDatabase: FirebaseDatabase? = null
 
@@ -88,6 +89,8 @@ class WriteReview : DialogFragment() {
 
           rb!!.rating = review!!.rating!!
 
+          oldRating = review!!.rating!!
+
           et!!.setText(review!!.comment)
 
         }
@@ -129,30 +132,34 @@ class WriteReview : DialogFragment() {
     }
 
 
-    if ((amIOwner!! && alreadyReviewedbyOwner!!) || (!amIOwner!! && alreadyReviewedbyBorrower!!)) {
-      dismiss()
-    } else {
-      val db = FirebaseDatabase.getInstance()
-      val dbref = db.getReference("USERS").child(reviewedUid)
+    val db = FirebaseDatabase.getInstance()
+    val dbref = db.getReference("USERS").child(reviewedUid)
 
-      dbref.addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(dataSnapshot: DataSnapshot) {
-          val profile = dataSnapshot!!.getValue<Profile>(Profile::class.java)
-          mDatabase = FirebaseDatabase.getInstance()
+    dbref.addListenerForSingleValueEvent(object : ValueEventListener {
+      override fun onDataChange(dataSnapshot: DataSnapshot) {
+        val profile = dataSnapshot!!.getValue<Profile>(Profile::class.java)
+        mDatabase = FirebaseDatabase.getInstance()
 
+        if ((amIOwner!! && alreadyReviewedbyOwner!!) || (!amIOwner!! && alreadyReviewedbyBorrower!!)) {
+          mDatabase!!.getReference("USERS/" + reviewedUid).child("totScoringReviews").setValue(profile!!.totScoringReviews - oldRating!!)
+          mDatabase!!.getReference("USERS/" + reviewedUid).child("totScoringReviews").setValue(profile!!.totScoringReviews + rb!!.rating)
+
+        } else {
           mDatabase!!.getReference("USERS/" + reviewedUid).child("totReviewsReceived").setValue(Integer.valueOf(profile!!.totReviewsReceived + 1))
           mDatabase!!.getReference("USERS/" + reviewedUid).child("totScoringReviews").setValue(profile!!.totScoringReviews + rb!!.rating)
-          dismiss()
         }
 
-        override fun onCancelled(e: DatabaseError) {
-          FirebaseAuth.getInstance().signOut()
-          val intent = Intent(activity, SignInActivity::class.java)
-          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-          startActivity(intent)
-          dismiss()
-        }
-      })
-    }
+        dismiss()
+      }
+
+      override fun onCancelled(e: DatabaseError) {
+        FirebaseAuth.getInstance().signOut()
+        val intent = Intent(activity, SignInActivity::class.java)
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
+        dismiss()
+      }
+    })
+
   }
 }
