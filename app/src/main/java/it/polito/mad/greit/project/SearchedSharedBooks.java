@@ -47,6 +47,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 public class SearchedSharedBooks extends AppCompatActivity {
   private Toolbar t;
   TextView twTitle;
@@ -311,6 +313,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
       
       {
         Intent I = new Intent(ctx, OtherProfile.class);
+        I.setFlags(FLAG_ACTIVITY_NEW_TASK);
         I.putExtra("uid", model.getOwnerUid());
         ctx.startActivity(I);
       });

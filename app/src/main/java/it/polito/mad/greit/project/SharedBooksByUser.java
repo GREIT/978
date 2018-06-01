@@ -43,6 +43,8 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 public class SharedBooksByUser extends AppCompatActivity {
   
   private RecyclerView mResultList;
@@ -202,6 +204,7 @@ public class SharedBooksByUser extends AppCompatActivity {
       
       {
         Intent I = new Intent(ctx, OtherProfile.class);
+        I.setFlags(FLAG_ACTIVITY_NEW_TASK);
         I.putExtra("uid", model.getOwnerUid());
         ctx.startActivity(I);
       });
