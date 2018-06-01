@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.ImageView
@@ -96,6 +97,7 @@ class OtherProfile : AppCompatActivity() {
   fun setupReviewsList (uid : String) {
     val layoutManager = LinearLayoutManager(this)
     layoutManager.reverseLayout = false
+    mReviewsList!!.addItemDecoration(DividerItemDecoration(mReviewsList!!.context, layoutManager.orientation))
     mReviewsList!!.setHasFixedSize(true)
     mReviewsList!!.layoutManager = layoutManager
 
