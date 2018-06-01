@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class MainEmptyActivity extends AppCompatActivity {
@@ -14,7 +16,11 @@ public class MainEmptyActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+    try {
+      FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+    }catch (DatabaseException dbe){
+      dbe.printStackTrace();
+    }
    
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     Intent intent;

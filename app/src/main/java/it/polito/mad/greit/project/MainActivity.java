@@ -463,6 +463,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       drawer.closeDrawer(GravityCompat.START);
     } else {
       Log.d(TAG, "Back button pressed");
+      super.onBackPressed();
     }
   }
   
