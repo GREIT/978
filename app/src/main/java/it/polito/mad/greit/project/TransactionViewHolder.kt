@@ -67,14 +67,17 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
       itemView.transaction_write_review.setOnClickListener{view -> run {
         val bundle = Bundle()
         if (transaction.ownerUid.equals(FirebaseAuth.getInstance().getCurrentUser()!!.uid)) {
+          bundle.putBoolean("owner", true)
           bundle.putString("reviewed_uid", transaction.receiverUid)
           bundle.putString("reviewed_username", transaction.receiverUsername)
         } else {
+          bundle.putBoolean("owner", false)
           bundle.putString("reviewed_uid", transaction.ownerUid)
           bundle.putString("reviewed_username", transaction.ownerUsername)
         }
         bundle.putString("chat_id", transaction.chatId)
-        bundle.putBoolean("already_reviewed", transaction.alreadyReviewed)
+        bundle.putBoolean("already_reviewed_by_borrower", transaction.alreadyReviewedByBorrower)
+        bundle.putBoolean("already_reviewed_by_owner", transaction.alreadyReviewedByOwner)
         bundle.putString("shared_book_title", transaction.bookTitle)
         val dialogFragment = WriteReview()
         dialogFragment.arguments = bundle
