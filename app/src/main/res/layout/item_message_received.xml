@@ -18,9 +18,7 @@
         android:layout_height="wrap_content"
         android:maxWidth="240dp"
         android:padding="8dp"
-        android:textColor="#ffffff"
-        android:layout_marginTop="4dp"
-        android:layout_marginLeft="8dp" />
+        android:textColor="@color/onSurface" />
 
     <TextView
         android:id="@+id/text_message_time"
