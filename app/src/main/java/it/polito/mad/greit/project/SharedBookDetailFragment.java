@@ -81,7 +81,7 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
             getContext().startActivity(I);
         }
     }, 25, dateAndOwnerInfo.length(), 0);
-    spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primary)), 25, dateAndOwnerInfo.length(), 0);
+    spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.accent)), 25, dateAndOwnerInfo.length(), 0);
     spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 25, dateAndOwnerInfo.length(), 0);
 
     tv.setText(spannable, TextView.BufferType.SPANNABLE);

@@ -72,7 +72,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:text=" @username"
-                    android:textColor="@color/primary"
+                    android:textColor="@color/accent"
                     android:textStyle="bold" />
 
                 <LinearLayout
