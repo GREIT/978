@@ -73,19 +73,16 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
     String dateAndOwnerInfo = "Added on " + date + "\nby @" + sb.getOwnerUsername();
 
     Spannable spannable = new SpannableString(dateAndOwnerInfo);
-    spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primary)), 24,
-        dateAndOwnerInfo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-    spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
-        25, dateAndOwnerInfo.length(), 0);
     spannable.setSpan(new ClickableSpan() {
-                        @Override
-                        public void onClick(View view) {
-                          Intent I = new Intent(getContext(), OtherProfile.class);
-                          I.putExtra("uid", sb.getOwnerUid());
-                          getContext().startActivity(I);
-                        }
-                      },
-        25, dateAndOwnerInfo.length(), 0);
+        @Override
+        public void onClick(View view) {
+            Intent I = new Intent(getContext(), OtherProfile.class);
+            I.putExtra("uid", sb.getOwnerUid());
+            getContext().startActivity(I);
+        }
+    }, 25, dateAndOwnerInfo.length(), 0);
+    spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primary)), 25, dateAndOwnerInfo.length(), 0);
+    spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 25, dateAndOwnerInfo.length(), 0);
 
     tv.setText(spannable, TextView.BufferType.SPANNABLE);
     tv.setClickable(true);
