@@ -71,9 +71,9 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
     
     tv = (TextView) v.findViewById(R.id.shared_book_detail_owner);
     String dateAndOwnerInfo = "Added on " + date + "\nby @" + sb.getOwnerUsername();
-    
+
     Spannable spannable = new SpannableString(dateAndOwnerInfo);
-    spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primaryDark)), 24,
+    spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primary)), 24,
         dateAndOwnerInfo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
         25, dateAndOwnerInfo.length(), 0);
@@ -86,14 +86,14 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
                         }
                       },
         25, dateAndOwnerInfo.length(), 0);
-    
+
     tv.setText(spannable, TextView.BufferType.SPANNABLE);
     tv.setClickable(true);
     tv.setMovementMethod(LinkMovementMethod.getInstance());
-    
+
     tv = (TextView) v.findViewById(R.id.shared_book_detail_text);
     tv.setText("\"" + sb.getAdditionalInformations() + "\"");
-    
+
     if (sb.getOwnerUsername().equals(getContext().getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username", null))) {
       // It is my book
       if (sb.getShared() == true) {
@@ -109,15 +109,15 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
               .setMessage("Do you really want to delete this book?")
               .setIcon(android.R.drawable.ic_dialog_alert)
               .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                
+
                 public void onClick(DialogInterface dialog, int whichButton) {
                   FirebaseDatabase db = FirebaseDatabase.getInstance();
                   DatabaseReference dbref = db.getReference("SHARED_BOOKS/" + sb.getKey());
-                  
+
                   dbref.removeValue();
-                  
+
                   dbref = db.getReference("BOOKS");
-                  
+
                   dbref.orderByKey().equalTo(sb.getISBN()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -133,14 +133,14 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
                         }
                       }
                     }
-                    
+
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                    
+
                     }
                   });
-                  
-                  
+
+
                 }
               })
               .setNegativeButton(android.R.string.no, null).show();
@@ -158,7 +158,7 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
         contactForLoan.setOnClickListener(view -> Chat.openchat(getContext(), sb));
       }
     }
-    
+
     if (currentLocation != null) {
       distanceKm = Utils.calcDistance(sb.getCoordinates(), currentLocation) / 1000;
       if (distanceKm > 20)
@@ -168,14 +168,14 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
       else
         distance.setImageResource(R.mipmap.ic_minore_5);
     } else distance.setImageResource(R.mipmap.ic_minore_5);
-    
+
     ownerInfo.setImageResource(R.drawable.ic_person_white_48dp);
     ownerInfo.setOnClickListener(view -> {
       Intent I = new Intent(this.getContext(), OtherProfile.class);
       I.putExtra("uid", sb.getOwnerUid());
       this.getContext().startActivity(I);
     });
-    
+
     thumbnail.setImageResource(R.drawable.ic_book_blue_grey_900_48dp);
     StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + sb.getKey() + ".jpg");
     sr.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
