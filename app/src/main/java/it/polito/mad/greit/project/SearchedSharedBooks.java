@@ -184,12 +184,15 @@ public class SearchedSharedBooks extends AppCompatActivity {
         if (positions.isEmpty()) {
           DecimalFormat df = new DecimalFormat("00000.00");
           
-          for (int i = 1; i <= getItemCount(); i++)
+          for (int i = 1; i <= mSnapshots.size(); i++)
             distances.put(df.format(Utils.calcDistance(mSnapshots.getObject(i - 1).getCoordinates(), currentLocation) / 1000) + mSnapshots.getObject(i - 1).getKey(), i - 1);
           for (Map.Entry<String, Integer> entry : distances.entrySet())
             positions.add(entry.getValue());
         }
-        return (SharedBook) mSnapshots.getObject(positions.get(position));
+        if(mSnapshots.size() > positions.get(position))
+          return (SharedBook) mSnapshots.getObject(positions.get(position));
+        else
+          return null;
       }
       
     };
