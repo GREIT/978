@@ -143,11 +143,12 @@ public class BookTransaction implements Serializable, Comparable {
   public void lock_book() {
     DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(this.chatId);
     BookTransaction current = this;
-    
-    dbref.runTransaction(new Transaction.Handler() {
+
+    dbref.addListenerForSingleValueEvent(new ValueEventListener() {
       @Override
-      public Transaction.Result doTransaction(MutableData mutableData) {
-        if (mutableData.getValue() == null) {
+      public void onDataChange(DataSnapshot dataSnapshot) {
+
+        if(dataSnapshot.getValue() == null){
           current.setFree(false);
           current.setAlreadyReviewedByBorrower(false);
           current.setAlreadyReviewedByOwner(false);
@@ -156,33 +157,58 @@ public class BookTransaction implements Serializable, Comparable {
           actors.put(current.getOwnerUid(), current.getOwnerUid());
           actors.put(current.getReceiverUid(), current.getReceiverUid());
           current.setActors(actors);
-          mutableData.setValue(current);
           Log.d("DEBUGTRANSACTION", "startTransaction: set mutable data in lock" + current.free);
-          return Transaction.success(mutableData);
-          
+
+          dbref.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+              mutableData.setValue(current);
+              return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+              if (b) {
+                Log.d("DEBUGTRANSACTION", "entered on complete lock");
+                updateSharedBook(true);
+              }
+            }
+          });
+
         } else {
-          BookTransaction bt = mutableData.getValue(BookTransaction.class);
-          bt.setFree(false);
-          bt.setAlreadyReviewedByBorrower(false);
-          bt.setAlreadyReviewedByOwner(false);
-          bt.setDateStart(System.currentTimeMillis() / 1000L);
-          bt.setDateEnd(0);
-          Map<String, String> actors = new HashMap<>();
-          actors.put(bt.getOwnerUid(), bt.getOwnerUid());
-          actors.put(bt.getReceiverUid(), bt.getReceiverUid());
-          bt.setActors(actors);
-          mutableData.setValue(bt);
-          Log.d("DEBUGTRANSACTION", "startTransaction: data already present in lock" + current.free);
-          return Transaction.success(mutableData);
+            BookTransaction bt = dataSnapshot.getValue(BookTransaction.class);
+            bt.setFree(false);
+            bt.setAlreadyReviewedByBorrower(false);
+            bt.setAlreadyReviewedByOwner(false);
+            bt.setDateStart(System.currentTimeMillis() / 1000L);
+            bt.setDateEnd(0);
+            Map<String, String> actors = new HashMap<>();
+            actors.put(bt.getOwnerUid(), bt.getOwnerUid());
+            actors.put(bt.getReceiverUid(), bt.getReceiverUid());
+            bt.setActors(actors);
+            Log.d("DEBUGTRANSACTION", "startTransaction: data already present in lock" + current.free);
+
+            dbref.runTransaction(new Transaction.Handler() {
+              @Override
+              public Transaction.Result doTransaction(MutableData mutableData) {
+                mutableData.setValue(bt);
+                return Transaction.success(mutableData);
+              }
+
+              @Override
+              public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                if (b) {
+                  Log.d("DEBUGTRANSACTION", "entered on complete lock");
+                  updateSharedBook(true);
+                }
+              }
+            });
         }
       }
-      
+
       @Override
-      public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-        if (b) {
-          Log.d("DEBUGTRANSACTION", "entered on complete lock");
-          updateSharedBook(true);
-        }
+      public void onCancelled(DatabaseError databaseError) {
+
       }
     });
     
@@ -190,26 +216,35 @@ public class BookTransaction implements Serializable, Comparable {
   
   public void unlock_book() {
     DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(this.chatId);
-    
-    dbref.runTransaction(new Transaction.Handler() {
+
+    dbref.addListenerForSingleValueEvent(new ValueEventListener() {
       @Override
-      public Transaction.Result doTransaction(MutableData mutableData) {
-        if (mutableData.getValue() != null) {
-          BookTransaction bt = mutableData.getValue(BookTransaction.class);
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        if(dataSnapshot.getValue() != null){
+          BookTransaction bt = dataSnapshot.getValue(BookTransaction.class);
           bt.setFree(true);
           bt.setDateEnd(System.currentTimeMillis() / 1000L);
-          mutableData.setValue(bt);
-          return Transaction.success(mutableData);
-        } else {
-          return Transaction.abort();
+
+          dbref.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+              mutableData.setValue(bt);
+              return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+              if (b) {
+                updateSharedBook(false);
+              }
+            }
+          });
         }
       }
-      
+
       @Override
-      public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-        if (b) {
-          updateSharedBook(false);
-        }
+      public void onCancelled(DatabaseError databaseError) {
+
       }
     });
   }
@@ -222,6 +257,7 @@ public class BookTransaction implements Serializable, Comparable {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
         SharedBook sb = dataSnapshot.getValue(SharedBook.class);
+
         if (op) {
           Log.d("DEBUGTRANSACTION", "startTransaction: updating lock");
           sb.setBorrowToUid(bt.getReceiverUid());
@@ -233,45 +269,63 @@ public class BookTransaction implements Serializable, Comparable {
           sb.setBorrowToUsername("");
           sb.setShared(false);
         }
-  
-        FirebaseDatabase dbB = FirebaseDatabase.getInstance();
-        DatabaseReference dbrefB = dbB.getReference("BOOKS").child(sb.getISBN());
-  
-        dbrefB.addListenerForSingleValueEvent(new ValueEventListener() {
-          @Override
-          public void onDataChange(DataSnapshot dataSnapshot) {
-            Book B = dataSnapshot.getValue(Book.class);
-            
-            if (op) {
-              dbrefB.child("lentBooks").setValue(Integer.valueOf(B.getLentBooks()) + 1);
-            } else {
-              dbrefB.child("lentBooks").setValue(Integer.valueOf(B.getLentBooks()) - 1);
-            }
-          }
-    
-          @Override
-          public void onCancelled(DatabaseError e) {
-          }
-        });
-        
+
         dbref.runTransaction(new Transaction.Handler() {
           @Override
           public Transaction.Result doTransaction(MutableData mutableData) {
             mutableData.setValue(sb);
             return Transaction.success(mutableData);
           }
-          
+
           @Override
           public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-          
+            if(b){
+              updateBooks(op,sb.getISBN());
+            }
           }
         });
-        
+
       }
       
       @Override
       public void onCancelled(DatabaseError databaseError) {
       
+      }
+    });
+  }
+
+  private void updateBooks(boolean op,String ISBN){
+    FirebaseDatabase dbB = FirebaseDatabase.getInstance();
+    DatabaseReference dbrefB = dbB.getReference("BOOKS").child(ISBN);
+
+    dbrefB.addListenerForSingleValueEvent(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        Book B = dataSnapshot.getValue(Book.class);
+
+        if (op) {
+          B.setLentBooks(B.getLentBooks()+1);
+        } else {
+          B.setLentBooks(B.getLentBooks()-1);
+        }
+
+
+        dbrefB.runTransaction(new Transaction.Handler() {
+          @Override
+          public Transaction.Result doTransaction(MutableData mutableData) {
+            mutableData.setValue(B);
+            return Transaction.success(mutableData);
+          }
+
+          @Override
+          public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+          }
+        });
+      }
+
+      @Override
+      public void onCancelled(DatabaseError e) {
       }
     });
   }
