@@ -277,7 +277,7 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
             
             SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
             dialogFragment.setArguments(bundle);
-            dialogFragment.show(((FragmentActivity) ctx).getSupportFragmentManager(), "dialog");
+            dialogFragment.show(((FragmentActivity) ctx).getFragmentManager(), "dialog");
           });
           
           iw1.setImageResource(R.drawable.ic_delete_white_48dp);

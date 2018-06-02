@@ -127,4 +127,8 @@
 
   <string name="cannot_delete">You cannot delete this book because there is an active loan.</string>
 
+  <!-- TODO: Remove or change this placeholder text -->
+  <string name="hello_blank_fragment">Hello blank fragment</string>
+  <string name="title_activity_maps">Map</string>
+
 </resources>

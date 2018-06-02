@@ -1,5 +1,6 @@
 package it.polito.mad.greit.project;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,7 +35,7 @@ import com.google.firebase.storage.StorageReference;
 import java.text.DateFormat;
 import java.util.Date;
 
-public class SharedBookDetailFragment extends android.support.v4.app.DialogFragment {
+public class SharedBookDetailFragment extends DialogFragment {
   
   private static final String ARG_PARAM1 = "book";
   private static final String ARG_PARAM2 = "currentLocation";
@@ -76,9 +77,9 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
     spannable.setSpan(new ClickableSpan() {
         @Override
         public void onClick(View view) {
-            Intent I = new Intent(getContext(), OtherProfile.class);
+            Intent I = new Intent(getActivity(), OtherProfile.class);
             I.putExtra("uid", sb.getOwnerUid());
-            getContext().startActivity(I);
+            getActivity().startActivity(I);
         }
     }, 25, dateAndOwnerInfo.length(), 0);
     spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.accent)), 25, dateAndOwnerInfo.length(), 0);
@@ -91,7 +92,7 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
     tv = (TextView) v.findViewById(R.id.shared_book_detail_text);
     tv.setText("\"" + sb.getAdditionalInformations() + "\"");
 
-    if (sb.getOwnerUsername().equals(getContext().getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username", null))) {
+    if (sb.getOwnerUsername().equals(getActivity().getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username", null))) {
       // It is my book
       if (sb.getShared() == true) {
         // Book is currently on loan
@@ -101,7 +102,7 @@ public class SharedBookDetailFragment extends android.support.v4.app.DialogFragm
       } else {
         contactForLoan.setImageResource(R.drawable.ic_delete_white_48dp);
         contactForLoan.setOnClickListener(view -> {
-          new AlertDialog.Builder(getContext())
+          new AlertDialog.Builder(getActivity())
               .setTitle("Confirmation needed")
               .setMessage("Do you really want to delete this book?")
               .setIcon(android.R.drawable.ic_dialog_alert)

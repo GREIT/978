@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  tools:context=".ShowSharedBooks">
+
+  <include
+    android:id="@+id/searched_sharedBooks_toolbar"
+    layout="@layout/toolbar" />
+
+  <LinearLayout
+    android:id="@+id/selectedBookDetails"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:background="@color/primary"
+    android:orientation="horizontal"
+    android:padding="15dp">
+
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_margin="10dp"
+      android:layout_weight="1"
+      android:orientation="vertical"
+      android:paddingHorizontal="10dp"
+      android:paddingVertical="5dp">
+
+      <TextView
+        android:id="@+id/bookCardTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/onPrimary"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+      <TextView
+        android:id="@+id/bookCardAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bookCardTitle"
+        android:layout_marginBottom="10dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/onPrimary"
+        android:textStyle="bold" />
+
+      <TextView
+        android:id="@+id/bookCardPublisher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bookCardAuthor"
+        android:textColor="@color/onPrimary"
+        android:visibility="gone" />
+
+      <TextView
+        android:id="@+id/bookCardYear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bookCardPublisher"
+        android:textColor="@color/onPrimary" />
+
+      <TextView
+        android:id="@+id/bookCardISBN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/onPrimary" />
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.CardView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center_vertical"
+      android:layout_weight="2"
+      android:elevation="5dp"
+      app:cardCornerRadius="3dp">
+
+      <ImageView
+        android:id="@+id/bookCardCover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY" />
+    </android.support.v7.widget.CardView>
+
+  </LinearLayout>
+
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+      android:id="@+id/fragment_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"/>
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:layout_above="@+id/distance_from_bottom"
+      android:layout_centerHorizontal="true"
+      android:background="@drawable/map_or_list">
+
+      <ImageButton
+        android:id="@+id/list_icon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:backgroundTint="@color/white"
+        android:src="@drawable/ic_list_black_24dp"
+        android:layout_marginLeft="10dp"
+        android:tooltipText="List"/>
+      <TextView
+        android:id="@+id/list_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:textStyle="bold"
+        android:text="List"
+        android:layout_marginRight="14dp"
+        android:clickable="true"/>
+
+      <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="#9E9E9E"/>
+
+      <ImageButton
+        android:id="@+id/map_icon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:backgroundTint="@color/white"
+        android:src="@drawable/ic_map_black_24dp"
+        android:layout_marginLeft="10dp"/>
+      <TextView
+        android:id="@+id/map_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:textStyle="bold"
+        android:text="Map"
+        android:layout_marginRight="14dp"
+        android:clickable="true"/>
+
+    </LinearLayout>
+
+    <View
+      android:id="@+id/distance_from_bottom"
+      android:layout_width="match_parent"
+      android:layout_height="10dp"
+      android:layout_alignParentBottom="true"
+      android:layout_centerHorizontal="true" />
+
+
+  </RelativeLayout>
+
+
+
+</LinearLayout>

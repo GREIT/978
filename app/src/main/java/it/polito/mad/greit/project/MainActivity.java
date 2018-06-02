@@ -433,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void onClick(View view) {
           Intent I = new Intent(itemView.getContext(),
-              SearchedSharedBooks.class);
+              ShowSharedBooks.class);
           I.putExtra("book", model);
           I.putExtra("userLocation", profile.getCoordinates());
           itemView.getContext().startActivity(I);

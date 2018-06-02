@@ -1,28 +1,24 @@
 package it.polito.mad.greit.project;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.location.Location;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -30,8 +26,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,141 +44,60 @@ import java.util.TreeMap;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
-public class SearchedSharedBooks extends AppCompatActivity {
-  private Toolbar t;
-  TextView twTitle;
-  TextView twAuthor;
-  TextView twPublisher;
-  TextView twISBN;
-  TextView twYear;
-  ImageView iwCover;
-  
-  private Book book;
-  
-  private RecyclerView mResultList;
-  private DatabaseReference mSharedBookDb;
-  
-  private FusedLocationProviderClient mFusedLocationClient;
+
+public class SharedBooksOnList extends Fragment {
+  String ISBN;
   private static String currentLocation;
   private static double distanceKm;
   
+  private DatabaseReference mSharedBookDb;
+  private RecyclerView mResultList;
   private SortedMap<String, Integer> distances;
   private ArrayList<Integer> positions;
   
+  private static final String ARG_PARAM1 = "isbn";
+  private static final String ARG_PARAM2 = "location";
   
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_searched_shared_books);
-    
-    t = findViewById(R.id.searched_sharedBooks_toolbar);
-    t.setTitle("Books near you");
-    setSupportActionBar(t);
-    t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-    t.setNavigationOnClickListener(view -> onBackPressed());
-    
-    book = (Book) getIntent().getSerializableExtra("book");
-    
-    twTitle = (TextView) findViewById(R.id.bookCardTitle);
-    twTitle.setText(book.getTitle());
-    
-    twAuthor = (TextView) findViewById(R.id.bookCardAuthor);
-    String AS = android.text.TextUtils.join(", ", book.getAuthors().keySet());
-    twAuthor.setText(AS);
-    
-    twPublisher = (TextView) findViewById(R.id.bookCardPublisher);
-    if (!book.getPublisher().isEmpty())
-      twPublisher.setVisibility(View.VISIBLE);
-    twPublisher.setText(book.getPublisher());
-    
-    twISBN = (TextView) findViewById(R.id.bookCardISBN);
-    twISBN.setText("ISBN: " + book.getISBN());
-    
-    
-    twYear = (TextView) findViewById(R.id.bookCardYear);
-    twYear.setText(book.getYear());
-    
-    iwCover = (ImageView) findViewById(R.id.bookCardCover);
-    Glide.with(this)
-        .load(book.getCover())
-        .into(iwCover);
-    
+    if (getArguments() != null) {
+      ISBN = (String) getArguments().getString(ARG_PARAM1);
+      currentLocation = (String) getArguments().getString(ARG_PARAM2);
+    }
     mSharedBookDb = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS");
-    mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-    
     distances = new TreeMap<>();
     positions = new ArrayList<>();
-    
-    // Recupero posizione attuale
-    if (ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-      ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.FINE_LOCATION_PERMISSION);
-    else
-      mFusedLocationClient.getLastLocation()
-          .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-              // Got last known location. In some rare situations this can be null.
-              if (location != null) {
-                currentLocation = location.getLatitude() + ";" + location.getLongitude();
-              } else {
-                currentLocation = getIntent().getStringExtra("userLocation");
-                Toast.makeText(SearchedSharedBooks.this, "Location not found, profile location set.", Toast.LENGTH_SHORT).show();
-              }
-              sharedBookShow(book.getISBN());
-            }
-          });
   }
   
-  @SuppressLint("MissingPermission")
+  @Nullable
   @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-      mFusedLocationClient.getLastLocation()
-          .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-              // Got last known location. In some rare situations this can be null.
-              if (location != null) {
-                currentLocation = location.getLatitude() + ";" + location.getLongitude();
-              } else {
-                currentLocation = getIntent().getStringExtra("userLocation");
-                Toast.makeText(SearchedSharedBooks.this, "Location not available, profile location set.", Toast.LENGTH_SHORT).show();
-              }
-              sharedBookShow(book.getISBN());
-            }
-          });
-    } else {
-      currentLocation = getIntent().getStringExtra("userLocation");
-      Toast.makeText(SearchedSharedBooks.this, "Location not available, profile location set.", Toast.LENGTH_SHORT).show();
-      sharedBookShow(book.getISBN());
-    }
-    return;
-  }
+  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    View rootView = inflater.inflate(R.layout.fragment_shared_books_on_list, container, false);
   
-  private void sharedBookShow(String ISBN) {
-    mResultList = (RecyclerView) findViewById(R.id.shared_books_result_list);
+    mResultList = (RecyclerView) rootView.findViewById(R.id.shared_books_result_list);
     mResultList.setItemAnimator(new DefaultItemAnimator());
-    mResultList.setLayoutManager(new GridLayoutManager(this, 2));
+    mResultList.setLayoutManager(new GridLayoutManager(getActivity(), 2));
     mResultList.removeItemDecoration(mResultList.getItemDecorationAt(0));
-    mResultList.addItemDecoration(new SearchedSharedBooks.GridSpacingItemDecoration(2, dpToPx(20), true));
-    
+    mResultList.addItemDecoration(new SharedBooksOnList.GridSpacingItemDecoration(2, dpToPx(20), true));
+  
     Query firebaseSearchQuery = mSharedBookDb.orderByChild("isbn").equalTo(ISBN);
-    FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SharedBook, SharedBookViewHolder>(
+    FirebaseRecyclerAdapter<SharedBook, SharedBooksOnList.SharedBookViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SharedBook, SharedBooksOnList.SharedBookViewHolder>(
         SharedBook.class,
         R.layout.sharedbook_card,
-        SharedBookViewHolder.class,
+        SharedBooksOnList.SharedBookViewHolder.class,
         firebaseSearchQuery
     ) {
       @Override
-      protected void populateViewHolder(SharedBookViewHolder viewHolder, SharedBook model, int position) {
-        viewHolder.setDetails(getApplicationContext(), model, getFragmentManager());
+      protected void populateViewHolder(SharedBooksOnList.SharedBookViewHolder viewHolder, SharedBook model, int position) {
+        viewHolder.setDetails(getActivity(), model, getFragmentManager());
       }
-      
+    
       @Override
       public SharedBook getItem(int position) {
         if (positions.isEmpty()) {
           DecimalFormat df = new DecimalFormat("00000.00");
-          
+        
           for (int i = 1; i <= getItemCount(); i++)
             distances.put(df.format(Utils.calcDistance(mSnapshots.getObject(i - 1).getCoordinates(), currentLocation) / 1000) + mSnapshots.getObject(i - 1).getKey(), i - 1);
           for (Map.Entry<String, Integer> entry : distances.entrySet())
@@ -192,10 +105,12 @@ public class SearchedSharedBooks extends AppCompatActivity {
         }
         return (SharedBook) mSnapshots.getObject(positions.get(position));
       }
-      
-    };
     
+    };
+  
     mResultList.setAdapter(firebaseRecyclerAdapter);
+    
+    return rootView;
   }
   
   public static class SharedBookViewHolder extends RecyclerView.ViewHolder {
@@ -386,5 +301,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
     Resources r = getResources();
     return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
   }
+  
+  
   
 }
