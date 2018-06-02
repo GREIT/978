@@ -108,6 +108,7 @@ public class EditProfile extends AppCompatActivity {
   private Profile profile;
   private CircleImageView ciw;
   private File pic = null;
+  private File temp = null;
   private Uri imageUri = null;
   private boolean changed = false;
   private String coordinates=null;
@@ -127,10 +128,12 @@ public class EditProfile extends AppCompatActivity {
     t.setNavigationOnClickListener(v -> onBackPressed());
 
     pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg");
+    temp = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"temp.jpg");
 
     Setup(b);
 
     ciw = findViewById(R.id.edit_pic);
+    ciw.setImageResource(R.mipmap.ic_launcher_round);
     ciw.setOnClickListener(v -> pic_action());
 
     PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
@@ -257,41 +260,22 @@ public class EditProfile extends AppCompatActivity {
     else {
       StorageReference sr = FirebaseStorage.getInstance().getReference()
               .child("profile_pictures/" + user.getUid() + ".jpg");
-      sr.getFile(pic).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+      sr.getBytes(Constants.SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
         @Override
-        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+        public void onSuccess(byte[] bytes) {
           try {
-            Bitmap bm = BitmapFactory.decodeFile(pic.getPath());
+            Bitmap bm = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
             ciw.setImageBitmap(bm);
+            OutputStream outs = new FileOutputStream(pic);
+            bm.compress(Bitmap.CompressFormat.JPEG, 100,outs);
+            outs.flush();
+            outs.close();
           }catch (Exception e){
             e.printStackTrace();
             ciw.setImageResource(R.mipmap.ic_launcher_round);
           }
         }
       });
-              /*new OnSuccessListener<byte[]>() {
-        @Override
-        public void onSuccess(byte[] bytes) {
-          try{
-            File pic = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),"pic.jpg");
-            Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            OutputStream outs = new FileOutputStream(pic);
-            bm.compress(Bitmap.CompressFormat.JPEG, 100,outs);
-            createpic(bm);
-          }catch (Exception e){
-            e.printStackTrace();
-            pic.delete();
-            ciw.setImageResource(R.mipmap.ic_launcher_round);
-          }
-        }
-      }).addOnFailureListener(new OnFailureListener() {
-        @Override
-        public void onFailure(@NonNull Exception exception) {
-          // Handle any errors
-          exception.printStackTrace();
-          ciw.setImageResource(R.mipmap.ic_launcher_round);
-        }
-      });*/
     }
   }
 
@@ -304,21 +288,6 @@ public class EditProfile extends AppCompatActivity {
     profile.setUsername(tv.getText().toString());
     tv = findViewById(R.id.edit_email);
     profile.setEmail(tv.getText().toString());
-    //tv = findViewById(R.id.edit_location);
-    //profile.setLocation(tv.getText().toString());
-    /*if(tv.getText().toString().isEmpty()){
-      AlertDialog.Builder builder = new AlertDialog.Builder(this);
-      builder
-              .setMessage(R.string.location_error)
-              .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int id) {
-          dialog.dismiss();
-        }
-      });
-      AlertDialog dialog = builder.create();
-      dialog.show();
-      return;
-    }*/
     tv = findViewById(R.id.edit_biography);
     profile.setBio(tv.getText().toString());
 
@@ -333,11 +302,13 @@ public class EditProfile extends AppCompatActivity {
     if(changed){
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
       ProgressDialog dialog = ProgressDialog.show(EditProfile.this, "", "Uploading, please wait...", true);
-      sr.putFile(FileProvider.getUriForFile(this, "it.polito.mad.greit.project", pic))
+      sr.putFile(FileProvider.getUriForFile(this, "it.polito.mad.greit.project", temp))
               .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
         @Override
         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
           dialog.dismiss();
+          pic.delete();
+          temp.renameTo(new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(), "pic.jpg"));
           Intent swap = new Intent(EditProfile.this, MainActivity.class);
           swap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
           startActivity(swap);
@@ -369,7 +340,8 @@ public class EditProfile extends AppCompatActivity {
         Uri result = data.getData();
         CropImage.activity(result)
                 .setCropShape(CropImageView.CropShape.OVAL)
-                .setOutputUri(FileProvider.getUriForFile(this, "it.polito.mad.greit.project", pic))
+                //.setOutputUri(FileProvider.getUriForFile(this, "it.polito.mad.greit.project", pic))
+                .setOutputUri(FileProvider.getUriForFile(this, "it.polito.mad.greit.project", temp))
                 .setAspectRatio(1, 1)
                 .setRequestedSize(300, 300, CropImageView.RequestSizeOptions.RESIZE_INSIDE)
                 .start(this);
@@ -381,7 +353,8 @@ public class EditProfile extends AppCompatActivity {
       try {
         CropImage.activity(imageUri)
                 .setCropShape(CropImageView.CropShape.OVAL)
-                .setOutputUri(FileProvider.getUriForFile(this, "it.polito.mad.greit.project", pic))
+                //.setOutputUri(FileProvider.getUriForFile(this, "it.polito.mad.greit.project", pic))
+                .setOutputUri(FileProvider.getUriForFile(this, "it.polito.mad.greit.project", temp))
                 .setAspectRatio(1, 1)
                 .setRequestedSize(300, 300,CropImageView.RequestSizeOptions.RESIZE_INSIDE)
                 .start(this);
@@ -392,7 +365,7 @@ public class EditProfile extends AppCompatActivity {
     else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
       try {
         changed = true;
-        Bitmap bm = BitmapFactory.decodeFile(pic.getPath());
+        Bitmap bm = BitmapFactory.decodeFile(temp.getPath());
         ciw.setImageBitmap(bm);
       }catch (Exception e){
         e.printStackTrace();
@@ -482,6 +455,20 @@ public class EditProfile extends AppCompatActivity {
 
       }
     });
+  }
+
+  public void onDestroy(){
+    try {
+      File dir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString());
+      for (File f : dir.listFiles()) {
+        if (!f.getName().equals("pic.jpg")) {
+          f.delete();
+        }
+      }
+    }catch (Exception e){
+      e.printStackTrace();
+    }
+    super.onDestroy();
   }
 
 }
