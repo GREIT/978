@@ -271,6 +271,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     searchButton = findViewById(R.id.search_button_main);
     searchButton.setOnClickListener(v -> {
           String textToSearch = ACTV.getText().toString();
+          ACTV.setText("");
           bookSearch(field, textToSearch);
         }
     );
