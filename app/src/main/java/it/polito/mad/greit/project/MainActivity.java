@@ -431,6 +431,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         return viewHolder;
       }
+  
+      @Override
+      public void onDataChanged() {
+        super.onDataChanged();
+        if (getItemCount() == 0) {
+          AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+          builder.setMessage("No book found 😔")
+              .setCancelable(false)
+              .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                  //do things
+                }
+              });
+          AlertDialog alert = builder.create();
+          alert.show();
+        }
+      }
     };
     
     mResultList.setAdapter(firebaseRecyclerAdapter);
