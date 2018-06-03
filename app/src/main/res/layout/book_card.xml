@@ -19,7 +19,7 @@
 
       <ImageView
         android:id="@+id/bookCardCover"
-        android:layout_width="95dp"
+        android:layout_width="96dp"
         android:layout_height="match_parent"
         android:scaleType="fitXY" />
 
