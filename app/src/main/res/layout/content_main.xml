@@ -69,6 +69,8 @@ m
         android:layout_centerVertical="true" />
 
       <AutoCompleteTextView
+        android:singleLine="true"
+        android:imeOptions="actionDone"
         android:id="@+id/search_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

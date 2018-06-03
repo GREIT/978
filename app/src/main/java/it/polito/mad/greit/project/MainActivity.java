@@ -29,6 +29,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -39,6 +40,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -262,9 +264,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        hideKeyboard(MainActivity.this);
+        //hideKeyboard(MainActivity.this);
         mResultList.requestFocus();
         ACTV.setText(autoComplete.getItem(position));
+      }
+    });
+    ACTV.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+      
+      public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        
+        if ((actionId == EditorInfo.IME_ACTION_DONE)) {
+          hideKeyboard(MainActivity.this);
+          String textToSearch = ACTV.getText().toString();
+          ACTV.setText("");
+          bookSearch(field, textToSearch);
+          return true;
+        }
+        return false;
       }
     });
     
