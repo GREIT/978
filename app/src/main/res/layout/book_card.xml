@@ -19,16 +19,19 @@
 
       <ImageView
         android:id="@+id/bookCardCover"
-        android:layout_width="95dp"
+        android:layout_width="96dp"
         android:layout_height="match_parent"
+        android:contentDescription="Book Cover"
         android:scaleType="fitXY" />
 
       <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingHorizontal="10dp"
-        android:paddingVertical="5dp">
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
 
         <TextView
           android:id="@+id/bookCardTitle"
@@ -71,11 +74,9 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginBottom="3dp"
-          android:layout_marginRight="3dp"
           android:layout_marginEnd="3dp"
           android:layout_alignParentBottom="true"
           android:layout_alignParentEnd="true"
-          android:layout_alignParentRight="true"
           android:elevation="3dp"
           android:minWidth="0dp"
           android:textColor="@color/accent"

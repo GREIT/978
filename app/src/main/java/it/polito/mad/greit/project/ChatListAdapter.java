@@ -164,14 +164,14 @@ public class ChatListAdapter extends RecyclerView.Adapter {
     
             sr.getDownloadUrl().addOnSuccessListener(uri -> {
                 if (ctx != null) {
-                    Glide.with(ctx)
+                    Glide.with(ctx.getApplicationContext())
                         .load(uri)
                         .into(imageProfile);
                 }
                    
             }).addOnFailureListener( e -> {
                 if (ctx != null) {
-                    Glide.with(ctx)
+                    Glide.with(ctx.getApplicationContext())
                         .load("")
                         .apply(new RequestOptions()
                             .error(R.mipmap.ic_launcher_round)

@@ -1,5 +1,6 @@
 package it.polito.mad.greit.project;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -92,7 +93,7 @@ public class SharedBooksByUser extends AppCompatActivity {
     ) {
       @Override
       protected void populateViewHolder(SharedBooksByUser.SharedBookViewHolder viewHolder, SharedBook model, int position) {
-        viewHolder.setDetails(getApplicationContext(), model, getSupportFragmentManager());
+        viewHolder.setDetails(getApplicationContext(), model, getFragmentManager());
       }
       
       @Override
@@ -115,7 +116,7 @@ public class SharedBooksByUser extends AppCompatActivity {
     }
     
     
-    public void setDetails(Context ctx, SharedBook model, android.support.v4.app.FragmentManager fm) {
+    public void setDetails(Context ctx, SharedBook model, FragmentManager fm) {
       RelativeLayout rightBar = (RelativeLayout) mView.findViewById(R.id.right_bar);
       ImageView bookImage = (ImageView) mView.findViewById(R.id.shared_book_card_thumbnail);
       ImageView contactForLoan = (ImageView) mView.findViewById(R.id.shared_book_card_icon1);

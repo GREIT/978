@@ -277,7 +277,7 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
             
             SharedBookDetailFragment dialogFragment = new SharedBookDetailFragment();
             dialogFragment.setArguments(bundle);
-            dialogFragment.show(((FragmentActivity) ctx).getSupportFragmentManager(), "dialog");
+            dialogFragment.show(((FragmentActivity) ctx).getFragmentManager(), "dialog");
           });
           
           iw1.setImageResource(R.drawable.ic_delete_white_48dp);
@@ -323,11 +323,6 @@ public class SharedBooksByUserSplitted extends AppCompatActivity {
                 })
                 .setNegativeButton(android.R.string.no, null).show();
           });
-          
-          if (model.getShared()) {
-            ImageView overlay_book_card = (ImageView) mView.findViewById(R.id.overlay_shared_book_card_thumbnail);
-            overlay_book_card.setImageResource(R.drawable.ic_delete_white_48dp);
-          }
           
         } else {
           iw1.setImageResource(R.drawable.ic_textsms_white_48dp);

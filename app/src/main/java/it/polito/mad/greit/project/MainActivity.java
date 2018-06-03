@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     List<String> tmpAutoComplete = new LinkedList<>();
     
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-    database.child("BOOKS").addValueEventListener(new ValueEventListener() {
+    database.child("BOOKS").addListenerForSingleValueEvent(new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
         autoComplete.clear();
@@ -263,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         hideKeyboard(MainActivity.this);
+        ACTV.setText("");
         mResultList.requestFocus();
         bookSearch(field, autoComplete.getItem(position));
       }
@@ -433,7 +434,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void onClick(View view) {
           Intent I = new Intent(itemView.getContext(),
-              SearchedSharedBooks.class);
+              ShowSharedBooks.class);
           I.putExtra("book", model);
           I.putExtra("userLocation", profile.getCoordinates());
           itemView.getContext().startActivity(I);
