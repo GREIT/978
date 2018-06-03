@@ -61,13 +61,20 @@ m
       android:backgroundTint="@color/white"
       android:orientation="horizontal">
 
+      <View
+        android:id="@+id/distance_from_left"
+        android:layout_width="20dp"
+        android:layout_height="1dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true" />
+
       <AutoCompleteTextView
         android:id="@+id/search_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
+        android:layout_toRightOf="@id/distance_from_left"
         android:layout_centerVertical="true"
-        android:backgroundTint="@color/white"
+        android:background="@color/transparent"
         android:elevation="3dp"
         android:ems="10"
         android:fontFamily="@font/nunito_semibold"
@@ -92,7 +99,7 @@ m
 
       <View
         android:id="@+id/distance_from_right"
-        android:layout_width="10dp"
+        android:layout_width="20dp"
         android:layout_height="1dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true" />
