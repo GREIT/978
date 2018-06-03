@@ -32,13 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="fitXY" />
-
-          <ImageView
-            android:id="@+id/overlay_shared_book_card_thumbnail"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Book Cover"
             android:scaleType="fitXY" />
 
         </LinearLayout>
@@ -52,13 +46,15 @@
             android:id="@+id/shared_book_card_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginHorizontal="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginLeft="3dp"
             android:clickable="true"
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="2"
             android:textAlignment="center"
-            android:textColor="@color/onBackground" />
+            android:textColor="@color/onBackground"
+            android:focusable="true" />
         </LinearLayout>
 
       </LinearLayout>
@@ -71,13 +67,15 @@
         android:elevation="3dp"
         android:gravity="center_horizontal|center_vertical"
         android:orientation="vertical"
-        android:paddingHorizontal="10dp">
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
 
         <ImageView
           android:id="@+id/shared_book_card_icon1"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentTop="true"
+          android:contentDescription="Shortcut #1"
           android:elevation="3dp" />
 
         <ImageView
@@ -85,6 +83,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginTop="35dp"
+          android:contentDescription="Shortcut #2"
           android:elevation="3dp" />
 
         <ImageView
@@ -92,6 +91,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentBottom="true"
+          android:contentDescription="Shortcut #3"
           android:elevation="3dp" />
 
       </RelativeLayout>

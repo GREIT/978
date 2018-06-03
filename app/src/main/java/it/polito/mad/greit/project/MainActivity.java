@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     List<String> tmpAutoComplete = new LinkedList<>();
     
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-    database.child("BOOKS").addValueEventListener(new ValueEventListener() {
+    database.child("BOOKS").addListenerForSingleValueEvent(new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
         autoComplete.clear();
