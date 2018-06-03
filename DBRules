@@ -1,0 +1,48 @@
+{
+  "rules": {
+
+    "BOOKS":{
+    	".read": "auth != null",
+    	".write": "auth != null"
+    },
+
+    "SHARED_BOOKS":{
+      ".read":"auth!=null",
+      "$sbId" :{
+        ".write": "data.child('ownerUid').val() == auth.uid",
+        ".indexOn": "isbn"
+      }
+    },
+
+    "USERS":{
+      "$uid":{
+    		".read": "auth != null",
+    		".write": "$uid == auth.uid"
+    	}
+    },
+
+    "TOKENS":{
+    	".read": "auth != null",
+    	".write": "auth != null"
+    },
+
+    "TRANSACTIONS":{
+    	".read": "auth != null",
+    	".write": "auth != null"
+    },
+
+    "USER_CHATS":{
+    	".read": "auth != null",
+    	".write": "auth != null"
+    },
+
+    "USER_MESSAGES":{
+    	".read": "auth != null",
+    	".write": "auth != null"
+    },
+    "USER_REVIEWS":{
+    	".read": "auth != null",
+    	".write": "auth != null"
+    }
+  }
+}

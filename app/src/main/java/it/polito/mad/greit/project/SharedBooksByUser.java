@@ -149,14 +149,14 @@ public class SharedBooksByUser extends AppCompatActivity {
         // Book is currently on loan
         rightBar.setBackgroundColor(ContextCompat.getColor(mView.getContext(), R.color.unavailable));
         contactForLoan.setImageResource(R.drawable.ic_delete_transparent_48dp);
-        contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, "You can't delete a book currently on loan!", Toast.LENGTH_SHORT).show());
+        contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, R.string.cannot_delete, Toast.LENGTH_SHORT).show());
       } else {
         contactForLoan.setImageResource(R.drawable.ic_delete_white_48dp);
         contactForLoan.setOnClickListener(v -> {
   
           new AlertDialog.Builder(itemView.getContext())
-              .setTitle("Confirmation needed")
-              .setMessage("Do you really want to delete this book?")
+              .setTitle(R.string.confirmation_needed)
+              .setMessage(R.string.delete_shared_book)
               .setIcon(android.R.drawable.ic_dialog_alert)
               .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
         
@@ -179,7 +179,7 @@ public class SharedBooksByUser extends AppCompatActivity {
                         } else {
                           DatabaseReference tmpDbRef  = db.getReference("BOOKS/" + model.getISBN());
                           tmpDbRef.child("booksOnLoan").setValue(Integer.valueOf(tmpBook.getBooksOnLoan()) - 1);
-                          Toast.makeText(ctx, "Book removed from your collection", Toast.LENGTH_SHORT).show();
+                          Toast.makeText(ctx, R.string.book_removed, Toast.LENGTH_SHORT).show();
                         }
                       }
                     }

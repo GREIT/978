@@ -137,7 +137,7 @@ class WriteReview : DialogFragment() {
 
     dbref.addListenerForSingleValueEvent(object : ValueEventListener {
       override fun onDataChange(dataSnapshot: DataSnapshot) {
-        val profile = dataSnapshot!!.getValue<Profile>(Profile::class.java)
+        val profile = dataSnapshot.getValue<Profile>(Profile::class.java)?: return
         mDatabase = FirebaseDatabase.getInstance()
 
         if ((amIOwner!! && alreadyReviewedbyOwner!!) || (!amIOwner!! && alreadyReviewedbyBorrower!!)) {

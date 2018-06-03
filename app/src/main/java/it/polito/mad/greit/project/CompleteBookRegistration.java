@@ -236,7 +236,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
       } else {
         try {
           StorageReference sr = FirebaseStorage.getInstance().getReference().child("shared_books_pictures/" + sb.getKey() + ".jpg");
-          ProgressDialog dialog = ProgressDialog.show(CompleteBookRegistration.this, "", "Uploading, please wait...", true);
+          ProgressDialog dialog = ProgressDialog.show(CompleteBookRegistration.this, "", getResources().getString(R.string.loading), true);
           sr.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {

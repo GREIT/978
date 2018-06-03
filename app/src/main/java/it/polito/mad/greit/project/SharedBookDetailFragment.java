@@ -14,6 +14,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,7 +46,8 @@ public class SharedBookDetailFragment extends DialogFragment {
   private SharedBook sb;
   private String currentLocation;
   private double distanceKm;
-  
+  private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
   public SharedBookDetailFragment() {
   }
   
@@ -71,7 +75,7 @@ public class SharedBookDetailFragment extends DialogFragment {
     String date = DateFormat.getDateInstance().format(new Date(sb.getAddedOn() * 1000));
     
     tv = (TextView) v.findViewById(R.id.shared_book_detail_owner);
-    String dateAndOwnerInfo = "Added on " + date + "\nby @" + sb.getOwnerUsername();
+    String dateAndOwnerInfo = getActivity().getResources().getString(R.string.book_detail, date, sb.getOwnerUsername());
 
     Spannable spannable = new SpannableString(dateAndOwnerInfo);
     spannable.setSpan(new ClickableSpan() {
@@ -92,19 +96,19 @@ public class SharedBookDetailFragment extends DialogFragment {
     tv = (TextView) v.findViewById(R.id.shared_book_detail_text);
     tv.setText("\"" + sb.getAdditionalInformations() + "\"");
 
-    if (sb.getOwnerUsername().equals(getActivity().getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username", null))) {
+    if (sb.getOwnerUid().equals(user.getUid())) {
       // It is my book
-      if (sb.getShared() == true) {
+      if (sb.getShared()) {
         // Book is currently on loan
         rightBar.setBackgroundColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.unavailable));
         contactForLoan.setImageResource(R.drawable.ic_delete_transparent_48dp);
-        contactForLoan.setOnClickListener(view -> Toast.makeText(getActivity().getApplicationContext(), "You can't delete a book currently on loan!", Toast.LENGTH_SHORT).show());
+        contactForLoan.setOnClickListener(view -> Toast.makeText(getActivity().getApplicationContext(), R.string.cannot_delete, Toast.LENGTH_SHORT).show());
       } else {
         contactForLoan.setImageResource(R.drawable.ic_delete_white_48dp);
         contactForLoan.setOnClickListener(view -> {
           new AlertDialog.Builder(getActivity())
-              .setTitle("Confirmation needed")
-              .setMessage("Do you really want to delete this book?")
+              .setTitle(R.string.confirmation_needed)
+              .setMessage(R.string.delete_shared_book)
               .setIcon(android.R.drawable.ic_dialog_alert)
               .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
@@ -127,7 +131,7 @@ public class SharedBookDetailFragment extends DialogFragment {
                         } else {
                           DatabaseReference tmpDbRef  = db.getReference("BOOKS/" + sb.getISBN());
                           tmpDbRef.child("booksOnLoan").setValue(Integer.valueOf(tmpBook.getBooksOnLoan()) - 1);
-                          Toast.makeText(getActivity().getApplicationContext(), "Book removed from your collection", Toast.LENGTH_SHORT).show();
+                          Toast.makeText(getActivity().getApplicationContext(), R.string.book_removed, Toast.LENGTH_SHORT).show();
                         }
                       }
                     }
@@ -146,11 +150,11 @@ public class SharedBookDetailFragment extends DialogFragment {
       }
     } else {
       // Not my book
-      if (sb.getShared() == true) {
+      if (sb.getShared()) {
         // Book is currently on loan
         rightBar.setBackgroundColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.unavailable));
         contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
-        contactForLoan.setOnClickListener(view -> Toast.makeText(getActivity().getApplicationContext(), "The book is currently on loan!", Toast.LENGTH_SHORT).show());
+        contactForLoan.setOnClickListener(view -> Toast.makeText(getActivity().getApplicationContext(), R.string.book_on_loan, Toast.LENGTH_SHORT).show());
       } else {
         contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
         contactForLoan.setOnClickListener(view -> Chat.openchat(getActivity().getApplicationContext(), sb));

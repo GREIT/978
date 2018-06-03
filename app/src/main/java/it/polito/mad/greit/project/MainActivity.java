@@ -272,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   
   public void chooseSearchField() {
     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-    builder.setTitle("Choose search field:");
+    builder.setTitle(R.string.menu_search_title);
     
     String title = getResources().getString(R.string.item_title);
     String author = getResources().getString(R.string.item_author);
@@ -452,8 +452,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
           .load(model.getCover())
           .into(iwCover);
       
-      if (model.getBooksOnLoan() == 1) twCopies.setText(model.getBooksOnLoan() + " COPY AVAILABLE");
-      else twCopies.setText(model.getBooksOnLoan() + " COPIES AVAILABLE");
+      if (model.getBooksOnLoan() == 1) twCopies.setText(ctx.getResources().getString(R.string.copy_available));
+      else twCopies.setText(ctx.getResources().getString(R.string.copies_available , model.getBooksOnLoan()));
     }
   }
   

@@ -35,18 +35,18 @@ class UserHistory : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_user_history)
 
+    tb = findViewById(R.id.user_history_toolbar)
+    tb!!.setTitle(R.string.nav_history)
+    setSupportActionBar(tb!!)
+    tb!!.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
+    tb!!.setNavigationOnClickListener{view -> onBackPressed()}
+
     mDatabaseTransactions = FirebaseDatabase.getInstance().getReference("TRANSACTIONS");
     dates = ArrayList()
   }
 
   override fun onStart() {
     super.onStart()
-
-    tb = findViewById(R.id.user_history_toolbar)
-    setSupportActionBar(tb!!)
-    tb!!.title = "History"
-    tb!!.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
-    tb!!.setNavigationOnClickListener{view -> onBackPressed()}
 
     setupTransactionsList(intent.getStringExtra("uid"))
   }
@@ -74,7 +74,7 @@ class UserHistory : AppCompatActivity() {
       }
 
       override fun getItem(position: Int): BookTransaction {
-        if (dates!!.isEmpty()) {
+        if (position >= dates!!.size) {
           for (i in 1..itemCount)
             dates!!.add(mSnapshots.getObject(i - 1) as BookTransaction)
           Collections.sort(dates!!)

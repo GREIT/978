@@ -5,6 +5,8 @@
 
   //Misc
   <string name="yes">Si</string>
+  <string name="loading">Caricamento, attendere prego&#8230;</string>
+  <string name="registration_failed">Registrazione fallita</string>
 
   // Main activity
   <string name="search_text_main">Cerca i libri per</string>
@@ -17,11 +19,21 @@
   <string name="item_isbn">ISBN</string>
   <string name="item_year">Anno</string>
   <string name="item_tag">Tag</string>
+  <string name="menu_search_title">Scegli il campo di ricerca:</string>
+  <string name="copy_available">1 COPIA DISPONIBILI</string>
+  <string name="copies_available">%d COPIE DISPONIBILI</string>
   <string name="nav_my_books">I miei libri</string>
   <string name="nav_my_reviews">Recensioni ricevute</string>
   <string name="nav_history">Storico</string>
   <string name="nav_add_a_book">Aggiungi un libro</string>
 
+  //Searched Shared Books
+  <string name="confirmation_needed">Richiesta conferma</string>
+  <string name="delete_shared_book">Sei davvero sicuro di voler cancellare questo libro?</string>
+  <string name="book_removed">Libro rimosso dalla tua libreria</string>
+  <string name="location_not_found">Posizione non accessibile</string>
+  <string name="books_near_you">Libri vicino a te</string>
+  <string name="book_on_loan">Il libro é attualmente in prestito!</string>
 
 
   // Authentication
@@ -54,6 +66,8 @@
   <string name="published">Anno</string>
   <string name="conditions">Condizioni</string>
   <string name="tag">Tag</string>
+  <string name="book_detail">Aggiunto il %1$s\nda @%2$s</string>
+
 
   // Share new book
   <string name="activity_share_book">Condividi un nuovo libro</string>

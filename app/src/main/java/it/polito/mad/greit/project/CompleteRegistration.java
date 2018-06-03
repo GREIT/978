@@ -240,7 +240,7 @@ public class CompleteRegistration extends AppCompatActivity {
 
           } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(CompleteRegistration.this, "Registration failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(CompleteRegistration.this, R.string.registration_failed, Toast.LENGTH_SHORT).show();
           }
         }
 

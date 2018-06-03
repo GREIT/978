@@ -55,7 +55,8 @@ class OtherProfile : AppCompatActivity() {
 
     mDatabaseUsers!!.addListenerForSingleValueEvent(object : ValueEventListener {
       override fun onDataChange(dataSnapshot: DataSnapshot) {
-        val user = dataSnapshot.getValue(Profile::class.java)
+        val user = dataSnapshot.getValue(Profile::class.java) ?: return
+
 
         println(user)
 

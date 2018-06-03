@@ -4,6 +4,8 @@
 
   //Misc
   <string name="yes">Yes</string>
+  <string name="loading">Loading, please wait&#8230;</string>
+  <string name="registration_failed">Registration failed</string>
 
   // Main activity
   <string name="search_text_main">Search books by</string>
@@ -16,10 +18,22 @@
   <string name="item_isbn">ISBN</string>
   <string name="item_year">Year</string>
   <string name="item_tag">Tag</string>
+  <string name="menu_search_title">Choose search field:</string>
+  <string name="copy_available">1 COPY AVAILABLE</string>
+  <string name="copies_available">%d COPIES AVAILABLE</string>
   <string name="nav_my_books">My Books</string>
   <string name="nav_my_reviews">Received Reviews</string>
   <string name="nav_history">History</string>
   <string name="nav_add_a_book">Add a Book</string>
+
+  //Searched Shared Books
+  <string name="confirmation_needed">Confirmation needed</string>
+  <string name="delete_shared_book">Do you really want to delete this book?</string>
+  <string name="book_removed">Book removed from your collection</string>
+  <string name="location_not_found">Location not found</string>
+  <string name="books_near_you">Books near you</string>
+  <string name="book_on_loan">The book is currently on loan!</string>
+
 
   // Authentication
   <string name="signout">Sign out</string>
@@ -51,6 +65,7 @@
   <string name="published">Year</string>
   <string name="conditions">Conditions</string>
   <string name="tag">Tags</string>
+  <string name="book_detail">Added on %1$s\nby @%2$s</string>
 
   // Share new book
   <string name="activity_share_book">Share a new book</string>
@@ -100,7 +115,7 @@
   //Chat
   <string name="enter_message">Enter message</string>
   <string name="inbox">Inbox</string>
-  <string name="input">Insert here...</string>
+  <string name="input">Insert here&#8230;</string>
   <string name="free">Free</string>
   <string name="borrowed">Borrowed</string>
   <string name="alert_message_chat_lock">"Are you sure you want to borrow this book?"</string>

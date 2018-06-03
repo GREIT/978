@@ -70,13 +70,15 @@ public class ReceivedReviewsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Profile profile = dataSnapshot.getValue(Profile.class);
-                Float score = profile.getTotScoringReviews()/profile.getTotReviewsReceived();
+                if(profile!= null) {
+                    Float score = (profile.getTotReviewsReceived() != 0) ? profile.getTotScoringReviews() / profile.getTotReviewsReceived() : 0;
 
-                String sscore = score.toString();
-                sscore = sscore.substring(0, (sscore.length()>4)?4:sscore.length());
+                    String sScore = score.toString();
+                    sScore = sScore.substring(0, (sScore.length() > 4) ? 4 : sScore.length());
 
-                rating.setRating(score);
-                mean_value.setText(sscore);
+                    rating.setRating(score);
+                    mean_value.setText(sScore);
+                }
             }
 
             @Override

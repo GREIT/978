@@ -21,6 +21,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
@@ -33,6 +34,8 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -70,6 +73,8 @@ public class SearchedSharedBooks extends AppCompatActivity {
   
   private SortedMap<String, Integer> distances;
   private ArrayList<Integer> positions;
+
+  static FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
   
   
   @Override
@@ -78,7 +83,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
     setContentView(R.layout.activity_searched_shared_books);
     
     t = findViewById(R.id.searched_sharedBooks_toolbar);
-    t.setTitle("Books near you");
+    t.setTitle(R.string.books_near_you);
     setSupportActionBar(t);
     t.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
     t.setNavigationOnClickListener(view -> onBackPressed());
@@ -128,7 +133,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
                 currentLocation = location.getLatitude() + ";" + location.getLongitude();
               } else {
                 currentLocation = getIntent().getStringExtra("userLocation");
-                Toast.makeText(SearchedSharedBooks.this, "Location not found, profile location set.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SearchedSharedBooks.this, R.string.location_not_found, Toast.LENGTH_SHORT).show();
               }
               sharedBookShow(book.getISBN());
             }
@@ -148,14 +153,14 @@ public class SearchedSharedBooks extends AppCompatActivity {
                 currentLocation = location.getLatitude() + ";" + location.getLongitude();
               } else {
                 currentLocation = getIntent().getStringExtra("userLocation");
-                Toast.makeText(SearchedSharedBooks.this, "Location not available, profile location set.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SearchedSharedBooks.this, R.string.location_not_found, Toast.LENGTH_SHORT).show();
               }
               sharedBookShow(book.getISBN());
             }
           });
     } else {
       currentLocation = getIntent().getStringExtra("userLocation");
-      Toast.makeText(SearchedSharedBooks.this, "Location not available, profile location set.", Toast.LENGTH_SHORT).show();
+      Toast.makeText(SearchedSharedBooks.this, R.string.location_not_found, Toast.LENGTH_SHORT).show();
       sharedBookShow(book.getISBN());
     }
     return;
@@ -182,9 +187,12 @@ public class SearchedSharedBooks extends AppCompatActivity {
       
       @Override
       public SharedBook getItem(int position) {
-        if (positions.isEmpty()) {
+        if(position >=  positions.size()){
+          Log.e("GetItemSSB", "getItem: Some error in the getItem" );
+        }
+        if (positions.isEmpty() || position >=  positions.size()) {
           DecimalFormat df = new DecimalFormat("00000.00");
-          
+
           for (int i = 1; i <= mSnapshots.size(); i++)
             distances.put(df.format(Utils.calcDistance(mSnapshots.getObject(i - 1).getCoordinates(), currentLocation) / 1000) + mSnapshots.getObject(i - 1).getKey(), i - 1);
           for (Map.Entry<String, Integer> entry : distances.entrySet())
@@ -238,19 +246,19 @@ public class SearchedSharedBooks extends AppCompatActivity {
         dialogFragment.show(fm, "dialog");
       });
       
-      if (model.getOwnerUsername().equals(ctx.getSharedPreferences("sharedpref", Context.MODE_PRIVATE).getString("username", null))) {
+      if (model.getOwnerUid().equals(user.getUid())) {
         // It is my book
-        if (model.getShared() == true) {
+        if (model.getShared()) {
           // Book is currently on loan
           rightBar.setBackgroundColor(ContextCompat.getColor(mView.getContext(), R.color.unavailable));
           contactForLoan.setImageResource(R.drawable.ic_delete_transparent_48dp);
-          contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, "You can't delete a book currently on loan!", Toast.LENGTH_SHORT).show());
+          contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, R.string.cannot_delete, Toast.LENGTH_SHORT).show());
         } else {
           contactForLoan.setImageResource(R.drawable.ic_delete_white_48dp);
           contactForLoan.setOnClickListener(v -> {
             new AlertDialog.Builder(itemView.getContext())
-                .setTitle("Confirmation needed")
-                .setMessage("Do you really want to delete this book?")
+                .setTitle(R.string.confirmation_needed)
+                .setMessage(R.string.delete_shared_book)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                   
@@ -273,7 +281,7 @@ public class SearchedSharedBooks extends AppCompatActivity {
                           } else {
                             DatabaseReference tmpDbRef = db.getReference("BOOKS/" + model.getISBN());
                             tmpDbRef.child("booksOnLoan").setValue(Integer.valueOf(tmpBook.getBooksOnLoan()) - 1);
-                            Toast.makeText(ctx, "Book removed from your collection", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ctx, R.string.book_removed, Toast.LENGTH_SHORT).show();
                           }
                         }
                       }
@@ -292,11 +300,11 @@ public class SearchedSharedBooks extends AppCompatActivity {
         }
       } else {
         // Not my book
-        if (model.getShared() == true) {
+        if (model.getShared()) {
           // Book is currently on loan
           rightBar.setBackgroundColor(ContextCompat.getColor(mView.getContext(), R.color.unavailable));
           contactForLoan.setImageResource(R.drawable.ic_textsms_transparent_48dp);
-          contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, "The book is currently on loan!", Toast.LENGTH_SHORT).show());
+          contactForLoan.setOnClickListener(v -> Toast.makeText(ctx, R.string.book_on_loan, Toast.LENGTH_SHORT).show());
         } else {
           contactForLoan.setImageResource(R.drawable.ic_textsms_white_48dp);
           contactForLoan.setOnClickListener(v -> Chat.openchat(ctx, model));
