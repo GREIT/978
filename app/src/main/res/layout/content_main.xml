@@ -51,7 +51,8 @@ m
     </RelativeLayout>
 
     <RelativeLayout
-      android:layout_width="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:layout_width="280dp"
       android:layout_height="wrap_content"
       android:layout_marginBottom="20dp"
       android:layout_marginLeft="20dp"
@@ -71,10 +72,11 @@ m
       <AutoCompleteTextView
         android:singleLine="true"
         android:imeOptions="actionDone"
+        android:dropDownWidth="240dp"
         android:id="@+id/search_field"
-        android:layout_width="wrap_content"
+        android:layout_width="211dp"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/distance_from_left"
+        android:layout_toEndOf="@id/distance_from_left"
         android:layout_centerVertical="true"
         android:background="@color/transparent"
         android:elevation="3dp"
@@ -87,6 +89,7 @@ m
         android:paddingTop="10dp"
         android:textColor="@color/onSurface"
         android:textSize="16sp" />
+
 
       <ImageButton
         android:id="@+id/search_button_main"
