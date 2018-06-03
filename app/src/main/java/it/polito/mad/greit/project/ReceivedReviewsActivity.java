@@ -109,8 +109,10 @@ public class ReceivedReviewsActivity extends AppCompatActivity {
 
         };
 
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(linearLayoutManager);
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
         rv.setAdapter(reviewListAdapter);
     }
 

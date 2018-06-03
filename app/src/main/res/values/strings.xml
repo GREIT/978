@@ -6,6 +6,10 @@
   <string name="yes">Yes</string>
   <string name="loading">Loading, please wait&#8230;</string>
   <string name="registration_failed">Registration failed</string>
+  <string name="from_user">From\ </string>
+  <string name="from">From\ </string>
+  <string name="to">\ to\ </string>
+  <string name="to_user">To\ </string>
 
   // Main activity
   <string name="search_text_main">Search books by</string>

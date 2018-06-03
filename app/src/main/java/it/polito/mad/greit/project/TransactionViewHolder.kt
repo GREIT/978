@@ -17,7 +17,7 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     with(transaction!!) {
       itemView.transaction_book_title.text = transaction.bookTitle
       if (transaction.ownerUid.equals(FirebaseAuth.getInstance().getCurrentUser()!!.uid)) {
-        itemView.transaction_from_to.text = "To "
+        itemView.transaction_from_to.text = ctx.resources.getString(R.string.to_user)
         itemView.transaction_actor.text = "@" + transaction.receiverUsername
         itemView.transaction_actor.setOnClickListener{view -> run {
           val I = Intent(ctx, OtherProfile::class.java)
@@ -37,7 +37,7 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
           itemView.transaction_left.requestLayout()
         }
       } else {
-        itemView.transaction_from_to.text = "From "
+        itemView.transaction_from_to.text = ctx.resources.getString(R.string.from_user)
         itemView.transaction_actor.text = "@" + transaction.ownerUsername
         itemView.transaction_actor.setOnClickListener{view -> run {
           val I = Intent(ctx, OtherProfile::class.java)
@@ -57,10 +57,10 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
           itemView.transaction_right.requestLayout()
         }
       }
-      itemView.transaction_start_date_from.text = "From "
+      itemView.transaction_start_date_from.text = ctx.resources.getString(R.string.from)
       itemView.transaction_start_date.text = DateFormat.getDateInstance().format( Date(transaction.dateStart * 1000))
       if (transaction.dateEnd != 0L) {
-        itemView.transaction_end_date_to.text = " to "
+        itemView.transaction_end_date_to.text = ctx.resources.getString(R.string.to)
         itemView.transaction_end_date.text = DateFormat.getDateInstance().format( Date(transaction.dateEnd * 1000))
       }
 
