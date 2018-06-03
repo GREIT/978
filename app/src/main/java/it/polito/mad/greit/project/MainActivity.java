@@ -574,9 +574,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   
   private void saveUsername(String s) {
     SharedPreferences sharedref = getApplicationContext().getSharedPreferences("sharedpref", MODE_PRIVATE);
-    boolean notexists = sharedref.getString("username", null) == null;
-    boolean old = !sharedref.getString("username", null).equals(s);
-    if(notexists || old){
+
+    if(sharedref.getString("username", null) == null){
+      SharedPreferences.Editor editor = sharedref.edit();
+      editor.putString("username", s);
+      editor.commit();
+    }else if(!sharedref.getString("username", null).equals(s)){
       SharedPreferences.Editor editor = sharedref.edit();
       editor.putString("username", s);
       editor.commit();
