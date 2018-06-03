@@ -263,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         hideKeyboard(MainActivity.this);
+        ACTV.setText("");
         mResultList.requestFocus();
         bookSearch(field, autoComplete.getItem(position));
       }
