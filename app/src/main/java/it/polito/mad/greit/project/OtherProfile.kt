@@ -49,9 +49,9 @@ class OtherProfile : AppCompatActivity() {
 
     println(uid)
 
-    mDatabaseUsers = FirebaseDatabase.getInstance().getReference("USERS").child(uid)
-
     val sr: StorageReference? = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + uid + ".jpg")
+
+    mDatabaseUsers = FirebaseDatabase.getInstance().getReference("USERS").child(uid)
 
     mDatabaseUsers!!.addListenerForSingleValueEvent(object : ValueEventListener {
       override fun onDataChange(dataSnapshot: DataSnapshot) {
