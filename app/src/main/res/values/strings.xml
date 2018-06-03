@@ -104,9 +104,14 @@
   <string name="dialog_clicked">Dialog clicked</string>
   <string name="denied">Permission denied</string>
 
+  //Reviews
+  <string name="review_by">Review by\ </string>
+
+  //Navigator
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
   <string name="nav_header_desc">Navigation header</string>
+
 
   //Tabbed Page Strings
   <string name="title_activity_shared_books_by_user_splitted">Shared Books</string>

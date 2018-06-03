@@ -107,6 +107,9 @@
   <string name="dialog_clicked">Dialog clicked</string>
   <string name="denied">Permesso negato</string>
 
+    //Reviews
+    <string name="review_by">Recensito da\ </string>
+
   //Navigator
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>

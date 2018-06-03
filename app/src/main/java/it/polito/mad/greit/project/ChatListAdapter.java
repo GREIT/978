@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -201,8 +202,9 @@ public class ChatListAdapter extends RecyclerView.Adapter {
 
     private static String formatDateTime(long time){
         Date date = new Date(time*1000L);
-        SimpleDateFormat dt1 = new SimpleDateFormat("dd-MM hh:mm");
+        DateFormat dt1 = DateFormat.getDateInstance();
+        DateFormat dt2 = DateFormat.getTimeInstance(DateFormat.SHORT);
 
-        return dt1.format(date);
+        return dt1.format(date) + " " + dt2.format(date);
     }
 }

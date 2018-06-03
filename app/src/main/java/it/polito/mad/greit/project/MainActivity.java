@@ -86,6 +86,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -104,14 +105,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   private TextView tw_searchText;
   private TextView tw_searchMain;
   private FirebaseUser user;
-  
+    
   // Search variables
   private RecyclerView mResultList;
   private FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter;
   private DatabaseReference mBookDb, mSharedBookDb;
   private Button mSearchButton;
-  
-  
   
   
   @Override
@@ -209,15 +208,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     mSharedBookDb = FirebaseDatabase.getInstance().getReference("SHARED_BOOKS");
     mResultList = (RecyclerView) findViewById(R.id.result_list);
     mResultList.setItemAnimator(new DefaultItemAnimator());
-    
-    setupSearchBox("title");
+
+
+    String title = getResources().getString(R.string.item_title);
+    setupSearchBox(title,"title");
     startupRecycleView();
   }
   
   
-  private void setupSearchBox(String field) {
+  private void setupSearchBox(String fieldTranslated, String field) {
     mSearchButton = (Button) findViewById(R.id.search_button);
-    mSearchButton.setText(field.toUpperCase() + "▼");
+    mSearchButton.setText(fieldTranslated.toUpperCase() + "▼");
     mSearchButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -322,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             
             AutoCompleteTextView ACTV = (AutoCompleteTextView) findViewById(R.id.search_field);
             ACTV.setText("");
-            setupSearchBox(finalField);
+            setupSearchBox(items[choice[0]], finalField);
           }
         });
     

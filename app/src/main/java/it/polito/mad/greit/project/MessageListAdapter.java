@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -150,12 +151,11 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         }
     }
 
-
     private static String formatDateTime(long time){
         Date date = new Date(time*1000L);
+        DateFormat dt1 = DateFormat.getDateInstance();
+        DateFormat dt2 = DateFormat.getTimeInstance(DateFormat.SHORT);
 
-        SimpleDateFormat dt1 = new SimpleDateFormat("dd-MM kk:mm", locale);
-
-        return dt1.format(date);
+        return dt1.format(date) + " " + dt2.format(date);
     }
 }

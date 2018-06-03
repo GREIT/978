@@ -63,6 +63,10 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         itemView.transaction_end_date_to.text = ctx.resources.getString(R.string.to)
         itemView.transaction_end_date.text = DateFormat.getDateInstance().format( Date(transaction.dateEnd * 1000))
       }
+      else {
+        itemView.transaction_end_date_to.text = ""
+        itemView.transaction_end_date.text = ""
+      }
 
       itemView.transaction_write_review.setOnClickListener{view -> run {
         val bundle = Bundle()
