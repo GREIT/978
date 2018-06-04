@@ -11,6 +11,7 @@
   <string name="from">Dal\ </string>
   <string name="to">\ al\ </string>
   <string name="to_user">A\ </string>
+  <string name="username_taken">Username giá in uso</string>
 
 
   // Main activity

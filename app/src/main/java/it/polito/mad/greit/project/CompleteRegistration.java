@@ -211,37 +211,28 @@ public class CompleteRegistration extends AppCompatActivity {
       alert.show();
     } else {
       FirebaseDatabase db = FirebaseDatabase.getInstance();
-      db.getReference("USERS").addListenerForSingleValueEvent(new ValueEventListener() {
+      String userNameAdded = edit_nickname.getText().toString().toLowerCase();
+      //Log.d("USERNAME", "ADDED=" + userNameAdded);
+      db.getReference("USERNAMES").child(userNameAdded).addListenerForSingleValueEvent(new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-          boolean flag = false;
-          try {
-            Profile p;
-            for (DataSnapshot users : dataSnapshot.getChildren()) {
-              p = users.getValue(Profile.class);
-              if (p.getUsername().equals(edit_nickname.getText().toString())) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(CompleteRegistration.this);
-                builder.setMessage("Username already taken")
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                          @Override
-                          public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                          }
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
-                flag = true;
-              }
-            }
-
-            if (!flag) {
-              allowregistration();
-            }
-
-          } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(CompleteRegistration.this, R.string.registration_failed, Toast.LENGTH_SHORT).show();
+          String username = dataSnapshot.getValue(String.class);
+          //Log.d("USERNAME", "USERNAME=" + username);
+          if (username!=null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(CompleteRegistration.this);
+            builder.setMessage(R.string.username_taken)
+              .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  dialog.dismiss();
+                }
+              });
+            AlertDialog alert = builder.create();
+            alert.show();
+          } else {
+            allowregistration();
           }
+
         }
 
         @Override
@@ -272,6 +263,10 @@ public class CompleteRegistration extends AppCompatActivity {
     FirebaseDatabase db = FirebaseDatabase.getInstance();
     DatabaseReference dbref = db.getReference("TOKENS").child(U.getUid());
     dbref.setValue(FirebaseInstanceId.getInstance().getToken());
+
+    String username = P.getUsername().toLowerCase();
+    dbref = db.getReference("USERNAMES").child(username);
+    dbref.setValue(username);
 
     dbref = db.getReference("USERS").child(U.getUid());
     dbref.setValue(P).addOnSuccessListener(new OnSuccessListener<Void>() {
