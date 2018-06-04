@@ -155,6 +155,7 @@
     <string name="new_request">Nuova richiesta ricevuta da %1$s per il libro %2$s</string>
     <string name="incoming">Nuovi messaggi da %1$s per il libro %2$s</string>
     <string name="lock_event">%1$s ha accettato la richiesta per il libro %2$s</string>
+    <string name="review_not">Valuta la tua esperienza con l\'utente %1$s </string>
 
     //Delete
     <string name="cannot_delete">Non puoi cancellare questo libro perché c\'é un prestito ancora attivo.</string>

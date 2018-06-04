@@ -216,7 +216,7 @@ public class BookTransaction implements Serializable, Comparable {
 
   public void unlock_book() {
     DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TRANSACTIONS").child(this.chatId);
-
+    BookTransaction bt = this;
     dbref.addListenerForSingleValueEvent(new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
@@ -235,6 +235,8 @@ public class BookTransaction implements Serializable, Comparable {
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
               if (b) {
+                Chat.sendnotification(bt.ownerUsername,bt.chatId,bt.receiverUid,"review");
+                Chat.sendnotification(bt.receiverUsername,bt.chatId,bt.ownerUid,"review");
                 updateSharedBook(false);
               }
             }

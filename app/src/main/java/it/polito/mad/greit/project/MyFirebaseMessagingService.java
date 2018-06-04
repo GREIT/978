@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -13,6 +15,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
+import com.firebase.ui.auth.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -47,20 +50,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
             FirebaseDatabase db = FirebaseDatabase.getInstance();
             DatabaseReference dbref = db.getReference("USER_CHATS").child(fbu.getUid()).child(chatID);
-            dbref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Chat c = dataSnapshot.getValue(Chat.class);
-                    //sendNotification("Received " + c.getUnreadCount() + " new messages from " + from
-                     //       + " for the book " + c.getBookTitle(), );
-                    sendNotification(from,c,type);
-                }
+            if(type.equals("review")){
+                sendNotification(from,null,type);
+            }else {
+                dbref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Chat c = dataSnapshot.getValue(Chat.class);
+                        //sendNotification("Received " + c.getUnreadCount() + " new messages from " + from
+                        //       + " for the book " + c.getBookTitle(), );
+                        sendNotification(from, c, type);
+                    }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                }
-            });
+                    }
+                });
+            }
         }
 
         // Check if message contains a notification payload.
@@ -73,10 +80,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void sendNotification(String from,Chat c,String type) {
-        Intent intent = new Intent(this, ChatActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("chat",c);
-        intent.putExtra("notification", true);
+
+        Intent intent;
+
+        if(c != null){
+            intent = new Intent(this, ChatActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("chat",c);
+            intent.putExtra("notification", true);
+        }else{
+            intent = new Intent(this, UserHistory.class);
+            intent.putExtra("uid",FirebaseAuth.getInstance().getCurrentUser().getUid());
+        }
+
+
         PendingIntent pendingIntent = PendingIntent.getActivity(this, from.hashCode(), intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
@@ -89,6 +106,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         else if(type.equals("transaction")){
             messageBody = getResources().getString(R.string.lock_event,from,c.getBookTitle());
         }
+        else if(type.equals("review")){
+            messageBody = getResources().getString(R.string.review_not,from);
+        }
         else{
             messageBody = getResources().getString(R.string.new_request,from,c.getBookTitle());
         }
@@ -98,7 +118,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.ic_book_blue_700_48dp)
-                        .setContentTitle("Project")
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher_round))
+                        .setContentTitle("978")
                         .setContentText(messageBody)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)

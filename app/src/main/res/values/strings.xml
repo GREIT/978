@@ -154,7 +154,7 @@
   <string name="new_request">New Request Received from %1$s for the book %2$s</string>
   <string name="incoming">New messages from %1$s for the book %2$s</string>
   <string name="lock_event">%1$s accepted your request for book %2$s</string>
-
+  <string name="review_not">Review your experience with user %1$s </string>
   <string name="cannot_delete">You cannot delete this book because there is an active loan.</string>
 
   <!-- TODO: Remove or change this placeholder text -->
