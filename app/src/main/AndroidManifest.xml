@@ -45,8 +45,10 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-    <activity android:name=".SignInActivity" />
-    <activity android:name=".CompleteRegistration" />
+    <activity android:name=".SignInActivity"
+      android:screenOrientation="portrait"/>
+    <activity android:name=".CompleteRegistration"
+      android:screenOrientation="portrait"/>
     <activity
       android:name=".MainActivity"
       android:label="@string/title_activity_main"

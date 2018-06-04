@@ -29,6 +29,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -39,11 +40,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -105,12 +108,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
   private TextView tw_searchText;
   private TextView tw_searchMain;
   private FirebaseUser user;
-    
+  private ImageButton searchButton;
+  
   // Search variables
   private RecyclerView mResultList;
   private FirebaseRecyclerAdapter<Book, BookViewHolder> firebaseRecyclerAdapter;
   private DatabaseReference mBookDb, mSharedBookDb;
   private Button mSearchButton;
+  
+  
   
   
   @Override
@@ -263,12 +269,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ACTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        hideKeyboard(MainActivity.this);
-        ACTV.setText("");
-        mResultList.requestFocus();
-        bookSearch(field, autoComplete.getItem(position));
+        //hideKeyboard(MainActivity.this);
+        //mResultList.requestFocus();
+        ACTV.setText(autoComplete.getItem(position));
       }
     });
+    ACTV.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+      
+      public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        
+        if ((actionId == EditorInfo.IME_ACTION_DONE)) {
+          hideKeyboard(MainActivity.this);
+          String textToSearch = ACTV.getText().toString();
+          ACTV.setText("");
+          bookSearch(field, textToSearch);
+          return true;
+        }
+        return false;
+      }
+    });
+    
+    searchButton = findViewById(R.id.search_button_main);
+    searchButton.setOnClickListener(v -> {
+          String textToSearch = ACTV.getText().toString();
+          ACTV.setText("");
+          bookSearch(field, textToSearch);
+        }
+    );
   }
   
   public void chooseSearchField() {
@@ -409,6 +436,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         return viewHolder;
       }
+  
+      @Override
+      public void onDataChanged() {
+        super.onDataChanged();
+        if (getItemCount() == 0) {
+          AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+          builder.setMessage("No book found 😔")
+              .setCancelable(false)
+              .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                  //do things
+                }
+              });
+          AlertDialog alert = builder.create();
+          alert.show();
+          startupRecycleView();
+        }
+      }
     };
     
     mResultList.setAdapter(firebaseRecyclerAdapter);
@@ -430,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       TextView twYear = (TextView) mView.findViewById(R.id.bookCardYear);
       ImageView iwCover = (ImageView) mView.findViewById(R.id.bookCardCover);
       TextView twCopies = (TextView) mView.findViewById(R.id.bookCardCopies);
-  
+      
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -498,16 +543,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     } else if (id == R.id.nav_add_book) {
       Intent intent = new Intent(MainActivity.this, ShareNewBook.class);
       startActivity(intent);
-    }else if (id == R.id.nav_chat) {
+    } else if (id == R.id.nav_chat) {
       Intent intent = new Intent(MainActivity.this, InboxActivity.class);
       startActivity(intent);
     } else if (id == R.id.nav_my_history) {
-        Intent intent = new Intent(MainActivity.this, UserHistory.class);
-        intent.putExtra("uid", user.getUid());
-        startActivity(intent);
+      Intent intent = new Intent(MainActivity.this, UserHistory.class);
+      intent.putExtra("uid", user.getUid());
+      startActivity(intent);
     } else if (id == R.id.nav_my_reviews) {
-        Intent intent = new Intent(MainActivity.this, ReceivedReviewsActivity.class);
-        startActivity(intent);
+      Intent intent = new Intent(MainActivity.this, ReceivedReviewsActivity.class);
+      startActivity(intent);
     } else if (id == R.id.nav_sign_out) {
       FirebaseAuth.getInstance().signOut();
       Intent intent = new Intent(MainActivity.this, SignInActivity.class);

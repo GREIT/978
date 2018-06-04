@@ -58,10 +58,10 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         }
       }
       itemView.transaction_start_date_from.text = ctx.resources.getString(R.string.from)
-      itemView.transaction_start_date.text = DateFormat.getDateInstance().format( Date(transaction.dateStart * 1000))
+      itemView.transaction_start_date.text = DateFormat.getDateInstance(DateFormat.SHORT).format( Date(transaction.dateStart * 1000))
       if (transaction.dateEnd != 0L) {
         itemView.transaction_end_date_to.text = ctx.resources.getString(R.string.to)
-        itemView.transaction_end_date.text = DateFormat.getDateInstance().format( Date(transaction.dateEnd * 1000))
+        itemView.transaction_end_date.text = DateFormat.getDateInstance(DateFormat.SHORT).format( Date(transaction.dateEnd * 1000))
       }
       else {
         itemView.transaction_end_date_to.text = ""

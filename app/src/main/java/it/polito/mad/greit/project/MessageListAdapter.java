@@ -153,7 +153,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
     private static String formatDateTime(long time){
         Date date = new Date(time*1000L);
-        DateFormat dt1 = DateFormat.getDateInstance();
+        DateFormat dt1 = DateFormat.getDateInstance(DateFormat.SHORT);
         DateFormat dt2 = DateFormat.getTimeInstance(DateFormat.SHORT);
 
         return dt1.format(date) + " " + dt2.format(date);
