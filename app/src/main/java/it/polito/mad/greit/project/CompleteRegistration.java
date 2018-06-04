@@ -33,6 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,12 +80,27 @@ public class CompleteRegistration extends AppCompatActivity {
   private static final String TAG = "CompleteRegistration";
   String coordinates=null;
   String location = null;
+  private ImageButton explanation = null;
   //Boolean def = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_complete_registration);
+    
+    explanation = findViewById(R.id.explanationLocationRegistration);
+    explanation.setOnClickListener(v -> {
+      android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(CompleteRegistration.this);
+      builder.setMessage(getResources().getString(R.string.explanation_location))
+          .setCancelable(false)
+          .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+              //do things
+            }
+          });
+      android.support.v7.app.AlertDialog alert = builder.create();
+      alert.show();
+    });
 
     U = FirebaseAuth.getInstance().getCurrentUser();
 

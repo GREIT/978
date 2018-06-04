@@ -47,6 +47,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -113,6 +114,7 @@ public class EditProfile extends AppCompatActivity {
   private boolean changed = false;
   private String coordinates=null;
   private String location=null;
+  private ImageButton explanation = null;
  // boolean def = false;
 
 
@@ -135,6 +137,20 @@ public class EditProfile extends AppCompatActivity {
     ciw = findViewById(R.id.edit_pic);
     ciw.setImageResource(R.mipmap.ic_launcher_round);
     ciw.setOnClickListener(v -> pic_action());
+    
+    explanation = findViewById(R.id.explanationLocationProfile);
+    explanation.setOnClickListener(v -> {
+      android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(EditProfile.this);
+      builder.setMessage(getResources().getString(R.string.explanation_location))
+          .setCancelable(false)
+          .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+              //do things
+            }
+          });
+      android.support.v7.app.AlertDialog alert = builder.create();
+      alert.show();
+    });
 
     PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
             getFragmentManager().findFragmentById(R.id.edit_location);

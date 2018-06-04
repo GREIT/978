@@ -60,6 +60,7 @@
   <string name="error_size">Selected file is too big (max size allowed is 1MB</string>
   <string name="location_msg">Selected location </string>
   <string name="location_error">You have to select a location</string>
+  <string name="explanation_location">You should insert a location where you could meet other people for sharing your books.</string>
 
   // Shared Books
   <string name="shared_books">Shared books</string>
@@ -88,6 +89,7 @@
   // Complete book's informations
   <string name="actvity_complete_book_info">Complete book\'s informations</string>
   <string name="describe_your_book">How\'s your book</string>
+  <string name="explanation_tags">Insert the key words that describe your book (genre, themes, etc...) separated by a comma.</string>
 
   //Show Book
   <string name="show_book_title">Book</string>
