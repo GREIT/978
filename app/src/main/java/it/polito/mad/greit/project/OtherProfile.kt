@@ -37,10 +37,10 @@ class OtherProfile : AppCompatActivity() {
     setContentView(R.layout.activity_other_profile)
 
     tb = findViewById(R.id.other_profile_toolbar)
+    tb!!.setTitle(R.string.activity_other_profile)
     setSupportActionBar(tb)
     tb!!.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
     tb!!.setNavigationOnClickListener{view -> onBackPressed()}
-
 
 
     mReviewsList = findViewById(R.id.other_profile_reviews)

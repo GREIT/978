@@ -49,6 +49,7 @@
 
   // Profile
   <string name="activity_show_profile">Il tuo profilo</string>
+  <string name="activity_other_profile">Profilo</string>
   <string name="name">Nome</string>
   <string name="email" translatable="false">Email</string>
   <string name="username" translatable="false">Username</string>
