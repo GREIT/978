@@ -85,9 +85,11 @@ public class SharedBookDetailFragment extends DialogFragment {
             I.putExtra("uid", sb.getOwnerUid());
             getActivity().startActivity(I);
         }
-    }, 25, dateAndOwnerInfo.length(), 0);
-    spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.accent)), 25, dateAndOwnerInfo.length(), 0);
-    spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 25, dateAndOwnerInfo.length(), 0);
+    }, getActivity().getResources().getString(R.string.book_detail, date, sb.getOwnerUsername()).length() - sb.getOwnerUsername().length() - 1, dateAndOwnerInfo.length(), 0);
+    spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.accent)),
+        getActivity().getResources().getString(R.string.book_detail, date, sb.getOwnerUsername()).length() - sb.getOwnerUsername().length() - 1, dateAndOwnerInfo.length(), 0);
+    spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
+        getActivity().getResources().getString(R.string.book_detail, date, sb.getOwnerUsername()).length() - sb.getOwnerUsername().length() - 1, dateAndOwnerInfo.length(), 0);
 
     tv.setText(spannable, TextView.BufferType.SPANNABLE);
     tv.setClickable(true);

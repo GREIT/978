@@ -2,6 +2,7 @@ package it.polito.mad.greit.project
 
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.graphics.Color
 import android.opengl.Visibility
 import android.os.Bundle
@@ -23,6 +24,7 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         itemView.transaction_actor.setOnClickListener{view -> run {
           val I = Intent(ctx, OtherProfile::class.java)
           I.putExtra("uid", transaction.receiverUid)
+          I.addFlags(FLAG_ACTIVITY_NEW_TASK)
           ctx.startActivity(I)
         }}
         if (transaction.dateEnd == 0L) {
