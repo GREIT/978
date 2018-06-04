@@ -68,7 +68,7 @@ class WriteReview : DialogFragment() {
     tw!!.text = "@" + reviewedUsername
 
     tw = v.findViewById(R.id.write_review_book_title)
-    tw!!.text = "for " + title
+    tw!!.text = title
 
     et = v.findViewById(R.id.write_review_comment)
     et!!.setScroller(Scroller(context))

@@ -31,13 +31,28 @@
                 android:background="@color/greenDark"
                 android:visibility="invisible"/>
 
+            <Button
+                android:id="@+id/transaction_write_review_left"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:background="@drawable/rounded_corner_button_accent"
+                android:elevation="5dp"
+                android:text="REVIEW"
+                android:textColor="@color/white"
+                android:layout_toRightOf="@id/transaction_left"
+                android:layout_toEndOf="@id/transaction_left"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_centerInParent="true"
+                android:visibility="gone"/>
+
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/transaction_left"
-                android:layout_toEndOf="@id/transaction_left"
-                android:layout_toLeftOf="@id/transaction_write_review"
-                android:layout_toStartOf="@id/transaction_write_review"
+                android:layout_toRightOf="@id/transaction_write_review_left"
+                android:layout_toEndOf="@id/transaction_write_review_left"
+                android:layout_toLeftOf="@id/transaction_write_review_right"
+                android:layout_toStartOf="@id/transaction_write_review_right"
                 android:layout_marginHorizontal="20dp"
                 android:layout_centerVertical="true">
 
@@ -84,14 +99,12 @@
                         android:id="@+id/transaction_start_date_from"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:text="@string/from" />
 
                     <TextView
                         android:id="@+id/transaction_start_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:textStyle="bold"
                         android:text="Jan 01, 1900"/>
 
@@ -106,7 +119,6 @@
                         android:id="@+id/transaction_end_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:textStyle="bold"
                         android:text="Dec 31, 2000"/>
 
@@ -115,7 +127,7 @@
             </RelativeLayout>
 
             <Button
-                android:id="@+id/transaction_write_review"
+                android:id="@+id/transaction_write_review_right"
                 android:layout_width="80dp"
                 android:layout_height="30dp"
                 android:background="@drawable/rounded_corner_button_accent"
@@ -126,7 +138,8 @@
                 android:layout_toStartOf="@id/transaction_right"
                 android:layout_marginRight="20dp"
                 android:layout_marginEnd="20dp"
-                android:layout_centerInParent="true"/>
+                android:layout_centerInParent="true"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/transaction_right"

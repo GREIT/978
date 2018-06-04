@@ -108,6 +108,10 @@
 
   //Reviews
   <string name="review_by">Review by\ </string>
+  <string name="review_intro">Please, write a feedback</string>
+  <string name="review_to">to\ </string>
+  <string name="review_for">\ for</string>
+  <string name="review_comment">Insert here your comment...</string>
 
   //Navigator
   <string name="navigation_drawer_open">Open navigation drawer</string>
