@@ -69,13 +69,15 @@
 
       </LinearLayout>
 
-      <LinearLayout
+      <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingVertical="10dp">
 
         <TextView
+          android:id="@+id/tags_text"
+          android:layout_alignParentStart="true"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginRight="10dp"
@@ -84,14 +86,25 @@
           android:textStyle="bold" />
 
         <it.polito.mad.greit.project.TagEditText
+          android:layout_toRightOf="@+id/tags_text"
           android:id="@+id/complete_book_tags"
           android:layout_width="match_parent"
+          android:layout_toLeftOf="@id/explanationTags"
           android:layout_height="wrap_content"
           android:textColor="@color/onBackground"
           android:textSize="15sp"
           android:textStyle="bold" />
 
-      </LinearLayout>
+        <ImageButton
+          android:id="@+id/explanationTags"
+          android:background="@color/background"
+          android:layout_width="24dp"
+          android:layout_height="24dp"
+          app:srcCompat="@drawable/ic_help_24dp"
+          android:layout_alignParentEnd="true"
+          android:clickable="true"/>
+
+      </RelativeLayout>
 
       <LinearLayout
         android:layout_width="match_parent"

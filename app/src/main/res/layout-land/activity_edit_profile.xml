@@ -128,12 +128,17 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/background">
 
-          <LinearLayout
+          <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:orientation="vertical">
+              android:orientation="vertical"
+              android:layout_alignParentStart="true">
 
-            <TextView
+              <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
@@ -146,14 +151,27 @@
                 android:textSize="12sp"
                 android:textColor="@color/accent" />
 
-            <fragment
+              <fragment
                 android:id="@+id/edit_location"
                 android:layout_gravity="bottom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
 
-          </LinearLayout>
+            </LinearLayout>
+
+            <ImageButton
+              android:id="@+id/explanationLocationProfile"
+              android:background="@color/background"
+              android:layout_width="24dp"
+              android:layout_height="24dp"
+              app:srcCompat="@drawable/ic_help_24dp"
+              android:layout_alignParentEnd="true"
+              android:clickable="true"/>
+
+          </RelativeLayout>
+
+
 
         </android.support.v7.widget.CardView>
 

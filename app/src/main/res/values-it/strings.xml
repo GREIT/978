@@ -62,7 +62,7 @@
     <string name="error_size">Il file selezionato è troppo grande (dimensione massima 1MB)</string>
     <string name="location_msg">Selezionata posizione </string>
     <string name="location_error">Devi selezionare una posizione</string>
-
+    <string name="explanation_location">Inserisci una location dove saresti disposto ad incontrare altre persone per condividere i tuoi libri.</string>
     // Shared Books
     <string name="shared_books">Libri condivisi</string>
     <string name="activity_shared_books">I tuoi libri condivisi</string>
@@ -91,6 +91,7 @@
     // Complete book's informations
     <string name="actvity_complete_book_info">Completa le informazioni sul libro</string>
     <string name="describe_your_book">Descrivi le condizioni in cui si trova il tuo libro</string>
+    <string name="explanation_tags">Inserisci le parole chiave che meglio descrivono il tuo libro (genere, temi, ecc...) separate da una vorgola.</string>
 
     //Show Book
     <string name="show_book_title">Scheda libro</string>

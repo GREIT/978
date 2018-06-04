@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,6 +69,7 @@ public class CompleteBookRegistration extends AppCompatActivity {
   private TextView tw_conditions;
   private TagEditText tags;
   private Uri imageUri;
+  private ImageButton explanation = null;
   Toolbar t;
   
   @Override
@@ -105,6 +107,20 @@ public class CompleteBookRegistration extends AppCompatActivity {
     
     bb = (Button) findViewById(R.id.complete_book_snap_pic);
     bb.setOnClickListener(v -> camera());
+    
+    explanation = findViewById(R.id.explanationTags);
+    explanation.setOnClickListener(v -> {
+      android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(CompleteBookRegistration.this);
+      builder.setMessage(getResources().getString(R.string.explanation_tags))
+          .setCancelable(false)
+          .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+              //do things
+            }
+          });
+      android.support.v7.app.AlertDialog alert = builder.create();
+      alert.show();
+    });
   }
   
   void camera() {
