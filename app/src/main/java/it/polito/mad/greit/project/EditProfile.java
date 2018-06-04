@@ -301,7 +301,7 @@ public class EditProfile extends AppCompatActivity {
 
     if(changed){
       StorageReference sr = FirebaseStorage.getInstance().getReference().child("profile_pictures/" + user.getUid() + ".jpg");
-      ProgressDialog dialog = ProgressDialog.show(EditProfile.this, "", "Uploading, please wait...", true);
+      ProgressDialog dialog = ProgressDialog.show(EditProfile.this, "",  getResources().getString(R.string.loading), true);
       sr.putFile(FileProvider.getUriForFile(this, "it.polito.mad.greit.project", temp))
               .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
         @Override
