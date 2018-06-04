@@ -49,10 +49,10 @@ public class ChatActivity extends AppCompatActivity {
     private final int STATE_BORROWTOOTHER = 2;
     private final int STATE_UNKNOWN = -1;
 
-   private BookTransaction bt = null;
-   private SharedBook sb = null;
-   private Chat chat = null;
-   private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private BookTransaction bt = null;
+    private SharedBook sb = null;
+    private Chat chat = null;
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     private int state = STATE_UNKNOWN;
     ImageButton cardBookButton;
@@ -120,17 +120,29 @@ public class ChatActivity extends AppCompatActivity {
         DatabaseReference user_chat = FirebaseDatabase.getInstance()
                 .getReference(DB_USER_CHAT).child(user.getUid()).child(chatID);
 
-        user_chat.runTransaction(new Transaction.Handler() {
+        user_chat.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                Chat c = mutableData.getValue(Chat.class);
-                if(c!=null) c.setUnreadCount(0);
-                mutableData.setValue(c);
-                return Transaction.success(mutableData);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Chat c = dataSnapshot.getValue(Chat.class);
+                if(c!=null){
+                    c.setUnreadCount(0);
+                    user_chat.runTransaction(new Transaction.Handler() {
+                        @Override
+                        public Transaction.Result doTransaction(MutableData mutableData) {
+                            mutableData.setValue(c);
+                            return Transaction.success(mutableData);
+                        }
+
+                        @Override
+                        public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                        }
+                    });
+                }
             }
 
             @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
@@ -153,39 +165,61 @@ public class ChatActivity extends AppCompatActivity {
         DatabaseReference sender_chat = FirebaseDatabase.getInstance()
                 .getReference(DB_USER_CHAT).child(user.getUid()).child(chat.getChatID());
 
-        sender_chat.runTransaction(new Transaction.Handler() {
+        sender_chat.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                Chat c = mutableData.getValue(Chat.class);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Chat c = dataSnapshot.getValue(Chat.class);
                 c.setLastMsg(msg);
                 c.setTimestamp(System.currentTimeMillis()/1000L);
-                mutableData.setValue(c);
-                Chat.sendnotification(Profile.getCurrentUsername(ctx) ,c.getChatID(),c.getUserID(),"newRequest");
-                return Transaction.success(mutableData);
+
+                sender_chat.runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData mutableData) {
+                        mutableData.setValue(c);
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                        Chat.sendnotification(Profile.getCurrentUsername(ctx) ,c.getChatID(),c.getUserID(),"newRequest");
+                    }
+                });
             }
 
             @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
 
+
         DatabaseReference receiver_chat = FirebaseDatabase.getInstance()
                 .getReference(DB_USER_CHAT).child(chat.getUserID()).child(chat.getChatID());
 
-        receiver_chat.runTransaction(new Transaction.Handler() {
+        receiver_chat.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                Chat c = mutableData.getValue(Chat.class);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Chat c = dataSnapshot.getValue(Chat.class);
                 c.setLastMsg(msg);
                 c.setTimestamp(System.currentTimeMillis()/1000L);
                 c.setUnreadCount(c.getUnreadCount()+1);
-                mutableData.setValue(c);
-                return Transaction.success(mutableData);
+
+                receiver_chat.runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData mutableData) {
+                        mutableData.setValue(c);
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                    }
+                });
             }
 
             @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
@@ -194,7 +228,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void createAlertBorrow(ImageButton s){
         //I want the state as the one where I want to go
-            //ST state true when is locking, false when is opening
+        //ST state true when is locking, false when is opening
         boolean toBorrow = (state==STATE_FREE) ;
 
         int newState = (toBorrow)?STATE_BORROWTOUSER:STATE_FREE;
@@ -219,11 +253,11 @@ public class ChatActivity extends AppCompatActivity {
         builder.setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(android.R.string.yes, (d,w) -> {
-                       startTransaction(toBorrow);
-                       setState(newState);
+                    startTransaction(toBorrow);
+                    setState(newState);
                 })
                 .setNegativeButton(android.R.string.cancel, (d,w) ->
-                    d.dismiss()
+                        d.dismiss()
                 )
                 .setIcon(icon)
                 .show();
@@ -514,21 +548,31 @@ public class ChatActivity extends AppCompatActivity {
                 DatabaseReference sender_chat = FirebaseDatabase.getInstance()
                         .getReference("USER_CHATS").child(user.getUid()).child(chatID);
 
-                sender_chat.runTransaction(new Transaction.Handler() {
+                sender_chat.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public Transaction.Result doTransaction(MutableData mutableData) {
-                        Chat c = mutableData.getValue(Chat.class);
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Chat c = dataSnapshot.getValue(Chat.class);
                         //c.setIsnew(false);
                         c.setLastMsg(msg);
                         c.setTimestamp(time);
-                        mutableData.setValue(c);
-                        Chat.sendnotification(getCurrentUsername(ChatActivity.this),
-                                c.getChatID(),c.getUserID(),"message");
-                        return Transaction.success(mutableData);
+
+                        sender_chat.runTransaction(new Transaction.Handler() {
+                            @Override
+                            public Transaction.Result doTransaction(MutableData mutableData) {
+                                mutableData.setValue(c);
+                                return Transaction.success(mutableData);
+                            }
+
+                            @Override
+                            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                                Chat.sendnotification(getCurrentUsername(ChatActivity.this),
+                                        c.getChatID(),c.getUserID(),"message");
+                            }
+                        });
                     }
 
                     @Override
-                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                    public void onCancelled(DatabaseError databaseError) {
 
                     }
                 });
@@ -536,19 +580,30 @@ public class ChatActivity extends AppCompatActivity {
                 DatabaseReference receiver_chat = FirebaseDatabase.getInstance()
                         .getReference("USER_CHATS").child(ownerID).child(chatID);
 
-                receiver_chat.runTransaction(new Transaction.Handler() {
+                receiver_chat.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public Transaction.Result doTransaction(MutableData mutableData) {
-                        Chat c = mutableData.getValue(Chat.class);
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Chat c = dataSnapshot.getValue(Chat.class);
                         c.setLastMsg(msg);
                         c.setTimestamp(time);
                         c.setUnreadCount(c.getUnreadCount()+1);
-                        mutableData.setValue(c);
-                        return Transaction.success(mutableData);
+
+                        receiver_chat.runTransaction(new Transaction.Handler() {
+                            @Override
+                            public Transaction.Result doTransaction(MutableData mutableData) {
+                                mutableData.setValue(c);
+                                return Transaction.success(mutableData);
+                            }
+
+                            @Override
+                            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                            }
+                        });
                     }
 
                     @Override
-                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                    public void onCancelled(DatabaseError databaseError) {
 
                     }
                 });

@@ -22,6 +22,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
   private static final String TAG = "SignIn Activity";
@@ -111,6 +114,10 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 Intent intent = new Intent(SignInActivity.this, CompleteRegistration.class);
                 startActivity(intent);
               } else {
+                DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("TOKENS").child(U.getUid());
+                String token = FirebaseInstanceId.getInstance().getToken();
+                dbref.setValue(token);
+                Log.d("MyFirebaseIIDService", "onCreate: sent token " + token);
                 Intent I = new Intent(SignInActivity.this, MainActivity.class);
                 I.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(I);

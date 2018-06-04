@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -154,6 +155,7 @@ public class Chat implements Serializable, Comparable<Chat>{
         return res;
     }
 
+    public static boolean created1,created2;
     public static void openchat(Context context, SharedBook sb){
         FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
@@ -175,6 +177,8 @@ public class Chat implements Serializable, Comparable<Chat>{
                     }
 
                     if(!chat_exists){
+                        created1 = false;
+                        created2 = false;
                         Chat c = new Chat();
                         c.setUsername(sb.getOwnerUsername());
                         c.setBookID(sb.getKey());
@@ -193,20 +197,36 @@ public class Chat implements Serializable, Comparable<Chat>{
                         c.setLastMsg("");
                         c.setChatID(chatid);
 
-                        //set the chat for the current user
-                        dbref.child(chatid).setValue(c);
-
                         //prepare for making the other UserChat and create it
                         Intent intent = new Intent(context,ChatActivity.class);
                         intent.putExtra("chat",Chat.copy(c));
                         intent.putExtra("new",true);
 
+                        //set the chat for the current user
+                        dbref.child(chatid).setValue(c).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                created1 = true;
+                                if(created1 && created2){
+                                    context.startActivity(intent);
+                                }
+                            }
+                        });
+
                         DatabaseReference ref_second_user = db.getReference("USER_CHATS").child(sb.getOwnerUid());
                         c.setUserID(fbu.getUid());
                         c.setMine(true);
                         c.setUsername(Profile.getCurrentUsername(context));
-                        ref_second_user.child(chatid).setValue(c);
-                        context.startActivity(intent);
+                        ref_second_user.child(chatid).setValue(c).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                created2 = true;
+                                if(created1 && created2){
+                                    context.startActivity(intent);
+                                }
+                            }
+                        });
+
                     }
                 }catch (Exception e){
                     e.printStackTrace();
