@@ -98,12 +98,12 @@ public class ShareNewBook extends AppCompatActivity {
     return true;
   }
 
-  ProgressDialog dialog;
+//  ProgressDialog dialog;
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     
     if (R.id.share_new_book_confirm == item.getItemId()) {
-      dialog = ProgressDialog.show(ShareNewBook.this, "", getResources().getString(R.string.loading), true);
+//      dialog = ProgressDialog.show(ShareNewBook.this, "", getResources().getString(R.string.loading), true);
       EditText et_ISBN = (EditText) findViewById(R.id.share_new_book_ISBN);
       this.ISBN = et_ISBN.getText().toString();
       ISBNUtilities V = new ISBNUtilities(et_ISBN.getText().toString());
@@ -111,7 +111,7 @@ public class ShareNewBook extends AppCompatActivity {
         this.ISBN = V.convertToISBN13();
         getBookInfo(this.ISBN);
       } else {
-        dialog.dismiss();
+//        dialog.dismiss();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.isbn_not_valid)
             .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -139,7 +139,7 @@ public class ShareNewBook extends AppCompatActivity {
           Book tmpBook = new Book();
           tmpBook = dataSnapshot.getValue(Book.class);
 
-          dialog.dismiss();
+//          dialog.dismiss();
           Intent I = new Intent(ShareNewBook.this, CompleteBookRegistration.class);
           I.putExtra("book", tmpBook);
           startActivity(I);
@@ -197,14 +197,14 @@ public class ShareNewBook extends AppCompatActivity {
                 DatabaseReference dbref = db.getReference("BOOKS").child(B.getISBN());
                 dbref.setValue(B);
 
-                dialog.dismiss();
+//                dialog.dismiss();
                 Intent I = new Intent(ShareNewBook.this,
                     CompleteBookRegistration.class);
                 I.putExtra("book", B);
                 startActivity(I);
                 
               } else {
-                dialog.dismiss();
+//                dialog.dismiss();
                 AlertDialog.Builder builder = new AlertDialog.Builder(ShareNewBook.this);
                 builder.setMessage(R.string.book_not_found)
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
