@@ -11,6 +11,9 @@
   <string name="to">\ to\ </string>
   <string name="to_user">To\ </string>
   <string name="username_taken">Username already taken. </string>
+  <string name="upload_pic">Upload Pic</string>
+  <string name="snap_pic">Snap Pic</string>
+  <string name="select_image_action">Select source for image</string>
 
   // Main activity
   <string name="search_text_main">Search books by</string>

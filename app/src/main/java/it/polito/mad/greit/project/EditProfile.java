@@ -183,9 +183,12 @@ public class EditProfile extends AppCompatActivity {
 
   private void pic_action() {
     if(!EditProfile.this.isFinishing()){
-      final CharSequence[] items = {"Upload Pic", "Snap Pic"};
+      String upload = getResources().getString(R.string.upload_pic);
+      String snap = getResources().getString(R.string.snap_pic);
+      String select = getResources().getString(R.string.select_image_action);
+      final CharSequence[] items = {upload, snap};
       AlertDialog.Builder builder = new AlertDialog.Builder(EditProfile.this);
-      builder.setTitle("Select source for image")
+      builder.setTitle(select)
               .setItems(items, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                   if(which == 0){

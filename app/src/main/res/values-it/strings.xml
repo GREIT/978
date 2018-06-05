@@ -12,6 +12,9 @@
     <string name="to">\ al\ </string>
     <string name="to_user">A\ </string>
     <string name="username_taken">Username giá in uso</string>
+    <string name="upload_pic">Carica foto</string>
+    <string name="snap_pic">Scatta foto</string>
+    <string name="select_image_action">Selezione la sorgente per la foto</string>
 
 
     // Main activity
