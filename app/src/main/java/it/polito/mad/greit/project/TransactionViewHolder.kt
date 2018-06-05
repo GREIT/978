@@ -47,6 +47,7 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         itemView.transaction_actor.setOnClickListener{view -> run {
           val I = Intent(ctx, OtherProfile::class.java)
           I.putExtra("uid", transaction.ownerUid)
+          I.setFlags(FLAG_ACTIVITY_NEW_TASK)
           ctx.startActivity(I)
         }}
         if (transaction.dateEnd == 0L) {

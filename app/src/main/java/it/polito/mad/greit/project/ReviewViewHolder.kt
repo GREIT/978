@@ -2,6 +2,7 @@ package it.polito.mad.greit.project
 
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.support.v7.widget.RecyclerView
 import android.view.View
 
@@ -21,6 +22,7 @@ class ReviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
       itemView.review_card_rating.rating = review.rating!!.toFloat()
       itemView.review_card_reviewer.setOnClickListener{view ->
         val I = Intent(ctx!!, OtherProfile::class.java)
+        I.setFlags(FLAG_ACTIVITY_NEW_TASK)
         I.putExtra("uid", review.reviewerUid)
         ctx!!.startActivity(I)
       }
