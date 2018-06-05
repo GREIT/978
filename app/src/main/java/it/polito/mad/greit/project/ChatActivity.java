@@ -100,6 +100,7 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        zeroUnread(user, chat.getChatID());
         if(getIntent().hasExtra("notification") && getIntent().getBooleanExtra("notification", true)) {
             Intent intent = new Intent(ChatActivity.this, MainActivity.class);
             startActivity(intent);
@@ -117,23 +118,11 @@ public class ChatActivity extends AppCompatActivity {
 
     private void zeroUnread(FirebaseUser user,String chatID){
         //put to 0 unread count
-        DatabaseReference user_chat = FirebaseDatabase.getInstance()
-                .getReference(DB_USER_CHAT).child(user.getUid()).child(chatID);
-
-        user_chat.runTransaction(new Transaction.Handler() {
-            @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                Chat c = mutableData.getValue(Chat.class);
-                if(c!=null) c.setUnreadCount(0);
-                mutableData.setValue(c);
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-
-            }
-        });
+        if( chat.getUnreadCount() != 0) {
+            FirebaseDatabase.getInstance()
+                    .getReference(DB_USER_CHAT).child(user.getUid()).child(chatID)
+                    .child("unreadCount").setValue(0);
+        }
     }
 
     private void sendDefaultMsg(Chat chat){
