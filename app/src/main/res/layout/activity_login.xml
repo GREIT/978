@@ -26,7 +26,7 @@
         android:layout_below="@id/status_imageview"
         android:layout_centerHorizontal="true"
         android:fontFamily="@font/bilbo_swash_caps"
-        android:text="Welcome to 978"
+        android:text="@string/signin_welcome"
         android:textColor="@color/onPrimary"
         android:textSize="30sp"/>
 
@@ -37,7 +37,7 @@
         android:layout_below="@+id/welcome"
         android:layout_centerHorizontal="true"
         android:fontFamily="@font/nunito"
-        android:text="978 are the first barcode digits of every book.\n It's a country code, referring to a non-geographic\n but tantalizing realm, Bookland."
+        android:text="@string/signin_description"
         android:textColor="@color/onPrimary"
         android:textAlignment="center" />
 
