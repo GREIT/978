@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  tools:context=".SharedBooksByUser">
+
+  <include
+    android:id="@+id/shared_books_by_user_toolbar"
+    layout="@layout/toolbar" />
+
+  <android.support.v7.widget.RecyclerView
+    android:id="@+id/shared_books_by_user_result_list"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/shared_books_by_user_toolbar"/>
+
+    <android.support.design.widget.FloatingActionButton
+      android:id="@+id/fab_add_book_from_shared_books_by_user"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_alignParentEnd="true"
+      android:layout_alignParentRight="true"
+      android:layout_gravity="end|bottom"
+      android:layout_margin="10dp"
+      app:backgroundTint="@color/accent"
+      app:srcCompat="@drawable/ic_add_white_48dp" />
+
+
+</RelativeLayout>

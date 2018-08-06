@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  tools:context=".OtherProfile">
+
+  <include
+    android:id="@+id/other_profile_toolbar"
+    layout="@layout/toolbar" />
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="@color/primary"
+    android:orientation="horizontal"
+    android:padding="30dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+      android:id="@+id/other_profile_pic"
+      android:layout_width="100dp"
+      android:layout_height="100dp"
+      android:layout_gravity="center_vertical"
+      android:layout_marginEnd="20dp"
+      android:layout_marginRight="20dp"
+      android:contentDescription="Profile Picture"
+      app:civ_border_color="@color/accent"
+      app:civ_border_width="3dp"
+      app:srcCompat="@mipmap/ic_launcher_round" />
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:orientation="vertical">
+
+      <TextView
+        android:id="@+id/other_profile_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:contentDescription="Username"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textColor="@color/onPrimary"
+        android:textStyle="bold" />
+
+      <RatingBar
+        android:id="@+id/other_profile_mean_rating"
+        style="?android:attr/ratingBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="5dp"
+        android:isIndicator="true"
+        android:numStars="5"
+        android:rating="2"
+        android:stepSize="0.5" />
+      />
+
+      <TextView
+        android:id="@+id/other_profile_bio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        android:textStyle="normal"
+        android:layout_gravity="bottom"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/onSecondary" />
+    </LinearLayout>
+
+  </LinearLayout>
+
+  <android.support.v7.widget.RecyclerView
+    android:id="@+id/other_profile_reviews"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+</LinearLayout>

@@ -1,0 +1,112 @@
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:layout_marginBottom="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:id="@+id/inbox_chat_profile_pic"
+              android:layout_width="60dp"
+              android:layout_height="60dp"
+              android:layout_gravity="center_vertical"
+              android:layout_marginHorizontal="5dp"
+              android:contentDescription="Profile Picture"
+              app:civ_border_color="@color/accent"
+              app:civ_border_width="3dp"
+              app:srcCompat="@mipmap/ic_launcher_round" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+              android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/inbox_chat_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:paddingHorizontal="5dp"
+                    android:text="Username"
+                    android:textColor="@color/onBackground"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/inbox_chat_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:paddingHorizontal="5dp"
+                    android:paddingTop="5dp"
+                    android:text="Il libro sul campeggio"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/inbox_chat_last"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:paddingHorizontal="5dp"
+                    android:paddingTop="5dp"
+                    android:textSize="10sp"
+                    android:text="Nel mezzo del cammin di nostra vita é stato l'ultimo messaggio" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+              android:layout_gravity="center_vertical"
+                android:paddingHorizontal="5dp">
+
+                <TextView
+                    android:id="@+id/inbox_chat_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentTop="true"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:layout_marginTop="10dp"
+                    android:text="02/05 21:35"
+                    android:textSize="10sp"/>
+
+                <Button
+                    android:id="@+id/inbox_chat_unread"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/circular_button"
+                    android:backgroundTint="@color/accent"
+                    android:elevation="6dp"
+                    android:minWidth="0dp"
+                    android:text="1"
+                    android:textColor="@color/white"
+                    android:visibility="visible" />
+
+            </RelativeLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

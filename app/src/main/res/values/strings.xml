@@ -1,14 +1,169 @@
 <resources>
-    <string name="app_name">Project</string>
-    <string name="name">Name</string>
-    <string name="surname">Surname</string>
-    <string name="email" translatable="false">Email</string>
-    <string name="nickname" translatable="false">Nickname</string>
-    <string name="location">Location</string>
-    <string name="bio">A short bio</string>
-    <string name="bio_sample" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam metus eros, maximus non ipsum ac, luctus ultricies urna. Suspendisse dignissim volutpat sodales. Nullam tincidunt lectus vitae dui finibus, nec egestas neque venenatis.</string>
-    <string name="upload"> Upload </string>
-    <string name="camera"> Camera </string>
-    <string name="cancel"> Cancel </string>
-    <string name="ok"> OK </string>
+  <string name="app_name">978</string>
+  <string name="title_activity_main">Home</string>
+
+  //Misc
+  <string name="yes">Yes</string>
+  <string name="loading">Loading, please wait&#8230;</string>
+  <string name="registration_failed">Registration failed</string>
+  <string name="from_user">From\ </string>
+  <string name="from">From\ </string>
+  <string name="to">\ to\ </string>
+  <string name="to_user">To\ </string>
+  <string name="username_taken">Username already taken. </string>
+  <string name="upload_pic">Upload Pic</string>
+  <string name="snap_pic">Snap Pic</string>
+  <string name="select_image_action">Select source for image</string>
+
+  // Main activity
+  <string name="search_text_main">Search books by</string>
+  <string name="search_field">Search here</string>
+  <string name="main_title_search_1">Popular this period</string>
+  <string name="main_title_search_2">Choose the book that you\'re searching</string>
+  <string name="main_title_search_3">These are the books near you</string>
+  <string name="item_title">Title</string>
+  <string name="item_author">Author</string>
+  <string name="item_isbn">ISBN</string>
+  <string name="item_year">Year</string>
+  <string name="item_tag">Tag</string>
+  <string name="menu_search_title">Choose search field:</string>
+  <string name="copy_available">1 COPY AVAILABLE</string>
+  <string name="copies_available">%d COPIES AVAILABLE</string>
+  <string name="nav_my_books">My Books</string>
+  <string name="nav_my_reviews">Received Reviews</string>
+  <string name="nav_history">History</string>
+  <string name="nav_add_a_book">Add a Book</string>
+
+  //Searched Shared Books
+  <string name="confirmation_needed">Confirmation needed</string>
+  <string name="delete_shared_book">Do you really want to delete this book?</string>
+  <string name="book_removed">Book removed from your collection</string>
+  <string name="location_not_found">Location not found</string>
+  <string name="books_near_you">Books near you</string>
+  <string name="book_on_loan">The book is currently on loan!</string>
+
+
+  // Authentication
+  <string name="signout">Sign out</string>
+
+  // Complete Profile
+  <string name="activity_complete_profile">Complete your profile</string>
+
+  // Profile
+  <string name="activity_show_profile">Your Profile</string>
+  <string name="activity_other_profile">Profile</string>
+  <string name="name">Name</string>
+  <string name="email" translatable="false">Email</string>
+  <string name="username" translatable="false">Username</string>
+  <string name="location">Location</string>
+  <string name="bio">A short bio</string>
+
+  // Edit Profile
+  <string name="activity_edit_profile">Edit your profile</string>
+  <string name="error_size">Selected file is too big (max size allowed is 1MB</string>
+  <string name="location_msg">Selected location </string>
+  <string name="location_error">You have to select a location</string>
+  <string name="explanation_location">You should insert a location where you could meet other people for sharing your books.</string>
+
+  // Shared Books
+  <string name="shared_books">Shared books</string>
+  <string name="activity_shared_books">Your shared books</string>
+  <string name="title">Title</string>
+  <string name="author">Author</string>
+  <string name="ISBN">ISBN</string>
+  <string name="publisher">Publisher</string>
+  <string name="published">Year</string>
+  <string name="conditions">Conditions</string>
+  <string name="tag">Tags</string>
+  <string name="book_detail">Added on %1$s\nby @%2$s</string>
+
+  // Share new book
+  <string name="activity_share_book">Share a new book</string>
+  <string name="insert_isbn">Insert here the book\'s ISBN</string>
+  <string name="or">or</string>
+  <string name="scan_qr">Scan QR code</string>
+  <string name="isbn_not_valid">ISBN not valid 😕</string>
+  <string name="request_error">Error during the request 🤯</string>
+  <string name="image_upload_failed">Failed to load image</string>
+  <string name="detector_error">Could not set up the detector!</string>
+  <string name="scan_failed">Scan Failed: Found nothing to scan</string>
+  <string name="book_not_found">Book not found!</string>
+
+  // Complete book's informations
+  <string name="actvity_complete_book_info">Complete book\'s informations</string>
+  <string name="describe_your_book">How\'s your book</string>
+  <string name="explanation_tags">Insert the key words that describe your book (genre, themes, etc...) separated by a comma.</string>
+
+  //Show Book
+  <string name="show_book_title">Book</string>
+  <string name="edit">Edit</string>
+  <string name="delete">Delete</string>
+  <string name="add_to_star">Star</string>
+  <string name="ask_borrow">Ask to borrow</string>
+
+  // Miscellaneous
+  <string name="AUTH_ID" translatable="false">1059761957663-g0pf2f234revm5upjo64u3s6v2br3t38.apps.googleusercontent.com</string>
+  <string name="ok"> OK </string>
+  <string name="upload"> Upload </string>
+  <string name="camera"> 📸 </string>
+  <string name="cancel"> Cancel </string>
+  <string name="fill_fields">Fill all the required fields!</string>
+  <string name="dialog_clicked">Dialog clicked</string>
+  <string name="denied">Permission denied</string>
+
+  //Reviews
+  <string name="review_by">Review by\ </string>
+  <string name="review_intro">Please, write a feedback</string>
+  <string name="review_to">to\ </string>
+  <string name="review_for">\ for</string>
+  <string name="review_comment">Insert here your comment...</string>
+
+  //Navigator
+  <string name="navigation_drawer_open">Open navigation drawer</string>
+  <string name="navigation_drawer_close">Close navigation drawer</string>
+  <string name="nav_header_desc">Navigation header</string>
+
+
+  //Tabbed Page Strings
+  <string name="title_activity_shared_books_by_user_splitted">Shared Books</string>
+  <string name="tab_text_1">Your Books</string>
+  <string name="tab_text_2">Borrowed Books</string>
+  <string name="tab_text_3">Tab 3</string>
+
+  <string name="action_settings">Settings</string>
+
+  //Chat
+  <string name="enter_message">Enter message</string>
+  <string name="inbox">Inbox</string>
+  <string name="input">Insert here&#8230;</string>
+  <string name="free">Free</string>
+  <string name="borrowed">Borrowed</string>
+  <string name="alert_message_chat_lock">"Are you sure you want to borrow this book?"</string>
+  <string name="alert_message_chat_unlock">"Are you sure you want to conclude the loan?"</string>
+  <string name="alert_title_chat_lock">"Borrow"</string>
+  <string name="alert_title_chat_unlock">"Conclude"</string>
+  <string name="book_already_borrowed_title">"Book borrowed"</string>
+  <string name="book_already_borrowed_message">"You gave your book to @%1$s"</string>
+  <string name="dialog_free_message">"This book is free, you can ask the owner to confirm the request."</string>
+  <string name="borrowed_to_you">"Borrow already confirmed"</string>
+  <string name="dialog_borrowed_to_you">"The owner already accepted borrowing to you this book. If you haven't done it yet, set up an appointment with him/her."</string>
+  <string name="dialog_borrowed_to_other">"This book is already borrowed to another user."</string>
+  <string name="borrowed_to_other">"Book not available"</string>
+
+  <string name="system_message_accepted">User %1$s accepted the loan</string>
+  <string name="system_message_closed">User %1$s closed the loan</string>
+
+
+  //notifications
+  <string name="default_msg">User %1$s made a request for %2$s</string>
+  <string name="new_request">New Request Received from %1$s for the book %2$s</string>
+  <string name="incoming">New messages from %1$s for the book %2$s</string>
+  <string name="lock_event">%1$s accepted your request for book %2$s</string>
+  <string name="review_not">Review your experience with user %1$s </string>
+  <string name="cannot_delete">You cannot delete this book because there is an active loan.</string>
+
+  <!-- TODO: Remove or change this placeholder text -->
+  <string name="hello_blank_fragment">Hello blank fragment</string>
+  <string name="title_activity_maps">Map</string>
+
 </resources>
